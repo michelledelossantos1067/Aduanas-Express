@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "AduanasExpress.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/AduanasExpress.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/AduanasExpress.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "AduanasExpress.Domain/1.0.0": {
+      "type": "project",
+      "path": "../AduanasExpress.Domain/AduanasExpress.Domain.csproj",
+      "msbuildProject": "../AduanasExpress.Domain/AduanasExpress.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "AduanasExpress.Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/Users/dianny/.nuget/packages/": {}
@@ -32,7 +51,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj": {
+              "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -1,0 +1,13 @@
+namespace AduanasExpress.Application.DTOs.Vehiculo;
+
+public class CreateVehiculoDTOs{
+    public string Marca {get;set;}
+    public string Modelo {get;set;}
+    public int Año {get;set;}
+    public string Matricula {get;set;}
+    public string Color {get;set;}
+    public string Tipo {get;set;}
+    public int Capacidad {get;set;}
+    public EstadosVehiculo Estado {get;set;}
+    public decimal Kilometraje {get;set;}
+}

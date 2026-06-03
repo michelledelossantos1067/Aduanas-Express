@@ -9,5 +9,6 @@ public class CreateVehiculoDTOs{
     public string Tipo {get;set;}
     public int Capacidad {get;set;}
     public EstadosVehiculo Estado {get;set;}
-    public decimal Kilometraje {get;set;}
+    public decimal Kilometraje { get; set; }
+    public DateTime? FechaUltimoMant {get;set;}
 }

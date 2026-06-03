@@ -1,14 +1,16 @@
-using AduanasExpress.Application.interfaces.Repositories;
-using AduanasExpress.Application.interfaces.Services;
-using AduanasExpress.Infrastructure.Services;
-using AduanasExpress.Infrastructure.Repositories;
-using AduanasExpress.Infrastructure.Data;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using AduanasExpress.Application.interfaces.Repositories;
+using AduanasExpress.Application.interfaces.Services;
+using AduanasExpress.Application.Interfaces.Services;
+using AduanasExpress.Infrastructure.Data;
+using AduanasExpress.Infrastructure.Repositories;
+using AduanasExpress.Application.Interfaces.Repositories;
+using AduanasExpress.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -30,6 +32,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioServices>();
 builder.Services.AddScoped<IAuthService, AuthServices>();
 builder.Services.AddScoped<IVehiculoService, VehiculoServices>();
 builder.Services.AddScoped<IVehiculoRepositories, VehiculoRepositories>();
+builder.Services.AddScoped<IMantenimientoRepositories, MantenimientoRepositories>();
+builder.Services.AddScoped<IMantenimientoService, MantenimientoServices>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

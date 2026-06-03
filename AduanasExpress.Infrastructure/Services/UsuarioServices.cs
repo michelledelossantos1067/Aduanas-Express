@@ -40,6 +40,7 @@ public class UsuarioServices : IUsuarioService{
             Nombre = createUsuario.Nombre,
             Apellido = createUsuario.Apellido,
             Email = createUsuario.Email,
+            Password = createUsuario.Password,
             Rol = createUsuario.Rol
         };
         await _usuarioRepositories.Crear(usuarios);
@@ -52,6 +53,7 @@ public class UsuarioServices : IUsuarioService{
         usuario.Nombre = updateUsuario.Nombre;
         usuario.Apellido = updateUsuario.Apellido;
         usuario.Email = updateUsuario.Email;
+        usuario.Password = updateUsuario.Password;
         usuario.Rol = updateUsuario.Rol;
         
         await _usuarioRepositories.Actualizar(Id,usuario);

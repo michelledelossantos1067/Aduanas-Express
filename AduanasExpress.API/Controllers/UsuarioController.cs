@@ -2,6 +2,7 @@ using AduanasExpress.Infrastructure.Services;
 using AduanasExpress.Application.interfaces.Services;
 using AduanasExpress.Application.DTOs.Usuario;
 using Microsoft.AspNetCore.Mvc;
+
 [ApiController]
 [Route("api/[controller]")]
 public class UsuarioController : ControllerBase{
@@ -14,9 +15,9 @@ public class UsuarioController : ControllerBase{
         var usuario = await _usuarioService.ObtenerTodos();
         return Ok(usuario);
     }
-    [HttpGet("{id}")]
-    public async Task<IActionResult> ObtenerPorId(int id){
-        var usuario = await _usuarioService.ObtenerPorId(id);
+    [HttpGet("{Id}")]
+    public async Task<IActionResult> ObtenerPorId(int Id){
+        var usuario = await _usuarioService.ObtenerPorId(Id);
         if(usuario == null){
             throw new Exception("Error no se encontro el usuario.");
         };
@@ -27,14 +28,14 @@ public class UsuarioController : ControllerBase{
         await _usuarioService.Crear(createUsuario);
         return Created();
     }
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Actualizar(int id,UpdateUsuario updateUsuario){
-        await _usuarioService.Actualizar(id,updateUsuario);
+    [HttpPut("{Id}")]
+    public async Task<IActionResult> Actualizar(int Id,UpdateUsuario updateUsuario){
+        await _usuarioService.Actualizar(Id,updateUsuario);
         return Ok();
     }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Eliminar(int id){
-        await _usuarioService.Eliminar(id);
+    [HttpDelete("{Id}")]
+    public async Task<IActionResult> Eliminar(int Id){
+        await _usuarioService.Eliminar(Id);
         return NoContent();
     }
 

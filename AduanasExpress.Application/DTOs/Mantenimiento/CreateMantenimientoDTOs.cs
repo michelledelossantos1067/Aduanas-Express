@@ -6,6 +6,5 @@ public class CreateMantenimientoDTOs{
     public decimal Costo {get;set;}
     public string Taller {get;set;}
     public DateTime? ProximoMantenimiento {get;set;}
-    
     public int VehiculoId {get;set;}
 }

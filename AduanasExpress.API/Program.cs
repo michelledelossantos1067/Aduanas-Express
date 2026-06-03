@@ -3,10 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.interfaces.Services;
+using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Infrastructure.Data;
 using AduanasExpress.Infrastructure.Repositories;
-using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +34,8 @@ builder.Services.AddScoped<IVehiculoService, VehiculoServices>();
 builder.Services.AddScoped<IVehiculoRepositories, VehiculoRepositories>();
 builder.Services.AddScoped<IMantenimientoRepositories, MantenimientoRepositories>();
 builder.Services.AddScoped<IMantenimientoService, MantenimientoServices>();
+builder.Services.AddScoped<IConsumoCombustibleRepositories, ConsumoCombustibleRepositories>();
+builder.Services.AddScoped<IConsumoCombustibleService, ConsumoCombustibleServices>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

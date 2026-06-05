@@ -1,0 +1,6 @@
+[
+  { "label": "Disponibles", "value": 15, "color": "#4CAF50" },
+  { "label": "En viaje", "value": 6, "color": "#2196F3" },
+  { "label": "Mantenimiento", "value": 2, "color": "#FF9800" },
+  { "label": "Fuera servicio", "value": 1, "color": "#F44336" }
+]

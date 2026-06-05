@@ -1,0 +1,6 @@
+[
+  { "label": "Total vehículo", "value": 38, "sub": "30 disponible" },
+  { "label": "Viajes hoy", "value": 7, "sub": "2 viajes" },
+  { "label": "Solicitudes pend.", "value": 5, "sub": "Requieren acción" },
+  { "label": "Conductores activos", "value": 12, "sub": "3 en mantenimiento" }
+]

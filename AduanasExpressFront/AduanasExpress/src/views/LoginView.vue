@@ -10,10 +10,7 @@ const form = ref({
 })
 
 const submitForm = async () => {
-  console.log('Login:', form.value)
-  // Cuando el backend esté listo:
-  // const response = await authService.login(form.value)
-  // router.push('/dashboard')
+  router.push('/dashboard')
 }
 </script>
 
@@ -29,8 +26,7 @@ const submitForm = async () => {
 
       <div>
         <label>Contraseña:</label>
-        <input v-model="form.password" type="password" placeholderfind src -type f
-="••••••••" required />
+        <input v-model="form.password" type="password" placeholder="••••••••" required />
       </div>
 
       <button type="submit">Entrar</button>

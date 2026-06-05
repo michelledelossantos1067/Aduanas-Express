@@ -1,0 +1,5 @@
+[
+  { "id": 1, "area": "Logística", "destino": "Parque Canaviedes", "fecha": "2026-05-28", "estado": "Pendiente" },
+  { "id": 2, "area": "Recursos Humanos", "destino": "Zona Industrial", "fecha": "2026-05-28", "estado": "Aprobada" },
+  { "id": 3, "area": "Operaciones", "destino": "Centro Comercial", "fecha": "2026-05-29", "estado": "Pendiente" }
+]

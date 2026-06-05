@@ -39,10 +39,10 @@ builder.Services.AddScoped<IConsumoCombustibleRepositories, ConsumoCombustibleRe
 builder.Services.AddScoped<IConsumoCombustibleService, ConsumoCombustibleServices>();
 builder.Services.AddScoped<IConductorRepositories, ConductorRepositories>();
 builder.Services.AddScoped<IConductorService, ConductorServices>();
-
-
 builder.Services.AddScoped<ISolicitudTransporteRepositories, SolicitudTransporteRepositories>();
 builder.Services.AddScoped<ISolicitudTransporteService, SolicitudTransporteServices>();
+builder.Services.AddScoped<IAsignacionRepository, AsignacionRepository>();
+builder.Services.AddScoped<IAsignacionService, AsignacionService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -29,6 +29,31 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(s => s.VehiculoId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        // Asignacion
+        modelBuilder.Entity<Asignacion>()
+            .HasOne(a => a.Solicitud)
+            .WithMany()
+            .HasForeignKey(a => a.SolicitudId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Asignacion>()
+            .HasOne(a => a.Vehiculo)
+            .WithMany()
+            .HasForeignKey(a => a.VehiculoId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Asignacion>()
+            .HasOne(a => a.Conductor)
+            .WithMany()
+            .HasForeignKey(a => a.ConductorId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Asignacion>()
+            .HasOne(a => a.AsignadoPor)
+            .WithMany()
+            .HasForeignKey(a => a.AsignadoPorId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Vehiculo> Vehiculos { get; set; }
@@ -36,4 +61,5 @@ public class AppDbContext : DbContext
     public DbSet<ConsumoCombustible> ConsumoCombustibles { get; set; }
     public DbSet<Conductor> Conductores { get; set; }
     public DbSet<SolicitudTransporte> SolicitudesTransporte { get; set; }
+    public DbSet<Asignacion> Asignaciones { get; set; }
 }

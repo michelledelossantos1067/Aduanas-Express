@@ -36,6 +36,8 @@ builder.Services.AddScoped<IMantenimientoRepositories, MantenimientoRepositories
 builder.Services.AddScoped<IMantenimientoService, MantenimientoServices>();
 builder.Services.AddScoped<IConsumoCombustibleRepositories, ConsumoCombustibleRepositories>();
 builder.Services.AddScoped<IConsumoCombustibleService, ConsumoCombustibleServices>();
+builder.Services.AddScoped<IConductorRepositories, ConductorRepositories>();
+builder.Services.AddScoped<IConductorService, ConductorServices>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

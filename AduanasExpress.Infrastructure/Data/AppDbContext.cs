@@ -9,5 +9,5 @@ public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     public DbSet<Vehiculo> Vehiculos {get;set;}
     public DbSet<Mantenimiento> Mantenimientos { get; set; }
     public DbSet<ConsumoCombustible> ConsumoCombustibles { get; set; }
-
+    public DbSet<Conductor> Conductores { get; set; }
 }

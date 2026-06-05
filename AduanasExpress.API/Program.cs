@@ -11,6 +11,7 @@ using AduanasExpress.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -38,6 +39,10 @@ builder.Services.AddScoped<IConsumoCombustibleRepositories, ConsumoCombustibleRe
 builder.Services.AddScoped<IConsumoCombustibleService, ConsumoCombustibleServices>();
 builder.Services.AddScoped<IConductorRepositories, ConductorRepositories>();
 builder.Services.AddScoped<IConductorService, ConductorServices>();
+
+
+builder.Services.AddScoped<ISolicitudTransporteRepositories, SolicitudTransporteRepositories>();
+builder.Services.AddScoped<ISolicitudTransporteService, SolicitudTransporteServices>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "AduanasExpress.Application/1.0.0": {
+        "dependencies": {
+          "AduanasExpress.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AduanasExpress.Application.dll": {}
+        }
+      },
+      "AduanasExpress.Domain/1.0.0": {
+        "runtime": {
+          "AduanasExpress.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AduanasExpress.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AduanasExpress.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

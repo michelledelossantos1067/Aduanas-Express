@@ -1,0 +1,12 @@
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/bin/Debug/net9.0/AduanasExpress.Domain.deps.json
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/bin/Debug/net9.0/AduanasExpress.Domain.dll
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/bin/Debug/net9.0/AduanasExpress.Domain.pdb
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.AssemblyInfoInputs.cache
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.AssemblyInfo.cs
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.csproj.CoreCompileInputs.cache
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.sourcelink.json
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.dll
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/refint/AduanasExpress.Domain.dll
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.pdb
+/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/ref/AduanasExpress.Domain.dll

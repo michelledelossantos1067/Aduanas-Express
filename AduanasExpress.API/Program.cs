@@ -43,6 +43,7 @@ builder.Services.AddScoped<ISolicitudTransporteRepositories, SolicitudTransporte
 builder.Services.AddScoped<ISolicitudTransporteService, SolicitudTransporteServices>();
 builder.Services.AddScoped<IAsignacionRepository, AsignacionRepository>();
 builder.Services.AddScoped<IAsignacionService, AsignacionService>();
+builder.Services.AddScoped<IReporteService, ReporteService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

@@ -13,6 +13,7 @@ const navbar = useNavbarStore()
 onMounted(() => {
   navbar.setTitulo('Dashboard')
   navbar.setAcciones([])
+  navbar.setExtras(true, true)
 })
 </script>
 
@@ -37,7 +38,7 @@ onMounted(() => {
             <p>Viajes por mes</p>
             <a>Ver detalle</a>
           </div>
-          <div class="chart-placeholder">Gráfico próximamente</div>
+          <div class="chart-placeholder">Gráfico </div>
         </div>
 
         <div class="chart-card">

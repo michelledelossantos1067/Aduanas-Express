@@ -17,9 +17,12 @@ const navbar = useNavbarStore()
         {{ accion.label }}
       </button>
 
-      <span class="navbar-fecha"><img src="../../assets/icons/calendario.png" alt="calendario" width="15" height="15" />   Jueves, 28 mayo 2026</span>
-      <button><img src="../../assets/icons/buscador.png" alt="buscar" width="15" height="15" /></button>
-      <button><img src="../../assets/icons/notificación.png" alt="notificación" width="15" height="15" /></button>
+      <button v-if="navbar.mostrarBuscador">
+        <img src="../../assets/icons/buscador.png" width="33" height="33" />
+      </button>
+      <button v-if="navbar.mostrarNotificaciones">
+        <img src="../../assets/icons/notificación.png" width="33" height="33" />
+      </button>
     </div>
   </header>
 </template>

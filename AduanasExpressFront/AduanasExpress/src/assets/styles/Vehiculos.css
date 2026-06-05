@@ -1,0 +1,193 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+.vehiculos-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.vehiculos-content {
+  flex: 1;
+  padding: 24px;
+}
+
+.vehiculos-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.vstat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vstat-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vstat-card h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.vstat-card p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+.vehiculos-filtros {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.filtro-busqueda {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.filtro-busqueda input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 13px;
+}
+
+.vehiculos-filtros select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+}
+
+.vehiculos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.vehiculo-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.vehiculo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vehiculo-placa {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.vehiculo-estado {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.vehiculo-estado.disponible {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.vehiculo-estado.en-viaje {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.vehiculo-estado.mantenimiento {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.vehiculo-estado.fuera-servicio {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.vehiculo-modelo {
+  font-size: 13px;
+  color: #444;
+  margin: 0 0 4px;
+}
+
+.vehiculo-tipo {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 12px;
+}
+
+.vehiculo-detalles {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.vehiculo-detalles div {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #666;
+}
+
+.vehiculo-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-ver, .btn-editar, .btn-eliminar {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-ver {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-editar {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.btn-eliminar {
+  background: #fce4ec;
+  color: #c62828;
+}

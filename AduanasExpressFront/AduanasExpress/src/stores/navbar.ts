@@ -4,6 +4,8 @@ import { ref } from 'vue'
 export const useNavbarStore = defineStore('navbar', () => {
   const titulo = ref('Dashboard')
   const acciones = ref<{ label: string; accion: string }[]>([])
+  const mostrarBuscador = ref(false)
+  const mostrarNotificaciones = ref(false)
 
   function setTitulo(nuevoTitulo: string) {
     titulo.value = nuevoTitulo
@@ -13,5 +15,11 @@ export const useNavbarStore = defineStore('navbar', () => {
     acciones.value = nuevasAcciones
   }
 
-  return { titulo, acciones, setTitulo, setAcciones }
+  function setExtras(buscador: boolean, notificaciones: boolean) {
+    mostrarBuscador.value = buscador
+    mostrarNotificaciones.value = notificaciones
+  }
+  
+
+  return { titulo, acciones, mostrarBuscador, mostrarNotificaciones, setTitulo, setAcciones, setExtras }
 })

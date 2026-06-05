@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "placa": "TRA-4821",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "Disponible"
+  },
+  {
+    "id": 2,
+    "placa": "TRA-4822",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "Disponible"
+  },
+  {
+    "id": 3,
+    "placa": "TRA-4823",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "En viaje"
+  },
+  {
+    "id": 4,
+    "placa": "TRA-4824",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "Mantenimiento"
+  },
+  {
+    "id": 5,
+    "placa": "TRA-4825",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "Disponible"
+  },
+  {
+    "id": 6,
+    "placa": "TRA-4826",
+    "modelo": "Toyota Hiace 2022",
+    "tipo": "Minibús",
+    "capacidad": 15,
+    "color": "Blanco",
+    "kilometraje": "12,500 km",
+    "ultimoMantenimiento": "15/01/2030",
+    "estado": "Disponible"
+  }
+]

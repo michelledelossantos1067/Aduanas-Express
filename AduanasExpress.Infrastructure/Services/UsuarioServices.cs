@@ -43,6 +43,11 @@ public class UsuarioServices : IUsuarioService{
             Password = createUsuario.Password,
             Rol = createUsuario.Rol
         };
+        if (usuarios.Password != null)
+        {
+            var PasswordHash = BCrypt.Net.BCrypt.HashPassword(usuarios.Password);
+            usuarios.Password = PasswordHash;
+        }
         await _usuarioRepositories.Crear(usuarios);
     }
     public async Task Actualizar(int Id,UpdateUsuario updateUsuario){
@@ -55,7 +60,10 @@ public class UsuarioServices : IUsuarioService{
         usuario.Email = updateUsuario.Email;
         usuario.Password = updateUsuario.Password;
         usuario.Rol = updateUsuario.Rol;
-        
+        if (!string.IsNullOrWhiteSpace(updateUsuario.Password))
+        {
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(updateUsuario.Password);
+        }
         await _usuarioRepositories.Actualizar(Id,usuario);
     }
     public async Task Eliminar(int Id){

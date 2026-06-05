@@ -1,7 +1,7 @@
 using AduanasExpress.Application.DTOs.Vehiculo;
-using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.interfaces.Services;
+using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Infrastructure.Services;
 public class VehiculoServices : IVehiculoService{
@@ -58,6 +58,7 @@ public class VehiculoServices : IVehiculoService{
             Capacidad = createVehiculoDTOs.Capacidad,
             Estado = createVehiculoDTOs.Estado,
             Kilometraje = createVehiculoDTOs.Kilometraje,
+            FechaUltimoMant = createVehiculoDTOs.FechaUltimoMant
         };
         await _vehiculoRepositories.Crear(vehiculo);
     }
@@ -76,6 +77,7 @@ public class VehiculoServices : IVehiculoService{
             vehiculo.Capacidad = updateVehiculoDTOs.Capacidad;
             vehiculo.Estado = updateVehiculoDTOs.Estado;
             vehiculo.Kilometraje = updateVehiculoDTOs.Kilometraje;
+            vehiculo.FechaUltimoMant = updateVehiculoDTOs.FechaUltimoMant;
         await _vehiculoRepositories.Actualizar(Id,vehiculo);
     }
     public async Task Eliminar(int Id){

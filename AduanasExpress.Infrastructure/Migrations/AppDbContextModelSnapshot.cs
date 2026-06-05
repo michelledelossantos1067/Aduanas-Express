@@ -22,6 +22,75 @@ namespace AduanasExpress.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.ConsumoCombustible", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CostoPorGalon")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("CostoTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Galones")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VehiculoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehiculoId");
+
+                    b.ToTable("ConsumoCombustibles");
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.Mantenimiento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Costo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ProximoMantenimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Taller")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoMantenimiento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VehiculoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehiculoId");
+
+                    b.ToTable("Mantenimientos");
+                });
+
             modelBuilder.Entity("AduanasExpress.Domain.Entitis.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -100,6 +169,28 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Vehiculos");
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.ConsumoCombustible", b =>
+                {
+                    b.HasOne("AduanasExpress.Domain.Entitis.Vehiculo", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("VehiculoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehiculo");
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.Mantenimiento", b =>
+                {
+                    b.HasOne("AduanasExpress.Domain.Entitis.Vehiculo", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("VehiculoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehiculo");
                 });
 #pragma warning restore 612, 618
         }

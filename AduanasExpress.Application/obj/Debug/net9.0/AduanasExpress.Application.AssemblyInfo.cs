@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5b3f02f4e4cb1df6aa704091b46778b050a0b71")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f4e598e5150cc0dfe598b12085a81bf1342a188")]
 [assembly: System.Reflection.AssemblyProductAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net9.0": {
       "Azure.Core/1.38.0": {
@@ -2827,36 +2827,43 @@
     ]
   },
   "packageFolders": {
-    "/Users/dianny/.nuget/packages/": {}
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\": {},
+    "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj",
+      "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj",
       "projectName": "AduanasExpress.Infrastructure",
-      "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj",
-      "packagesPath": "/Users/dianny/.nuget/packages/",
-      "outputPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/obj/",
+      "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj",
+      "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
+      "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/Users/dianny/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Carlos Reynoso\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj": {
-              "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj"
+            "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj": {
+              "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj"
             },
-            "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj": {
-              "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj"
+            "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj": {
+              "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj"
             }
           }
         }
@@ -2871,10 +2878,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net9.0": {
+        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "BCrypt.Net-Next": {
@@ -2906,7 +2914,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/sdk/9.0.115/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

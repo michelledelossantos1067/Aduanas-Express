@@ -1,0 +1,8 @@
+# Frontend
+AduanasExpressFront/AduanasExpress/node_modules/
+
+# Backend
+bin/
+obj/
+.vs/
+appsettings.Development.json

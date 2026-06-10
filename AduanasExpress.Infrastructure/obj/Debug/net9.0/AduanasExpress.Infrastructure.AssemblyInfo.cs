@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AduanasExpress.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af0b8feec874663098ab1c09c4527382f98cc0e0")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c2ad01ddb2da0734f6ccb572cbd9e73933556a2")]
+>>>>>>> origin/develop
 [assembly: System.Reflection.AssemblyProductAttribute("AduanasExpress.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AduanasExpress.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

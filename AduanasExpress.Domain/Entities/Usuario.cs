@@ -6,6 +6,6 @@ public class Usuario{
     public string Apellido {get;set;}
     public string Email {get;set;}
     public string Password {get;set;}
-    public Roles Rol{get;set;}
+    public Roles Rol { get; set; } = (Roles)2;
 
 }

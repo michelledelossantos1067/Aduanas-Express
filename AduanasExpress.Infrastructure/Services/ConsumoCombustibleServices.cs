@@ -3,6 +3,8 @@ using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Application.DTOs.ConsumoCombustible;
 using AduanasExpress.Domain.Entitis;
+using AduanasExpress.Application.Mappings;
+
 
 namespace AduanasExpress.Infrastructure.Services;
 public class ConsumoCombustibleServices : IConsumoCombustibleService{

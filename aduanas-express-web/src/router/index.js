@@ -22,14 +22,52 @@ const router = createRouter({
       path: '/reset-password',
       name: 'reset-password',
       component: () => import('../views/auth/ResetPasswordView.vue')
+    },
+    {
+      path: '/change-password',
+      name: 'change-password',
+      component: () => import('../views/auth/ChangePasswordView.vue')
+    },
+    {
+      path: '/vehiculos',
+      name: 'vehiculos',
+      component: () => import('../views/vehiculos/VehiculosListView.vue')
+    },
+    {
+      path: '/vehiculos/nuevo',
+      name: 'vehiculos/nuevo',
+      component: () => import('../views/vehiculos/VehiculosFormView.vue')
+    },
+    {
+      path: '/conductores',
+      name: 'conductores',
+      component: () => import('../views/conductor/ConductorListView.vue')
+    },
+    ,
+    {
+      path: '/conductores/nuevo',
+      name: 'conductores/nuevo',
+      component: () => import('../views/conductor/ConductorFormView.vue')
+    },
+    // {
+    //   path: '/conductores/:id',
+    //   name: 'ConductorDetail',
+    //   component: () => import('../views/conductor/ConductorDetailView.vue')
+    // },
+    {
+      path: '/solicitudes',
+      name: 'solicitudes',
+      component: () => import('../views/solicitud/SolicitudesListView.vue')
     }
+
+    
   ],
 })
 
 // navigation guard
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const rutasPublicas = ['login', 'register', 'reset-password']
+  const rutasPublicas = ['login', 'register', 'reset-password','change-password']
   
   if (!rutasPublicas.includes(to.name) && !authStore.token) {
     next({ name: 'login' })

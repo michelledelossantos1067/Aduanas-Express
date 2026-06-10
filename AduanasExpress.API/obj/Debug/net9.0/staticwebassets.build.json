@@ -1,1 +1,12 @@
-{"Version":1,"Hash":"g//iGVt756vCCqIi5+zpy0qasDpi192Nn7GdBzVHYnM=","Source":"AduanasExpress.API","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "ojC2vuzRlLGMaxki0f747Ruoqi8D96MYFJ2EHX4eLcc=",
+  "Source": "AduanasExpress.API",
+  "BasePath": "_content/AduanasExpress.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

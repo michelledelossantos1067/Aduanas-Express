@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 namespace AduanasExpress.Infrastructure.Services;
+
+
 public class AuthServices : IAuthService {
     private readonly IUsuarioRepositories _usuarioRepositories;
     private readonly IConfiguration _configuration;

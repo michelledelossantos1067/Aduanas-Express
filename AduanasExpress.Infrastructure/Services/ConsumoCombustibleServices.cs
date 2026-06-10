@@ -19,29 +19,14 @@ public class ConsumoCombustibleServices : IConsumoCombustibleService{
         if(consumo == null){
             throw new Exception("Error al obtener los mantenimiento.");
         };
-        return consumo.Select(c => new ConsumoCombustibleReponseDTOs{
-            Fecha = c.Fecha,
-            Galones = c.Galones,
-            CostoPorGalon = c.CostoPorGalon,
-            CostoTotal = c.CostoTotal,
-            VehiculoId = c.VehiculoId,
-            // SolicitudId = c.SolicitudId
-        }).ToList();
+        return consumo.Select(c => c.ToResponse()).ToList();
     }
     public async Task<ConsumoCombustibleReponseDTOs?> ObtenerPorId(int Id){
         var consumo = await _consumoCombustibleRepositories.ObtenerPorId(Id);
         if(consumo == null){
             throw new Exception("Error al buscar el consumo de combustible.");
         };
-        return new ConsumoCombustibleReponseDTOs{
-            Id = consumo.Id,
-            Fecha = consumo.Fecha,
-            Galones = consumo.Galones,
-            CostoPorGalon = consumo.CostoPorGalon,
-            CostoTotal = consumo.CostoTotal,
-            VehiculoId = consumo.VehiculoId,
-            // SolicitudId = consumo.SolicitudId
-        };
+        return consumo.ToResponse();
     }
     public async Task Crear(CreateConsumoCombustibleDTOs createConsumoCombustibleDTOs){
         var consumo = new ConsumoCombustible{

@@ -2,6 +2,7 @@ using AduanasExpress.Application.DTOs.Vehiculo;
 using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.interfaces.Services;
 using AduanasExpress.Domain.Entitis;
+using AduanasExpress.Application.Mappings;
 
 namespace AduanasExpress.Infrastructure.Services;
 public class VehiculoServices : IVehiculoService{
@@ -16,36 +17,15 @@ public class VehiculoServices : IVehiculoService{
         if(vehiculo == null){
             throw new Exception("Error al obtener los vehiculo.");
         };
-        return vehiculo.Select(c => new VehiculoResponseDTOs{
-            Marca = c.Marca,
-            Modelo = c.Modelo,
-            Año = c.Año,
-            Matricula = c.Matricula,
-            Color = c.Color,
-            Tipo = c.Tipo,
-            Capacidad = c.Capacidad,
-            Estado = c.Estado,
-            Kilometraje = c.Kilometraje,
-            FechaUltimoMant = c.FechaUltimoMant
-        }).ToList();
+        return vehiculo.Select(c => c.ToResponse()).ToList();
     }
     public async Task<VehiculoResponseDTOs?> ObtenerPorId(int Id){
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if(vehiculo == null){
             throw new Exception("Error al buscar el vehiculo.");
         };
-        return new VehiculoResponseDTOs{
-            Marca = vehiculo.Marca,
-            Modelo = vehiculo.Modelo,
-            Año = vehiculo.Año,
-            Matricula = vehiculo.Matricula,
-            Color = vehiculo.Color,
-            Tipo = vehiculo.Tipo,
-            Capacidad = vehiculo.Capacidad,
-            Estado = vehiculo.Estado,
-            Kilometraje = vehiculo.Kilometraje,
-            FechaUltimoMant = vehiculo.FechaUltimoMant
-        };
+        return vehiculo.ToResponse();
+     
     }
     public async Task Crear(CreateVehiculoDTOs createVehiculoDTOs){
         var vehiculo = new Vehiculo{

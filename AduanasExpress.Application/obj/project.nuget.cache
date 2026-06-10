@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "c1Rv5FD50ec=",
+  "dgSpecHash": "nE5UCLG+kSI=",
   "success": true,
-  "projectFilePath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512"
+  ],
   "logs": []
 }

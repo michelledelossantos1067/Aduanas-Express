@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
-        
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
@@ -27,7 +27,13 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod();
     });
 });
-builder.Services.AddOpenApi();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
+
 builder.Services.AddScoped<IUsuarioRepositories, UsuarioRepositories>();
 builder.Services.AddScoped<IUsuarioService, UsuarioServices>();
 builder.Services.AddScoped<IAuthService, AuthServices>();
@@ -70,13 +76,21 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
-app.UseCors("DevPolicy");
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<AduanasExpress.API.Middleware.ManejoErroresMiddleware>();
+
+
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseCors("FrontendPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();

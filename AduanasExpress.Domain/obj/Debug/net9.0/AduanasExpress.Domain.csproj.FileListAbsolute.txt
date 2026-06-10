@@ -10,3 +10,15 @@
 /Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/refint/AduanasExpress.Domain.dll
 /Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/AduanasExpress.Domain.pdb
 /Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/Debug/net9.0/ref/AduanasExpress.Domain.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\bin\Debug\net9.0\AduanasExpress.Domain.deps.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\bin\Debug\net9.0\AduanasExpress.Domain.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\bin\Debug\net9.0\AduanasExpress.Domain.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.AssemblyInfoInputs.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.AssemblyInfo.cs
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.csproj.CoreCompileInputs.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.sourcelink.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\refint\AduanasExpress.Domain.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\AduanasExpress.Domain.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.Domain\obj\Debug\net9.0\ref\AduanasExpress.Domain.dll

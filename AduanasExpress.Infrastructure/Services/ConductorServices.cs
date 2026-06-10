@@ -4,6 +4,8 @@ using AduanasExpress.Application.DTOs.Mantenimiento;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Domain.Entitis;
+using AduanasExpress.Application.Mappings;
+
 
 namespace AduanasExpress.Infrastructure.Services;
 public class ConductorServices : IConductorService{
@@ -18,35 +20,14 @@ public class ConductorServices : IConductorService{
         if(conductor == null){
             throw new Exception("Error al obtener los mantenimiento.");
         };
-        return conductor.Select(c => new ConductorReponseDTOs{
-            Nombre = c.Nombre,
-            Apellido = c.Apellido,
-            Cedula = c.Cedula,
-            NumeroLicencia = c.NumeroLicencia,
-            TipoLicencia = c.TipoLicencia,
-            Telefono = c.Telefono,
-            Direccion = c.Direccion,
-            SupervisorId = c.SupervisorId,
-            Estado = c.Estado
-        }).ToList();
+        return conductor.Select(c => c.ToResponse()).ToList();
     }
     public async Task<ConductorReponseDTOs?> ObtenerPorId(int Id){
         var conductor = await _conductorRepositories.ObtenerPorId(Id);
         if(conductor == null){
             throw new Exception("Error al buscar el conductor.");
         };
-        return new ConductorReponseDTOs{
-            Id = conductor.Id,
-            Nombre = conductor.Nombre,
-            Apellido = conductor.Apellido,
-            Cedula = conductor.Cedula,
-            NumeroLicencia = conductor.NumeroLicencia,
-            TipoLicencia = conductor.TipoLicencia,
-            Telefono = conductor.Telefono,
-            Direccion = conductor.Direccion,
-            SupervisorId = conductor.SupervisorId,
-            Estado = conductor.Estado
-        };
+        return conductor.ToResponse();
     }
     public async Task Crear(CreateConductorDTOs createConductorDTOs){
         var conductor = new Conductor

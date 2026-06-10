@@ -1,6 +1,7 @@
 using AduanasExpress.Application.DTOs.Asignacion;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
+using AduanasExpress.Application.Mappings;
 using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Infrastructure.Services;
@@ -11,34 +12,19 @@ public class AsignacionService : IAsignacionService{
         _asignacionRepository = asignacionRepository;
     }
 
-    public async Task<List<AsignacionResponseDTO?>> ObtenerTodos(){
+    public async Task<List<AsignacionResponseDTO?>> ObtenerTodos() {
         var asignacion = await _asignacionRepository.ObtenerTodos();
-        if(asignacion == null){
+        if (asignacion == null) {
             throw new Exception("Error al obtener las asignaciones.");
         };
-        return asignacion.Select(c => new AsignacionResponseDTO
-        {
-            Id = c.Id,
-            SolicitudId = c.SolicitudId,
-            VehiculoId = c.VehiculoId,
-            ConductorId = c.ConductorId,
-            FechaAsignacion = c.FechaAsignacion,
-            AsignadoPorId = c.AsignadoPorId
-        }).ToList();
+        return asignacion.Select(c => c.ToResponse()).ToList();
     }
     public async Task<AsignacionResponseDTO?> ObtenerPorId(int Id){
         var asignacion = await _asignacionRepository.ObtenerPorId(Id);
         if(asignacion == null){
             throw new Exception("Error al buscar la asignacion.");
         };
-        return new AsignacionResponseDTO{
-            Id = asignacion.Id,
-            SolicitudId = asignacion.SolicitudId,
-            VehiculoId = asignacion.VehiculoId,
-            ConductorId = asignacion.ConductorId,
-            FechaAsignacion = asignacion.FechaAsignacion,
-            AsignadoPorId = asignacion.AsignadoPorId
-        };
+        return asignacion.ToResponse();
     }
     public async Task Crear(CreateAsignacionDTO createAsignacionDTO){
         var asignacion = new Asignacion

@@ -4,6 +4,8 @@ using AduanasExpress.Application.DTOs.SolicitudTransporte;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Domain.Entitis;
+using AduanasExpress.Application.Mappings;
+
 
 namespace AduanasExpress.Infrastructure.Services;
 public class SolicitudTransporteServices : ISolicitudTransporteService{
@@ -18,40 +20,14 @@ public class SolicitudTransporteServices : ISolicitudTransporteService{
         if(solicitudTrans == null){
             throw new Exception("Error al obtener los solicitud transporte.");
         };
-        return solicitudTrans.Select(c => new SolicitudTransporteReponseDTOs
-        {
-            AreaSolicitante = c.AreaSolicitante,
-            CantidadColaboradores = c.CantidadColaboradores,
-            FechaViaje = c.FechaViaje,
-            HoraSalida = c.HoraSalida,
-            Destino = c.Destino,
-            MotivoViaje = c.MotivoViaje,
-            Estado = c.Estado,
-            VehiculoId = c.VehiculoId,
-            ConductorId = c.ConductorId,
-            UsuarioSolicitaId = c.UsuarioSolicitaId,
-            FechaCreacion = c.FechaCreacion
-        }).ToList();
+        return solicitudTrans.Select(c => c.ToResponse()).ToList();
     }
     public async Task<SolicitudTransporteReponseDTOs?> ObtenerPorId(int Id){
         var solicitudTrans = await _solicitudTransporteRepositories.ObtenerPorId(Id);
         if(solicitudTrans == null){
             throw new Exception("Error al buscar el solicitud transporte.");
         };
-        return new SolicitudTransporteReponseDTOs
-        {
-            AreaSolicitante = solicitudTrans.AreaSolicitante,
-            CantidadColaboradores = solicitudTrans.CantidadColaboradores,
-            FechaViaje = solicitudTrans.FechaViaje,
-            HoraSalida = solicitudTrans.HoraSalida,
-            Destino = solicitudTrans.Destino,
-            MotivoViaje = solicitudTrans.MotivoViaje,
-            Estado = solicitudTrans.Estado,
-            VehiculoId = solicitudTrans.VehiculoId,
-            ConductorId = solicitudTrans.ConductorId,
-            UsuarioSolicitaId = solicitudTrans.UsuarioSolicitaId,
-            FechaCreacion = solicitudTrans.FechaCreacion
-        };
+        return solicitudTrans.ToResponse();
     }
     public async Task Crear(CreateSolicitudTransporteDTOs createSolicitudTransporteDTOs){
         var solicitudTrans = new SolicitudTransporte

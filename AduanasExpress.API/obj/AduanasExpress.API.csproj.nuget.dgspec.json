@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj": {}
+    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\AduanasExpress.API.csproj": {}
   },
   "projects": {
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj": {
+    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\AduanasExpress.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj",
+        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\AduanasExpress.API.csproj",
         "projectName": "AduanasExpress.API",
-        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj",
+        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\AduanasExpress.API.csproj",
         "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
-        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\obj\\",
+        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"

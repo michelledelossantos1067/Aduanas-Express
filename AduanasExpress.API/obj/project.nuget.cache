@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iQboekSCXzM=",
+  "dgSpecHash": "6ddQFbdsM8s=",
   "success": true,
-  "projectFilePath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj",
+  "projectFilePath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\aduanasexpress.api\\AduanasExpress.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

@@ -11,6 +11,6 @@ public class ConductorReponseDTOs{
     public DateTime FechaVencLicencia { get; set; }
     public string Telefono {get;set;}
     public string Direccion { get; set; }
-    public string SupervisorId { get; set; }
+    public int SupervisorId { get; set; }
     public EstadosConductor Estado { get; set; }
 }

@@ -92,11 +92,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SupervisorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SupervisorId1")
+                    b.Property<int>("SupervisorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Telefono")
@@ -109,7 +105,7 @@ namespace AduanasExpress.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SupervisorId1");
+                    b.HasIndex("SupervisorId");
 
                     b.ToTable("Conductores");
                 });
@@ -357,7 +353,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                 {
                     b.HasOne("AduanasExpress.Domain.Entitis.Usuario", "Supervisor")
                         .WithMany()
-                        .HasForeignKey("SupervisorId1")
+                        .HasForeignKey("SupervisorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

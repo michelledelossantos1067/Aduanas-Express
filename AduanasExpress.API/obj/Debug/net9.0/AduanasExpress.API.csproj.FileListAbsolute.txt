@@ -345,4 +345,4 @@ D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.AP
 D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.pdb
 D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.genruntimeconfig.cache
 D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\ref\AduanasExpress.API.dll
-D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\aduanasexpress.api\bin\Debug\net9.0\FluentValidation.dll

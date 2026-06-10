@@ -10,13 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 namespace AduanasExpress.Infrastructure.Services;
 
-<<<<<<< HEAD
+
 
 public class AuthServices : IAuthService {
-=======
-public class AuthServices : IAuthService
-{
->>>>>>> origin/develop
+
     private readonly IUsuarioRepositories _usuarioRepositories;
     private readonly IConfiguration _configuration;
 

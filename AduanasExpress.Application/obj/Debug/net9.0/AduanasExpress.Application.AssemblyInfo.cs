@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af0b8feec874663098ab1c09c4527382f98cc0e0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd53db72ce1674adbb1b6b81f171d719052115fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AduanasExpress.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

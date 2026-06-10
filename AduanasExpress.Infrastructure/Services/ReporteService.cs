@@ -3,6 +3,7 @@ using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Application.DTOs.Reporte;
+using AduanasExpress.Application.Mappings;
 
 namespace AduanasExpress.Infrastructure.Services;
 public class ReporteService : IReporteService
@@ -20,27 +21,11 @@ public class ReporteService : IReporteService
         _solicitudRepository = solicitudRepository;
         _consumoRepository = consumoRepository;
     }
-
     public async Task<List<ReporteViajeDTO>> GetReporteViajesAsync(int mes, int año)
     {
         var solicitudes = await _solicitudRepository.ObtenerTodos();
 
-        return solicitudes
-            .Where(s => s.FechaViaje.Month == mes && s.FechaViaje.Year == año)
-            .Select(s => new ReporteViajeDTO
-            {
-                AreaSolicitante = s.AreaSolicitante,
-                Destino = s.Destino,
-                FechaViaje = s.FechaViaje,
-                CantidadPasajeros = s.CantidadColaboradores,
-                Estado = s.Estado.ToString(),
-                NombreConductor = s.Conductor != null
-                    ? $"{s.Conductor.Nombre} {s.Conductor.Apellido}"
-                    : "Sin asignar",
-                VehiculoPlaca = s.Vehiculo != null
-                    ? s.Vehiculo.Matricula
-                    : "Sin asignar"
-            }).ToList();
+        return solicitudes.Select(c => c.ToReporteViajeDTO()).ToList();
     }
 
     public async Task<List<ReporteConsumoDTO>> GetReporteConsumoAsync(int mes, int año)

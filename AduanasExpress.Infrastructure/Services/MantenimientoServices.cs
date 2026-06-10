@@ -2,6 +2,7 @@ using AduanasExpress.Application.DTOs.Mantenimiento;
 using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
+using AduanasExpress.Application.Mappings;
 
 namespace AduanasExpress.Infrastructure.Services;
 public class MantenimientoServices : IMantenimientoService{
@@ -16,31 +17,14 @@ public class MantenimientoServices : IMantenimientoService{
         if(mantenimiento == null){
             throw new Exception("Error al obtener los mantenimiento.");
         };
-        return mantenimiento.Select(c => new MantenimientoResponseDTOs{
-            Fecha = c.Fecha,
-            TipoMantenimiento = c.TipoMantenimiento,
-            Descripcion = c.Descripcion,
-            Costo = c.Costo,
-            Taller = c.Taller,
-            ProximoMantenimiento = c.ProximoMantenimiento,
-            VehiculoId = c.VehiculoId
-        }).ToList();
+        return mantenimiento.Select(c => c.ToResponse()).ToList();
     }
     public async Task<MantenimientoResponseDTOs?> ObtenerPorId(int Id){
         var mantenimiento = await _mantenimientoRepositories.ObtenerPorId(Id);
         if(mantenimiento == null){
             throw new Exception("Error al buscar el mantenimiento.");
         };
-        return new MantenimientoResponseDTOs{
-            Id = mantenimiento.Id,
-            Fecha = mantenimiento.Fecha,
-            TipoMantenimiento = mantenimiento.TipoMantenimiento,
-            Descripcion = mantenimiento.Descripcion,
-            Costo = mantenimiento.Costo,
-            Taller = mantenimiento.Taller,
-            ProximoMantenimiento = mantenimiento.ProximoMantenimiento,
-            VehiculoId = mantenimiento.VehiculoId
-        };
+        return mantenimiento.ToResponse();
     }
     public async Task Crear(CreateMantenimientoDTOs createMantenimientoDTOs){
         var mantenimiento = new Mantenimiento{

@@ -408,7 +408,7 @@ onMounted(cargarSolicitudes)
     :class="{ 'pag-activo': p === paginaActual, 'pag-dots': p === '...' }"
     @click="irPagina(p)"
 >{{ p }}</button>
-
+ 
                 <button class="pag-btn" :disabled="paginaActual === totalPaginas" @click="paginaActual++">&gt;</button>
             </div>
         </div>

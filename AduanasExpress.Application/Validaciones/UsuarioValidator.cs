@@ -17,6 +17,11 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(u => u.Email)
                 .NotEmpty().WithMessage("El email es requerido.")
                 .EmailAddress().WithMessage("El email no es válido.");
+            RuleFor(u => u.Password)
+                .NotEmpty().WithMessage("La contraseña es requerida.")
+                .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
+            RuleFor(u => u.Rol)
+               .IsInEnum().WithMessage("El rol no es válido.");
         }
     }
 }

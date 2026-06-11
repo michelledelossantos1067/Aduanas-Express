@@ -23,6 +23,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AsignacionValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<VehiculoValidator>();
+
 
 builder.Services.AddCors(options =>
 {

@@ -24,5 +24,6 @@ namespace AduanasExpress.Application.Validaciones
                .NotEmpty().WithMessage("El ID del asignador es requerido.")
                .GreaterThan(0).WithMessage("El ID del asignador debe ser mayor que 0.");
         }
+
     }
 }

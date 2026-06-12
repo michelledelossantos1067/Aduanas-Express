@@ -25,6 +25,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AsignacionValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<VehiculoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
 
 
 builder.Services.AddCors(options =>

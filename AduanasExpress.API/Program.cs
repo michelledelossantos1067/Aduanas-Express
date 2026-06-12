@@ -26,6 +26,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AsignacionValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<VehiculoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ConductorValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ConsumoCombustibleValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<MantenimientoValidator>();
+
 
 
 builder.Services.AddCors(options =>

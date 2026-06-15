@@ -8,6 +8,6 @@ namespace AduanasExpress.Infrastructure.Exceptions
 {
     public class ValidationException : Exception
     {
-        public ValidationException(string mensaje): base mensaje { }
+        public ValidationException(string mensaje): base (mensaje) { }
     }
 }

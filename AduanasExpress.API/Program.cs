@@ -29,6 +29,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ConductorValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ConsumoCombustibleValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<MantenimientoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<SolicitudTransporteValidator>();
 
 
 

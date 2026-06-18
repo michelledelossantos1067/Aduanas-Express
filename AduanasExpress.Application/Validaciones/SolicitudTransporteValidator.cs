@@ -33,9 +33,6 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(s => s.ConductorId)
                 .NotEmpty().WithMessage("El ID del conductor es requerido.")
                 .GreaterThan(0).WithMessage("El ID del conductor debe ser mayor que 0.");
-            RuleFor(s => s.UsuarioSolicitaId)
-                .NotEmpty().WithMessage("El ID del usuario solicitante es requerido.")
-                .GreaterThan(0).WithMessage("El ID del usuario solicitante debe ser mayor que 0.");
         }
     }
     public class SolicitudTransporteValidatorUpdate : AbstractValidator<UpdateSolicitudTransporteDTOs>

@@ -3,6 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import { verSolicitud, eliminarSolicitud } from '../../services/solicitudService'
 import ModalVerSolicitud from './ModalVerSolicitud.vue'
 import ModalEliminarSolicitud from './ModalEliminarSolicitud.vue'
+import { verVehiculos } from '../../services/vehiculoService'
+import { verConductores } from '../../services/conductorService'
 import { useRouter } from 'vue-router' 
 const router = useRouter()
 
@@ -144,8 +146,20 @@ async function cargarSolicitudes() {
     loading.value = true
     error.value = ''
     try {
-        const res = await verSolicitud()
-        solicitudes.value = res.data
+        const [resSolicitudes, resVehiculos, resConductores] = await Promise.all([
+            verSolicitud(),
+            verVehiculos(),
+            verConductores(),
+        ])
+
+        const mapaVehiculos   = Object.fromEntries(resVehiculos.data.map(v => [v.id, v]))
+        const mapaConductores = Object.fromEntries(resConductores.data.map(c => [c.id, c]))
+
+        solicitudes.value = resSolicitudes.data.map(s => ({
+            ...s,
+            vehiculo:  mapaVehiculos[s.vehiculoId]   ?? null,
+            conductor: mapaConductores[s.conductorId] ?? null,
+        }))
     } catch (e) {
         console.error(e)
         error.value = 'No se pudieron cargar las solicitudes.'
@@ -168,7 +182,7 @@ function exportar() {
         formatHora(s.horaSalida),
         s.destino,
         s.motivoViaje,
-        s.vehiculo?.placa ?? '',
+        s.vehiculo?.matricula ?? '',
         s.conductor ? `${s.conductor.nombre} ${s.conductor.apellido}` : '',
         estadoLabel(s.estado)
     ])
@@ -343,7 +357,7 @@ onMounted(cargarSolicitudes)
                             </span>
                         </td>
                         <td class="td-center">{{ s.cantidadColaboradores }}</td>
-                        <td>{{ s.vehiculo?.placa ?? 'Sin asignar' }}</td>
+                        <td>{{ s.vehiculo?.matricula ?? 'Sin asignar' }}</td>
                         <td>
                             {{
                                 s.conductor

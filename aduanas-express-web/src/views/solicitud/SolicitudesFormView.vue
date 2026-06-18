@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted ,nextTick} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { verSolicitudPorId, crearSolicitud, actualizarSolicitud } from '../../services/solicitudService'
 import { verVehiculos } from '../../services/vehiculoService'
@@ -55,6 +55,7 @@ async function cargarSolicitud() {
     try {
         const res = await verSolicitudPorId(route.params.id)
         const s   = res.data
+        await nextTick()
         form.value = {
             areaSolicitante:       s.areaSolicitante       ?? '',
             destino:               s.destino               ?? '',
@@ -67,6 +68,8 @@ async function cargarSolicitud() {
             conductorId:           s.conductorId           ?? null,
             estado:                s.estado                ?? 0,
         }
+        console.log('vehiculoId cargado:', form.value.vehiculoId, typeof form.value.vehiculoId)
+console.log('IDs disponibles:', vehiculos.value.map(v => ({ id: v.id, tipo: typeof v.id })))
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar la solicitud.'
     } finally {
@@ -84,15 +87,34 @@ async function guardar() {
     if (!form.value.vehiculoId)      { error.value = 'Debe seleccionar un vehículo.';       return }
     if (!form.value.conductorId)     { error.value = 'Debe seleccionar un conductor.';      return }
 
+    const horaSalidaFmt = form.value.horaSalida.length === 5
+        ? `${form.value.horaSalida}:00`
+        : form.value.horaSalida
+
+    const payload = {
+        areaSolicitante:       form.value.areaSolicitante,
+        cantidadColaboradores: form.value.cantidadColaboradores,
+        fechaViaje:            `${form.value.fechaViaje}T00:00:00`,
+        horaSalida:            horaSalidaFmt,
+        destino:               form.value.destino,
+        motivoViaje:           form.value.motivoViaje,
+        estado:                form.value.estado,
+        vehiculoId:            form.value.vehiculoId  ?? 0,
+        conductorId:           form.value.conductorId ?? 0,
+    }
+
+    console.log('Payload enviado:', JSON.stringify(payload, null, 2))
+
     loading.value = true
     try {
         if (esEdicion.value) {
-            await actualizarSolicitud(route.params.id, form.value)
+            await actualizarSolicitud(route.params.id, payload)
         } else {
-            await crearSolicitud(form.value)
+            await crearSolicitud(payload)
         }
         router.push('/solicitudes')
     } catch (e) {
+            console.error('Error detalle:', e?.response?.data)
         error.value = e?.response?.data?.message || e?.message || 'Error al guardar la solicitud.'
     } finally {
         loading.value = false
@@ -107,9 +129,11 @@ async function cargarListas() {
         ])
         vehiculos.value   = resVehiculos.data
         conductores.value = resConductores.data
+
+        console.log('Vehículo ejemplo:', { ...vehiculos.value[0] })
+        console.log('Conductor ejemplo:', { ...conductores.value[0] })
     } catch (e) {
         console.error(e)
-        error.value = 'No se pudieron cargar vehículos/conductores.'
     }
 }
 
@@ -284,7 +308,7 @@ onMounted(async () => {
                                 <select v-model.number="form.vehiculoId">
                                     <option :value="null" disabled>Seleccione un vehículo</option>
                                     <option v-for="v in vehiculos" :key="v.id" :value="v.id">
-                                        {{ v.placa }} {{ v.marca ? `— ${v.marca} ${v.modelo ?? ''}` : '' }}
+                                        {{ v.matricula }} {{ v.marca ? `— ${v.marca} ${v.modelo ?? ''}` : '' }}
                                     </option>
                                 </select>
                             </div>

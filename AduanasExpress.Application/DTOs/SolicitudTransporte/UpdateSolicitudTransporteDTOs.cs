@@ -3,7 +3,6 @@ using AduanasExpress.Domain.Entitis;
 namespace AduanasExpress.Application.DTOs.SolicitudTransporte;
 public class UpdateSolicitudTransporteDTOs
 {
-    public int Id { get; set; }
     public string AreaSolicitante { get; set; }
     public int CantidadColaboradores {get;set;}
     public DateTime FechaViaje {get;set;}
@@ -13,5 +12,4 @@ public class UpdateSolicitudTransporteDTOs
     public EstadosSolicitudes Estado {get;set;}
     public int VehiculoId {get;set;}
     public int ConductorId { get; set; }
-    public int UsuarioSolicitaId { get; set; }
 }

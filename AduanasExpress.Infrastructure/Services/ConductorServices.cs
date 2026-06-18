@@ -49,7 +49,6 @@ public class ConductorServices : IConductorService{
         if(conductor == null){
             throw new Exception("Error al actualizar el conductor.");
         }
-            conductor.Id = updateConductorDTOs.Id;
             conductor.Nombre = updateConductorDTOs.Nombre;
             conductor.Apellido = updateConductorDTOs.Apellido;
             conductor.Cedula = updateConductorDTOs.Cedula;

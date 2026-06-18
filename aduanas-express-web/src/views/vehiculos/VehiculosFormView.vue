@@ -78,7 +78,10 @@ async function cargarVehiculo() {
     try {
         loading.value = true
         const response = await verVehiculoPorId(route.params.id)
-        const data = response.data
+        const data = Array.isArray(response.data)
+            ? response.data.find(v => v.id == route.params.id)
+            : response.data
+        if (!data) throw new Error('Vehículo no encontrado.')
         form.value = {
             marca: data.marca,
             modelo: data.modelo,

@@ -68,7 +68,6 @@ async function guardar() {
 function confirmarEliminar() {
     mostrarConfirmacion.value = true
 }
-
 async function eliminar() {
     try {
         loading.value = true
@@ -85,7 +84,11 @@ async function eliminar() {
 async function cargarConductor() {
     try {
         loading.value = true
-        const { data } = await verConductorPorId(route.params.id)
+        const response = await verConductorPorId(route.params.id)
+        const data = Array.isArray(response.data)
+            ? response.data.find(c => c.id == route.params.id)
+            : response.data
+        if (!data) throw new Error('Conductor no encontrado.')
         form.value = {
             nombre: data.nombre ?? '',
             apellido: data.apellido ?? '',

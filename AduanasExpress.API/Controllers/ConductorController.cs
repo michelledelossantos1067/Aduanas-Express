@@ -20,7 +20,7 @@ public class ConductorController : ControllerBase{
     }
     [HttpGet("{Id}")]
     public async Task<IActionResult> ObtenerPorId(int Id){
-        var conductor = await _conductorService.ObtenerTodos();
+        var conductor = await _conductorService.ObtenerPorId(Id);
         return Ok(conductor);
     }
     [HttpPost]
@@ -34,9 +34,17 @@ public class ConductorController : ControllerBase{
         return Ok();
     }
     [HttpDelete("{Id}")]
-    public async Task<IActionResult> Eliminar(int Id){
-        await _conductorService.Eliminar(Id);
-        return NoContent();
+    public async Task<IActionResult> Eliminar(int Id)
+    {
+        try
+        {
+            await _conductorService.Eliminar(Id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
 }

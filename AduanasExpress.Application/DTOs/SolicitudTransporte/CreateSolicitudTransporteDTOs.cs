@@ -11,4 +11,5 @@ public class CreateSolicitudTransporteDTOs{
     public EstadosSolicitudes Estado {get;set;}
     public int? VehiculoId {get;set;}
     public int? ConductorId { get; set; }
+    public int UsuarioSolicitaId { get; set; }
 }

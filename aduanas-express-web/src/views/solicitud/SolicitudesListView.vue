@@ -1,11 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import {
-    verSolicitud,
-    eliminarSolicitud
-} from '../../services/solicitudService'
-
+import { verSolicitud, eliminarSolicitud } from '../../services/solicitudService'
+import ModalVerSolicitud from './ModalVerSolicitud.vue'
+import ModalEliminarSolicitud from './ModalEliminarSolicitud.vue'
+import { useRouter } from 'vue-router' 
 const router = useRouter()
 
 const solicitudes = ref([])
@@ -77,7 +75,35 @@ const solicitudesFiltradas = computed(() => {
         return coincideBusqueda && coincideEstado && coincideTab
     })
 })
+// ── Estado modales ──
+const modalVer = ref({ show: false, id: null })
+const modalEliminar = ref({ show: false, solicitud: null })
 
+function abrirVer(id) {
+    modalVer.value = { show: true, id }
+}
+
+function abrirNuevo()      { router.push('/solicitudes/nuevo') }
+function abrirEditar(id){
+    router.push(`/solicitudes/${id}/editar`) 
+}
+function confirmarEliminar(solicitud) {
+    modalEliminar.value = { show: true, solicitud }
+}
+
+async function ejecutarEliminar() {
+    try {
+        await eliminarSolicitud(modalEliminar.value.solicitud.id)
+        solicitudes.value = solicitudes.value.filter(
+            s => s.id !== modalEliminar.value.solicitud.id
+        )
+    } catch (e) {
+        console.error(e)
+        error.value = 'Error al eliminar la solicitud.'
+    } finally {
+        modalEliminar.value.show = false
+    }
+}
 // ── Paginación ────────────────────────────────────────────
 const totalPaginas = computed(() =>
     Math.max(1, Math.ceil(solicitudesFiltradas.value.length / porPagina))
@@ -127,45 +153,6 @@ async function cargarSolicitudes() {
         loading.value = false
     }
 }
-
-function irANuevo() {
-    router.push('/solicitudes/nuevo')
-}
-
-function verDetalle(id) {
-    router.push(`/solicitudes/${id}`)
-}
-
-function editarSolicitud(id) {
-    router.push(`/solicitudes/${id}/editar`)
-}
-
-function confirmarEliminar(solicitud) {
-    solicitudAEliminar.value = solicitud
-    mostrarConfirmacion.value = true
-}
-
-async function ejecutarEliminar() {
-    if (!solicitudAEliminar.value) return
-    try {
-        await eliminarSolicitud(solicitudAEliminar.value.id)
-        solicitudes.value = solicitudes.value.filter(
-            s => s.id !== solicitudAEliminar.value.id
-        )
-    } catch (e) {
-        console.error(e)
-        error.value = 'Error al eliminar la solicitud.'
-    } finally {
-        mostrarConfirmacion.value = false
-        solicitudAEliminar.value = null
-    }
-}
-
-function cancelarEliminar() {
-    mostrarConfirmacion.value = false
-    solicitudAEliminar.value = null
-}
-
 function exportar() {
     const headers = [
         'ID', 'Área Solicitante', 'Colaboradores',
@@ -230,7 +217,7 @@ onMounted(cargarSolicitudes)
                     </svg>
                     Exportar
                 </button>
-                <button class="btn-nuevo" @click="irANuevo">
+                <button class="btn-nuevo" @click="abrirNuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -371,14 +358,14 @@ onMounted(cargarSolicitudes)
                         </td>
                         <td>
                             <div class="td-acciones">
-                                <button class="btn-icon btn-ver" @click="verDetalle(s.id)">
+                                <button class="btn-icon btn-ver" @click="abrirVer(s.id)">
                                     <svg width=" 14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                    <circle cx="12" cy="12" r="3" />
+                                        stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
                                     </svg>
                                 </button>
-                                <button class="btn-icon btn-editar" @click="editarSolicitud(s.id)">
+                                <button class="btn-icon btn-editar" @click="abrirEditar(s.id)">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -401,14 +388,10 @@ onMounted(cargarSolicitudes)
 
             <!-- ── Paginación ── -->
             <div class="paginacion">
-                <button
-    v-for="(p, i) in paginasVisibles"
-    :key="i"
-    class="pag-btn"
-    :class="{ 'pag-activo': p === paginaActual, 'pag-dots': p === '...' }"
-    @click="irPagina(p)"
->{{ p }}</button>
- 
+                <button v-for="(p, i) in paginasVisibles" :key="i" class="pag-btn"
+                    :class="{ 'pag-activo': p === paginaActual, 'pag-dots': p === '...' }" @click="irPagina(p)">{{ p
+                    }}</button>
+
                 <button class="pag-btn" :disabled="paginaActual === totalPaginas" @click="paginaActual++">&gt;</button>
             </div>
         </div>
@@ -424,26 +407,11 @@ onMounted(cargarSolicitudes)
             <p>No se encontraron solicitudes</p>
             <span>Prueba ajustando los filtros o crea una nueva solicitud.</span>
         </div>
-
-        <!-- ── Modal confirmación eliminar ── -->
-        <Teleport to="body">
-            <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="cancelarEliminar">
-                <div class="modal">
-                    <h2 class="modal-titulo">¿Eliminar solicitud?</h2>
-                    <p class="modal-desc">
-                        Estás a punto de eliminar la solicitud
-                        <strong>{{ formatNumero(solicitudAEliminar?.id) }}</strong>
-                        de <strong>{{ solicitudAEliminar?.areaSolicitante }}</strong>.
-                        Esta acción no se puede deshacer.
-                    </p>
-                    <div class="modal-acciones">
-                        <button class="btn-cancelar-modal" @click="cancelarEliminar">Cancelar</button>
-                        <button class="btn-confirmar-modal" @click="ejecutarEliminar">Sí, eliminar</button>
-                    </div>
-                </div>
-            </div>
-        </Teleport>
-
+        <ModalVerSolicitud :show="modalVer.show" :solicitud-id="modalVer.id" @close="modalVer.show = false"
+            @editar="abrirEditar" />
+            
+        <ModalEliminarSolicitud :show="modalEliminar.show" :solicitud="modalEliminar.solicitud"
+            @close="modalEliminar.show = false" @confirmar="ejecutarEliminar" />
     </div>
 </template>
 

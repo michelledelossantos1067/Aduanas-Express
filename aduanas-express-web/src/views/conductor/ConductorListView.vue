@@ -6,10 +6,13 @@ import {
     verConductores,
     eliminarConductor
 } from '../../services/conductorService'
+import ConductorVerModal from './ConductorVerModal.vue'
+import ConductorEliminarModal from './ConductorEliminarModal.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
-
+const mostrarVer = ref(false)
+const conductorVerId = ref(null)
 const conductores = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -94,10 +97,11 @@ function irANuevo() {
 }
 
 function verConductor(id) {
-    router.push(`/conductores/${id}`)
+    conductorVerId.value = id
+    mostrarVer.value = true
 }
 function editarConductor(id) {
-    router.push(`/conductor/${id}/editar`)
+    router.push(`/conductores/${id}/editar`)
 }
 
 function confirmarEliminar(conductor) {
@@ -125,10 +129,10 @@ function cancelarEliminar() {
     conductoresAEliminar.value = null
 }
 function exportar() {
-    const headers = ['Nombre', 'Apellido', 'Cedula', 'NumeroLicencia', 'TipoLicencia', 'FechaVencLicencia', 'Telefono', 'Direccion', 'Supervisor','Estado']
+    const headers = ['Nombre', 'Apellido', 'Cedula', 'NumeroLicencia', 'TipoLicencia', 'FechaVencLicencia', 'Telefono', 'Direccion', 'Supervisor', 'Estado']
     const filas = conductores.value.map((v) => [
         v.nombre, v.apellido, v.cedula, v.numeroLicencia, v.tipoLicencia, v.fechaVencLicencia,
-        v.telefono,v.direccion,v.supervisor,v.estado, estadoLabel(v.estado)
+        v.telefono, v.direccion, v.supervisor, v.estado, estadoLabel(v.estado)
     ])
     const csv = [headers, ...filas].map((f) => f.join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -179,7 +183,7 @@ onMounted(cargarConductores)
         <!-- ── Tarjetas resumen ── -->
         <div class="cond-resumen">
             <div class="resumen-card">
-                
+
                 <span class="resumen-dot dot-total"></span>
                 <div>
                     <p class="resumen-num">{{ resumen.total }}</p>
@@ -256,7 +260,7 @@ onMounted(cargarConductores)
             <div v-for="v in conductoresFiltrados" :key="v.id" class="cond-card">
                 <!-- Cabecera de tarjeta -->
                 <div class="card-top">
-                    
+
                     <span class="card-cedula">{{ v.nombre }}</span>
                     <span class="badge" :class="estadoBadgeClase[v.estado]">
                         {{ estadoLabel(v.estado) }}
@@ -281,19 +285,12 @@ onMounted(cargarConductores)
                     </div>
                     <div class="detalle-fila">
                         <span class="detalle-label">Teléfono</span>
-                        <span class="detalle-valor">{{v.telefono}}</span>
+                        <span class="detalle-valor">{{ v.telefono }}</span>
                     </div>
                 </div>
 
-                <!-- Acciones -->
-                 
                 <div class="card-acciones">
-                    <button
-    class="btn-accion btn-ver"
-    @click="$router.push(`/conductores/${v.id}`)"
->
-    Ver
-</button>
+                    <button class="btn-accion btn-ver" @click="verConductor(v.id)">Ver</button>
                     <button class="btn-accion btn-editar" @click="editarConductor(v.id)">Editar</button>
                     <button class="btn-accion btn-eliminar" @click="confirmarEliminar(v)">Eliminar</button>
                 </div>
@@ -312,25 +309,10 @@ onMounted(cargarConductores)
             <span>Prueba ajustando los filtros o agrega un nuevo conductor.</span>
         </div>
 
-        <!-- ── Modal confirmación eliminar ── -->
-        <Teleport to="body">
-            <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="cancelarEliminar">
-                <div class="modal">
-                    <h2 class="modal-titulo">¿Eliminar conductor?</h2>
-                    <p class="modal-desc">
-                        Estás a punto de eliminar
-                       
-                        <strong>{{ conductoresAEliminar?.numeroLicencia }}</strong> —
-                        {{ vehiculoAEliminar?.cedula }} {{ conductoresAEliminar?.tipoLicencia }}.
-                        Esta acción no se puede deshacer.
-                    </p>
-                    <div class="modal-acciones">
-                        <button class="btn-cancelar-modal" @click="cancelarEliminar">Cancelar</button>
-                        <button class="btn-confirmar-modal" @click="ejecutarEliminar">Sí, eliminar</button>
-                    </div>
-                </div>
-            </div>
-        </Teleport>
+        <ConductorVerModal v-model="mostrarVer" :conductor-id="conductorVerId" />
+
+        <ConductorEliminarModal v-model="mostrarConfirmacion" :conductor="conductoresAEliminar"
+            @eliminado="(id) => conductores = conductores.filter(c => c.id !== id)" />
 
     </div>
 </template>

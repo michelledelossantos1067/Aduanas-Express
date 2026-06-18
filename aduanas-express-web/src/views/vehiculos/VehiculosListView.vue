@@ -3,6 +3,9 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import { verVehiculos, eliminarVehiculo } from '../../services/vehiculoService'
+import { generarReporteVehiculosPdf } from '@/utils/vehiculoReportePdf'
+import VehiculoVerModal from './VehiculoVerModal.vue'
+import VehiculoEliminarModal from './VehiculoEliminarModal.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -15,7 +18,8 @@ const filtroEstado = ref('')
 const filtroTipo = ref('')
 const mostrarConfirmacion = ref(false)
 const vehiculoAEliminar = ref(null)
-
+const mostrarVer = ref(false)
+const vehiculoVerId = ref(null)
 const estadosVehiculo = [
     { label: 'Disponible', value: 0 },
     { label: 'En Viaje', value: 1 },
@@ -84,7 +88,8 @@ function irANuevo() {
 }
 
 function verVehiculo(id) {
-    router.push(`/vehiculos/${id}`)
+    vehiculoVerId.value = id
+    mostrarVer.value = true
 }
 
 function editarVehiculo(id) {
@@ -95,43 +100,9 @@ function confirmarEliminar(vehiculo) {
     vehiculoAEliminar.value = vehiculo
     mostrarConfirmacion.value = true
 }
-
-async function ejecutarEliminar() {
-    if (!vehiculoAEliminar.value) return
-    try {
-        await eliminarVehiculo(vehiculoAEliminar.value.id)
-        vehiculos.value = vehiculos.value.filter(
-            (v) => v.id !== vehiculoAEliminar.value.id
-        )
-    } catch {
-        error.value = 'Error al eliminar el vehículo.'
-    } finally {
-        mostrarConfirmacion.value = false
-        vehiculoAEliminar.value = null
-    }
+function exportarPdf() {
+    generarReporteVehiculosPdf(vehiculosFiltrados.value, resumen.value)
 }
-
-function cancelarEliminar() {
-    mostrarConfirmacion.value = false
-    vehiculoAEliminar.value = null
-}
-
-function exportar() {
-    const headers = ['Matrícula', 'Marca', 'Modelo', 'Año', 'Tipo', 'Color', 'Kilometraje', 'Estado', 'Últ. Mantenimiento']
-    const filas = vehiculos.value.map((v) => [
-        v.matricula, v.marca, v.modelo, v.año, v.tipo, v.color,
-        v.kilometraje, estadoLabel(v.estado), v.fechaUltimoMant,
-    ])
-    const csv = [headers, ...filas].map((f) => f.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'vehiculos.csv'
-    a.click()
-    URL.revokeObjectURL(url)
-}
-
 function formatFecha(fecha) {
     if (!fecha) return '—'
     return new Date(fecha).toLocaleDateString('es-DO', {
@@ -149,14 +120,16 @@ onMounted(cargarVehiculos)
         <div class="veh-header">
             <h1 class="veh-title">Vehículos</h1>
             <div class="veh-header-actions">
-                <button class="btn-exportar" @click="exportar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Exportar
-                </button>
+                <button class="btn-exportar" @click="exportarPdf">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+    </svg>
+    Exportar PDF
+</button>
                 <button class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
@@ -288,25 +261,15 @@ onMounted(cargarVehiculos)
             <p>No se encontraron vehículos</p>
             <span>Prueba ajustando los filtros o agrega un nuevo vehículo.</span>
         </div>
-
-        <!-- ── Modal confirmación eliminar ── -->
-        <Teleport to="body">
-            <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="cancelarEliminar">
-                <div class="modal">
-                    <h2 class="modal-titulo">¿Eliminar vehículo?</h2>
-                    <p class="modal-desc">
-                        Estás a punto de eliminar
-                        <strong>{{ vehiculoAEliminar?.matricula }}</strong> —
-                        {{ vehiculoAEliminar?.marca }} {{ vehiculoAEliminar?.modelo }}.
-                        Esta acción no se puede deshacer.
-                    </p>
-                    <div class="modal-acciones">
-                        <button class="btn-cancelar-modal" @click="cancelarEliminar">Cancelar</button>
-                        <button class="btn-confirmar-modal" @click="ejecutarEliminar">Sí, eliminar</button>
-                    </div>
-                </div>
-            </div>
-        </Teleport>
+        <VehiculoVerModal
+            v-model="mostrarVer"
+            :vehiculo-id="vehiculoVerId"
+        />
+        <VehiculoEliminarModal
+            v-model="mostrarConfirmacion"
+            :vehiculo="vehiculoAEliminar"
+            @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)"
+        />
 
     </div>
 </template>
@@ -805,3 +768,4 @@ onMounted(cargarVehiculos)
     }
 }
 </style>
+

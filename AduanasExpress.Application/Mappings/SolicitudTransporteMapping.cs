@@ -9,6 +9,7 @@ namespace AduanasExpress.Application.Mappings
         {
             return new SolicitudTransporteReponseDTOs
             {
+                Id = solicitudTransporte.Id,
                 AreaSolicitante = solicitudTransporte.AreaSolicitante,
                 CantidadColaboradores = solicitudTransporte.CantidadColaboradores,
                 FechaViaje = solicitudTransporte.FechaViaje,

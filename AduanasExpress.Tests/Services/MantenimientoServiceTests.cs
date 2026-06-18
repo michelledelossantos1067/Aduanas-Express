@@ -20,7 +20,6 @@ namespace AduanasExpress.Tests.Services
         [Fact]
         public async Task ObtenerTodos_CuandoExistenMantenimientos_DebeRetornarLista()
         {
-            // Arrange
             var mantenimientos = new List<Mantenimiento>
             {
                 new Mantenimiento { Id = 1, TipoMantenimiento = "Aceite", Descripcion = "Cambio de aceite", Costo = 1500, Taller = "Taller A", VehiculoId = 1 },
@@ -28,10 +27,8 @@ namespace AduanasExpress.Tests.Services
             };
             _repositoryMock.Setup(r => r.ObtenerTodos()).ReturnsAsync(mantenimientos);
 
-            // Act
             var resultado = await _service.ObtenerTodos();
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count);
         }
@@ -39,14 +36,11 @@ namespace AduanasExpress.Tests.Services
         [Fact]
         public async Task ObtenerPorId_CuandoExisteMantenimiento_DebeRetornarMantenimiento()
         {
-            // Arrange
             var mantenimiento = new Mantenimiento { Id = 1, TipoMantenimiento = "Aceite", Descripcion = "Cambio de aceite", Costo = 1500, Taller = "Taller A", VehiculoId = 1 };
             _repositoryMock.Setup(r => r.ObtenerPorId(1)).ReturnsAsync(mantenimiento);
 
-            // Act
             var resultado = await _service.ObtenerPorId(1);
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.Equal(1, resultado.Id);
         }
@@ -54,17 +48,14 @@ namespace AduanasExpress.Tests.Services
         [Fact]
         public async Task ObtenerPorId_CuandoNoExisteMantenimiento_DebeLanzarExcepcion()
         {
-            // Arrange
             _repositoryMock.Setup(r => r.ObtenerPorId(99)).ReturnsAsync((Mantenimiento?)null);
 
-            // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.ObtenerPorId(99));
         }
 
         [Fact]
         public async Task Crear_CuandoDatosValidos_DebeCrearMantenimiento()
         {
-            // Arrange
             var createDto = new CreateMantenimientoDTOs
             {
                 TipoMantenimiento = "Aceite",
@@ -75,45 +66,36 @@ namespace AduanasExpress.Tests.Services
             };
             _repositoryMock.Setup(r => r.Crear(It.IsAny<Mantenimiento>())).Returns(Task.CompletedTask);
 
-            // Act
             await _service.Crear(createDto);
 
-            // Assert
             _repositoryMock.Verify(r => r.Crear(It.IsAny<Mantenimiento>()), Times.Once);
         }
 
         [Fact]
         public async Task Actualizar_CuandoNoExisteMantenimiento_DebeLanzarExcepcion()
         {
-            // Arrange
             _repositoryMock.Setup(r => r.ObtenerPorId(99)).ReturnsAsync((Mantenimiento?)null);
 
-            // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.Actualizar(99, new UpdateMantenimientoDTOs()));
         }
 
         [Fact]
         public async Task Eliminar_CuandoExisteMantenimiento_DebeEliminar()
         {
-            // Arrange
             var mantenimiento = new Mantenimiento { Id = 1, TipoMantenimiento = "Aceite", Descripcion = "Cambio de aceite", Costo = 1500, Taller = "Taller A", VehiculoId = 1 };
             _repositoryMock.Setup(r => r.ObtenerPorId(1)).ReturnsAsync(mantenimiento);
             _repositoryMock.Setup(r => r.Eliminar(1)).Returns(Task.CompletedTask);
 
-            // Act
             await _service.Eliminar(1);
 
-            // Assert
             _repositoryMock.Verify(r => r.Eliminar(1), Times.Once);
         }
 
         [Fact]
         public async Task Eliminar_CuandoNoExisteMantenimiento_DebeLanzarExcepcion()
         {
-            // Arrange
             _repositoryMock.Setup(r => r.ObtenerPorId(99)).ReturnsAsync((Mantenimiento?)null);
 
-            // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.Eliminar(99));
         }
     }

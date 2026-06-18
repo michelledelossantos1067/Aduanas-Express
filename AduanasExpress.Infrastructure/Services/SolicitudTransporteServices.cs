@@ -50,6 +50,7 @@ public class SolicitudTransporteServices : ISolicitudTransporteService{
         if(solicitudTrans == null){
             throw new Exception("Error al actualizar el solicitud transporte.");
         }
+        
         solicitudTrans.AreaSolicitante = updateSolicitudTransporteDTOs.AreaSolicitante;
         solicitudTrans.CantidadColaboradores = updateSolicitudTransporteDTOs.CantidadColaboradores;
         solicitudTrans.FechaViaje = updateSolicitudTransporteDTOs.FechaViaje;

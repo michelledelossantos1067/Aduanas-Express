@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using AduanasExpress.API.Middleware;
+using AduanasExpress.Infrastructure.Exceptions;
 
 namespace AduanasExpress.API.Middleware
 {
@@ -30,19 +31,25 @@ namespace AduanasExpress.API.Middleware
 
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            var statusCode = ex switch
+            var (statusCode, mensajeUsuario, detalleSeguro) = ex switch
             {
-                KeyNotFoundException => HttpStatusCode.NotFound,
-                UnauthorizedAccessException => HttpStatusCode.Unauthorized,
-                ArgumentException => HttpStatusCode.BadRequest,
-                _ => HttpStatusCode.InternalServerError
+                ValidationException => (HttpStatusCode.BadRequest, ex.Message, "Error de validación de datos."),
+
+                KeyNotFoundException => (HttpStatusCode.NotFound, "El recurso solicitado no fue encontrado.", ex.Message),
+                UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "No tienes autorización para realizar esta acción.", ex.Message),
+                ArgumentException => (HttpStatusCode.BadRequest, ex.Message, "Argumento inválido en la petición."),
+
+                _ when ex.GetType().Name == "SqlException" || ex.InnerException?.GetType().Name == "SqlException"
+                    => (HttpStatusCode.ServiceUnavailable, "El servicio de datos no está disponible temporalmente. Por favor, inténtelo más tarde.", "Fallo de infraestructura (Base de Datos)."),
+
+                _ => (HttpStatusCode.InternalServerError, "Ha ocurrido un error inesperado en el servidor.", "Error interno no controlado.")
             };
 
             var response = new MensajeErrorDto
             {
                 Estado = (int)statusCode,
-                Mensaje = ex.Message,
-                Detalle = ex.InnerException?.Message ?? "Sin detalles adicionales"
+                Mensaje = mensajeUsuario,
+                Detalle = detalleSeguro
             };
 
             context.Response.ContentType = "application/json";

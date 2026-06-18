@@ -1,352 +1,178 @@
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.csproj.AssemblyReference.cache
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.GeneratedMSBuildEditorConfig.editorconfig
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.AssemblyInfoInputs.cache
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.AssemblyInfo.cs
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.csproj.CoreCompileInputs.cache
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cs
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cache
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.sourcelink.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/appsettings.Development.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/appsettings.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.staticwebassets.endpoints.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.deps.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.runtimeconfig.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.pdb
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Azure.Core.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Azure.Identity.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.AspNetCore.OpenApi.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Bcl.AsyncInterfaces.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Data.SqlClient.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Relational.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.SqlServer.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Identity.Client.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Identity.Client.Extensions.Msal.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.OpenApi.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.SqlServer.Server.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Win32.SystemEvents.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.ClientModel.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Configuration.ConfigurationManager.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Drawing.Common.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Memory.Data.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Runtime.Caching.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Security.Cryptography.ProtectedData.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Security.Permissions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Windows.Extensions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/unix/lib/net6.0/Microsoft.Data.SqlClient.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/Microsoft.Data.SqlClient.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-arm/native/Microsoft.Data.SqlClient.SNI.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-arm64/native/Microsoft.Data.SqlClient.SNI.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-x64/native/Microsoft.Data.SqlClient.SNI.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-x86/native/Microsoft.Data.SqlClient.SNI.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/unix/lib/net6.0/System.Drawing.Common.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Drawing.Common.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Runtime.Caching.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Windows.Extensions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Application.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Domain.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Infrastructure.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Application.pdb
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Infrastructure.pdb
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Domain.pdb
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/scopedcss/bundle/AduanasExpress.API.styles.css
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.build.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.development.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.build.endpoints.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets/msbuild.AduanasExpress.API.Microsoft.AspNetCore.StaticWebAssets.props
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets/msbuild.AduanasExpress.API.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets/msbuild.build.AduanasExpress.API.props
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets/msbuild.buildMultiTargeting.AduanasExpress.API.props
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.AduanasExpress.API.props
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.pack.json
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasE.6A2A5B43.Up2Date
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/refint/AduanasExpress.API.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.pdb
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.genruntimeconfig.cache
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/ref/AduanasExpress.API.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Humanizer.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.CSharp.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.CSharp.Workspaces.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Design.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyModel.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Mono.TextTemplating.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.CodeDom.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.AttributedModel.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Convention.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Hosting.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Runtime.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.TypedParts.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Build.Locator.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Caching.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Caching.Memory.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/BCrypt.Net-Next.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/appsettings.Development.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/appsettings.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.staticwebassets.endpoints.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.exe
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.deps.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.runtimeconfig.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.API.pdb
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Azure.Core.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Azure.Identity.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/BCrypt.Net-Next.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Humanizer.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.AspNetCore.OpenApi.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Bcl.AsyncInterfaces.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Build.Locator.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.CSharp.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.CSharp.Workspaces.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Data.SqlClient.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Design.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.Relational.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.EntityFrameworkCore.SqlServer.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Caching.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Caching.Memory.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.DependencyModel.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Identity.Client.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Identity.Client.Extensions.Msal.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.OpenApi.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.SqlServer.Server.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Microsoft.Win32.SystemEvents.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Mono.TextTemplating.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.ClientModel.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.CodeDom.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.AttributedModel.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Convention.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Hosting.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.Runtime.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Composition.TypedParts.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Configuration.ConfigurationManager.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Drawing.Common.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Memory.Data.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Runtime.Caching.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Security.Cryptography.ProtectedData.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Security.Permissions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/System.Windows.Extensions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/cs/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/de/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/es/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/fr/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/it/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ja/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ko/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pl/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/pt-BR/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/ru/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/tr/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/unix/lib/net6.0/Microsoft.Data.SqlClient.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/Microsoft.Data.SqlClient.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-arm/native/Microsoft.Data.SqlClient.SNI.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-arm64/native/Microsoft.Data.SqlClient.SNI.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-x64/native/Microsoft.Data.SqlClient.SNI.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win-x86/native/Microsoft.Data.SqlClient.SNI.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/unix/lib/net6.0/System.Drawing.Common.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Drawing.Common.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Runtime.Caching.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Windows.Extensions.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Application.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Domain.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Infrastructure.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Application.pdb
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Infrastructure.pdb
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/AduanasExpress.Domain.pdb
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.csproj.AssemblyReference.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/rpswa.dswa.cache.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.GeneratedMSBuildEditorConfig.editorconfig
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.AssemblyInfoInputs.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.AssemblyInfo.cs
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.csproj.CoreCompileInputs.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cs
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.sourcelink.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/rjimswa.dswa.cache.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/scopedcss/bundle/AduanasExpress.API.styles.css
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.build.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.build.json.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.development.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/staticwebassets.build.endpoints.json
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/swae.build.ex.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasE.6A2A5B43.Up2Date
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/refint/AduanasExpress.API.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.pdb
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/AduanasExpress.API.genruntimeconfig.cache
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/AduanasExpress.API/obj/Debug/net9.0/ref/AduanasExpress.API.dll
-D:/Archivo de programas/Visual Studio/Poyectos/Aduanas-Express/aduanasexpress.api/bin/Debug/net9.0/FluentValidation.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/FluentValidation.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
-/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\appsettings.Development.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\appsettings.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.staticwebassets.endpoints.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.exe
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.deps.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.runtimeconfig.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.API.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Azure.Core.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Azure.Identity.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\BCrypt.Net-Next.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\FluentValidation.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\FluentValidation.AspNetCore.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\FluentValidation.DependencyInjectionExtensions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Humanizer.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Bcl.AsyncInterfaces.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Build.Locator.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.CSharp.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.CSharp.Workspaces.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.CodeAnalysis.Workspaces.MSBuild.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Data.SqlClient.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Design.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Relational.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyModel.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Logging.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Identity.Client.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Identity.Client.Extensions.Msal.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.OpenApi.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.SqlServer.Server.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Mono.TextTemplating.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.ClientModel.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.CodeDom.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Composition.AttributedModel.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Composition.Convention.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Composition.Hosting.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Composition.Runtime.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Composition.TypedParts.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Configuration.ConfigurationManager.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Drawing.Common.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Memory.Data.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Runtime.Caching.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Security.Cryptography.ProtectedData.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Security.Permissions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\System.Windows.Extensions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\fr\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\it\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ja\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ko\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pl\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pt-BR\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ru\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\fr\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\it\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ja\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ko\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pl\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ru\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\fr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\it\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ja\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ko\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pl\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pt-BR\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ru\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\fr\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\it\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ja\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ko\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pl\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pt-BR\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ru\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\fr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\it\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ja\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ko\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pl\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\pt-BR\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\ru\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Application.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Domain.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Infrastructure.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Application.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Infrastructure.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\bin\Debug\net9.0\AduanasExpress.Domain.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.csproj.AssemblyReference.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\rpswa.dswa.cache.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.GeneratedMSBuildEditorConfig.editorconfig
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.AssemblyInfoInputs.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.AssemblyInfo.cs
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.csproj.CoreCompileInputs.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cs
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.MvcApplicationPartsAssemblyInfo.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.sourcelink.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\rjimswa.dswa.cache.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\scopedcss\bundle\AduanasExpress.API.styles.css
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\staticwebassets.build.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\staticwebassets.build.json.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\staticwebassets.development.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\staticwebassets.build.endpoints.json
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\swae.build.ex.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasE.6A2A5B43.Up2Date
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\refint\AduanasExpress.API.dll
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.pdb
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\AduanasExpress.API.genruntimeconfig.cache
+D:\Archivo de programas\Visual Studio\Poyectos\Aduanas-Express\AduanasExpress.API\obj\Debug\net9.0\ref\AduanasExpress.API.dll

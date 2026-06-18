@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "w63vOOm/6vA=",
+  "dgSpecHash": "PpPJA3N5tL4=",
   "success": true,
-  "projectFilePath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj",
+  "projectFilePath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj",
   "expectedPackageFiles": [
-    "/Users/dianny/.nuget/packages/fluentvalidation/12.1.1/fluentvalidation.12.1.1.nupkg.sha512"
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.16\\microsoft.netcore.app.ref.9.0.16.nupkg.sha512",
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.16\\microsoft.windowsdesktop.app.ref.9.0.16.nupkg.sha512",
+    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.16\\microsoft.aspnetcore.app.ref.9.0.16.nupkg.sha512"
   ],
   "logs": []
 }

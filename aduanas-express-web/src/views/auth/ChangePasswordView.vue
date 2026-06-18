@@ -1,56 +1,52 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/authStore'
 import { ref } from 'vue'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
-const step = ref('email')
 const loading = ref(false)
 const error = ref('')
+const success = ref(false)
 
 const form = ref({
-    email: '',
-    password: '',
-    confirmPassword: ''
+    email: authStore.usuario?.email || '',
+    passwordActual: '',
+    passwordNueva: '',
+    confirmarNueva: ''
 })
 
-async function handleVerifyEmail() {
-    if (!form.value.email) {
-        error.value = 'Ingresa tu correo electrónico'
+async function handleChangePassword() {
+    if (!form.value.email || !form.value.passwordActual || !form.value.passwordNueva || !form.value.confirmarNueva) {
+        error.value = 'Completa todos los campos'
         return
     }
-    loading.value = true
-    error.value = ''
-    try {
-        // await checkEmailExists(form.value.email)
-        step.value = 'password'
-    } catch (e) {
-        error.value = e.response?.data?.message || 'Correo no encontrado'
-    } finally {
-        loading.value = false
+    if (form.value.passwordNueva.length < 6) {
+        error.value = 'La nueva contraseña debe tener al menos 6 caracteres'
+        return
     }
-}
+    if (form.value.passwordNueva !== form.value.confirmarNueva) {
+        error.value = 'Las contraseñas nuevas no coinciden'
+        return
+    }
+    if (form.value.passwordActual === form.value.passwordNueva) {
+        error.value = 'La nueva contraseña debe ser diferente a la actual'
+        return
+    }
 
-async function handleResetPassword() {
-    if (!form.value.password || !form.value.confirmPassword) {
-        error.value = 'Completa ambos campos'
-        return
-    }
-    if (form.value.password.length < 6) {
-        error.value = 'La contraseña debe tener al menos 6 caracteres'
-        return
-    }
-    if (form.value.password !== form.value.confirmPassword) {
-        error.value = 'Las contraseñas no coinciden'
-        return
-    }
     loading.value = true
     error.value = ''
+
     try {
-        // await resetPassword(form.value.email, form.value.password)
-        step.value = 'done'
+        // await changePassword({
+        //     email: form.value.email,
+        //     passwordActual: form.value.passwordActual,
+        //     passwordNueva: form.value.passwordNueva
+        // })
+        success.value = true
     } catch (e) {
-        error.value = e.response?.data?.message || 'Error al restablecer la contraseña'
+        error.value = e.response?.data?.message || 'Error al cambiar la contraseña'
     } finally {
         loading.value = false
     }
@@ -58,11 +54,12 @@ async function handleResetPassword() {
 </script>
 
 <template>
-    <div class="reset-page">
-        <div class="reset-card">
-            <div class="reset-container">
+    <div class="change-page">
+        <div class="change-card">
+            <div class="change-container">
 
-                <div class="reset-left">
+                <!-- Panel izquierdo -->
+                <div class="change-left">
                     <div>
                         <div class="brand">
                             <div class="brand-icon">
@@ -79,17 +76,17 @@ async function handleResetPassword() {
                         </p>
                         <ul class="feature-list">
                             <li>
-                                <i class="ti ti-lock-open" aria-hidden="true"></i>
+                                <i class="ti ti-lock" aria-hidden="true"></i>
                                 <div>
-                                    <span class="feature-title">Recuperación simple</span>
-                                    <span class="feature-sub">Solo tu correo y nueva clave</span>
+                                    <span class="feature-title">Seguridad de cuenta</span>
+                                    <span class="feature-sub">Actualiza tu contraseña regularmente</span>
                                 </div>
                             </li>
                             <li>
                                 <i class="ti ti-shield-check" aria-hidden="true"></i>
                                 <div>
                                     <span class="feature-title">Acceso protegido</span>
-                                    <span class="feature-sub">Tu cuenta siempre segura</span>
+                                    <span class="feature-sub">Solo tú controlas tu cuenta</span>
                                 </div>
                             </li>
                         </ul>
@@ -97,54 +94,70 @@ async function handleResetPassword() {
                     <p class="info">© 2025 Aduanas Express — Uso institucional exclusivo.<br>Acceso restringido a personal autorizado.</p>
                 </div>
 
-                <div class="reset-right">
+                <!-- Panel derecho -->
+                <div class="change-right">
 
-                    <!-- Paso 1: Email -->
-                    <template v-if="step === 'email'">
-                        <h1>Recuperar contraseña</h1>
-                        <h4>Ingresa tu correo para continuar</h4>
+                    <!-- Formulario -->
+                    <template v-if="!success">
+                        <h1>Cambiar contraseña</h1>
+                        <h4>Verifica tu identidad e ingresa tu nueva contraseña</h4>
+
                         <div class="form-group">
                             <label class="form-label">Correo electrónico</label>
-                            <input v-model="form.email" type="email" class="form-input" placeholder="correo@ejemplo.com" />
-                            <p v-if="error" class="error-msg">{{ error }}</p>
-                            <button @click="handleVerifyEmail" class="btn-action" :disabled="loading">
-                                {{ loading ? 'Verificando...' : 'Continuar' }}
-                            </button>
-                            <p>¿Recordaste tu contraseña?
-                                <span class="support" @click="router.push('/login')">Inicia sesión</span>
-                            </p>
-                        </div>
-                    </template>
+                            <input
+                                v-model="form.email"
+                                type="email"
+                                class="form-input"
+                                placeholder="correo@ejemplo.com"
+                                :disabled="!!authStore.usuario?.email"
+                            />
 
-                    <!-- Paso 2: Nueva contraseña -->
-                    <template v-if="step === 'password'">
-                        <h1>Nueva contraseña</h1>
-                        <h4>Elige una contraseña segura para <strong>{{ form.email }}</strong></h4>
-                        <div class="form-group">
+                            <label class="form-label">Contraseña actual</label>
+                            <input
+                                v-model="form.passwordActual"
+                                type="password"
+                                class="form-input"
+                                placeholder="Tu contraseña actual"
+                            />
+
                             <label class="form-label">Nueva contraseña</label>
-                            <input v-model="form.password" type="password" class="form-input" placeholder="Mínimo 6 caracteres" />
-                            <label class="form-label">Confirmar contraseña</label>
-                            <input v-model="form.confirmPassword" type="password" class="form-input" placeholder="Repite tu contraseña" />
+                            <input
+                                v-model="form.passwordNueva"
+                                type="password"
+                                class="form-input"
+                                placeholder="Mínimo 6 caracteres"
+                            />
+
+                            <label class="form-label">Confirmar nueva contraseña</label>
+                            <input
+                                v-model="form.confirmarNueva"
+                                type="password"
+                                class="form-input"
+                                placeholder="Repite tu nueva contraseña"
+                            />
+
                             <p v-if="error" class="error-msg">{{ error }}</p>
-                            <button @click="handleResetPassword" class="btn-action" :disabled="loading">
-                                {{ loading ? 'Guardando...' : 'Restablecer contraseña' }}
+
+                            <button @click="handleChangePassword" class="btn-action" :disabled="loading">
+                                {{ loading ? 'Guardando...' : 'Cambiar contraseña' }}
                             </button>
+
                             <p>
-                                <span class="support" @click="step = 'email'">← Cambiar correo</span>
+                                <span class="support" @click="router.back()">← Volver</span>
                             </p>
                         </div>
                     </template>
 
                     <!-- Éxito -->
-                    <template v-if="step === 'done'">
+                    <template v-else>
                         <div class="success-state">
                             <div class="success-icon">
                                 <i class="ti ti-circle-check"></i>
                             </div>
-                            <h1>¡Contraseña restablecida!</h1>
-                            <p>Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión.</p>
-                            <button @click="router.push('/login')" class="btn-action">
-                                Ir al inicio de sesión
+                            <h1>¡Contraseña actualizada!</h1>
+                            <p>Tu contraseña ha sido cambiada correctamente.</p>
+                            <button @click="router.push('/dashboard')" class="btn-action">
+                                Ir al dashboard
                             </button>
                         </div>
                     </template>
@@ -167,7 +180,7 @@ async function handleResetPassword() {
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
 
-.reset-page {
+.change-page {
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -176,13 +189,13 @@ async function handleResetPassword() {
     background: rgb(228, 228, 228);
 }
 
-.reset-card {
+.change-card {
     width: 900px;
     display: flex;
     flex-direction: column;
 }
 
-.reset-container {
+.change-container {
     display: flex;
     width: 900px;
     border-radius: 10px 10px 0 0;
@@ -190,7 +203,8 @@ async function handleResetPassword() {
     min-height: 500px;
 }
 
-.reset-left {
+/* ── Panel izquierdo ── */
+.change-left {
     background: #1a4a2e;
     display: flex;
     width: 40%;
@@ -249,7 +263,8 @@ async function handleResetPassword() {
     margin: 24px 0 0;
 }
 
-.reset-right {
+/* ── Panel derecho ── */
+.change-right {
     background: white;
     width: 60%;
     padding: 40px;
@@ -260,8 +275,8 @@ async function handleResetPassword() {
     min-height: 500px;
 }
 
-.reset-right h1 { margin: 0 0 4px 0; font-size: 24px; }
-.reset-right h4 { margin: 0 0 8px 0; font-weight: 400; color: #555; font-size: 14px; }
+.change-right h1 { margin: 0 0 4px 0; font-size: 24px; }
+.change-right h4 { margin: 0 0 8px 0; font-weight: 400; color: #555; font-size: 14px; }
 
 .form-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 
@@ -271,6 +286,13 @@ async function handleResetPassword() {
     width: 100%; padding: 10px;
     border: 1px solid #ccc; border-radius: 6px;
     font-size: 14px; box-sizing: border-box;
+    background: white;
+}
+
+.form-input:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
 }
 
 .form-input:focus {
@@ -295,9 +317,10 @@ async function handleResetPassword() {
 
 .support {
     color: #1a4a2e; cursor: pointer;
-    margin-left: 4px; text-decoration: underline;
+    text-decoration: underline;
 }
 
+/* ── Éxito ── */
 .success-state {
     display: flex; flex-direction: column;
     align-items: center; text-align: center;
@@ -315,6 +338,7 @@ async function handleResetPassword() {
 .success-state p { color: #555; font-size: 14px; max-width: 300px; line-height: 1.6; }
 .success-state .btn-action { width: auto; padding: 12px 32px; }
 
+/* ── Footer ── */
 .form-footer {
     width: 900px; margin-top: 0;
     padding: 14px 24px; background: white;
@@ -330,13 +354,14 @@ async function handleResetPassword() {
 
 .mobile-footer { display: none; }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
-    .reset-page { background: #1a4a2e; align-items: flex-end; padding: 0; }
-    .reset-card { width: 100%; }
-    .reset-container { flex-direction: column; width: 100%; border-radius: 0; min-height: auto; }
-    .reset-left { background: transparent; width: 100%; padding: 40px 24px 20px; display: block; }
+    .change-page { background: #1a4a2e; align-items: flex-end; padding: 0; }
+    .change-card { width: 100%; }
+    .change-container { flex-direction: column; width: 100%; border-radius: 0; min-height: auto; }
+    .change-left { background: transparent; width: 100%; padding: 40px 24px 20px; display: block; }
     .feature-list, .left-divider, .left-description, .info { display: none !important; }
-    .reset-right {
+    .change-right {
         background: white; width: 100%;
         border-radius: 24px 24px 0 0;
         min-height: 70vh; padding: 30px 24px;

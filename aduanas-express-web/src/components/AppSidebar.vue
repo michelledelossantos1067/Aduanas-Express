@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 
 const authStore = useAuthStore()
@@ -13,6 +13,17 @@ const userInitials = computed(() => {
         .substring(0, 2)
         .toUpperCase()
 })
+
+// Estado de apertura/cierre de cada sección (tipo dropdown)
+const openSections = reactive({
+    gestion: true,
+    operacion: false,
+    administracion: false
+})
+
+function toggleSection(key) {
+    openSections[key] = !openSections[key]
+}
 </script>
 
 <template>
@@ -30,7 +41,7 @@ const userInitials = computed(() => {
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
-            <!-- PRINCIPAL -->
+            <!-- PRINCIPAL (siempre visible) -->
             <div class="nav-section">
                 <span class="nav-section-title">PRINCIPAL</span>
                 <router-link to="/dashboard" class="nav-item">
@@ -39,63 +50,78 @@ const userInitials = computed(() => {
                 </router-link>
             </div>
 
-            <!-- GESTIÓN -->
+            <!-- GESTIÓN (dropdown) -->
             <div class="nav-section">
-                <span class="nav-section-title">GESTIÓN</span>
-                <router-link to="/vehiculos" class="nav-item">
-                    <span class="nav-icon">🚌</span>
-                    <span>Vehiculos</span>
-                </router-link>
-                <router-link to="/conductores" class="nav-item">
-                    <span class="nav-icon">👤</span>
-                    <span>Conductores</span>
-                </router-link>
-                <router-link to="/solicitudes" class="nav-item">
-                    <span class="nav-icon">📋</span>
-                    <span>Solicitudes</span>
-                </router-link>
-                <router-link to="/asignaciones" class="nav-item">
-                    <span class="nav-icon">📝</span>
-                    <span>Asignaciones</span>
-                </router-link>
+                <button class="nav-section-toggle" @click="toggleSection('gestion')">
+                    <span class="nav-section-title">GESTIÓN</span>
+                    <span class="nav-chevron" :class="{ open: openSections.gestion }">▾</span>
+                </button>
+                <div class="nav-collapsible" v-show="openSections.gestion">
+                    <router-link to="/vehiculos" class="nav-item">
+                        <span class="nav-icon">🚌</span>
+                        <span>Vehiculos</span>
+                    </router-link>
+                    <router-link to="/conductores" class="nav-item">
+                        <span class="nav-icon">👤</span>
+                        <span>Conductores</span>
+                    </router-link>
+                    <router-link to="/solicitudes" class="nav-item">
+                        <span class="nav-icon">📋</span>
+                        <span>Solicitudes</span>
+                    </router-link>
+                    <router-link to="/asignaciones" class="nav-item">
+                        <span class="nav-icon">📝</span>
+                        <span>Asignaciones</span>
+                    </router-link>
+                </div>
             </div>
 
-            <!-- OPERACIÓN -->
+            <!-- OPERACIÓN (dropdown) -->
             <div class="nav-section">
-                <span class="nav-section-title">OPERACIÓN</span>
-                <router-link to="/agenda" class="nav-item">
-                    <span class="nav-icon">📅</span>
-                    <span>Agenda</span>
-                </router-link>
-                <router-link to="/mantenimiento" class="nav-item">
-                    <span class="nav-icon">🔧</span>
-                    <span>Mantenimiento</span>
-                </router-link>
-                <router-link to="/reportes" class="nav-item">
-                    <span class="nav-icon">📊</span>
-                    <span>Reportes</span>
-                </router-link>
-                <router-link to="/monitoreo" class="nav-item">
-                    <span class="nav-icon">🖥️</span>
-                    <span>Monitoreo</span>
-                </router-link>
-                <router-link to="/historial" class="nav-item">
-                    <span class="nav-icon">🗂️</span>
-                    <span>Historial</span>
-                </router-link>
+                <button class="nav-section-toggle" @click="toggleSection('operacion')">
+                    <span class="nav-section-title">OPERACIÓN</span>
+                    <span class="nav-chevron" :class="{ open: openSections.operacion }">▾</span>
+                </button>
+                <div class="nav-collapsible" v-show="openSections.operacion">
+                    <router-link to="/agenda" class="nav-item">
+                        <span class="nav-icon">📅</span>
+                        <span>Agenda</span>
+                    </router-link>
+                    <router-link to="/mantenimiento" class="nav-item">
+                        <span class="nav-icon">🔧</span>
+                        <span>Mantenimiento</span>
+                    </router-link>
+                    <router-link to="/reportes" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        <span>Reportes</span>
+                    </router-link>
+                    <router-link to="/monitoreo" class="nav-item">
+                        <span class="nav-icon">🖥️</span>
+                        <span>Monitoreo</span>
+                    </router-link>
+                    <router-link to="/historial" class="nav-item">
+                        <span class="nav-icon">🗂️</span>
+                        <span>Historial</span>
+                    </router-link>
+                </div>
             </div>
 
-            <!-- ADMINISTRACIÓN -->
+            <!-- ADMINISTRACIÓN (dropdown) -->
             <div class="nav-section">
-                <span class="nav-section-title">ADMINISTRACIÓN</span>
-                <router-link to="/usuarios" class="nav-item">
-                    <span class="nav-icon">👥</span>
-                    <span>Usuarios</span>
-                </router-link>
-                <router-link to="/roles" class="nav-item">
-                    <span class="nav-icon">⚙️</span>
-                    <span>Roles</span>
-                </router-link>
+                <button class="nav-section-toggle" @click="toggleSection('administracion')">
+                    <span class="nav-section-title">ADMINISTRACIÓN</span>
+                    <span class="nav-chevron" :class="{ open: openSections.administracion }">▾</span>
+                </button>
+                <div class="nav-collapsible" v-show="openSections.administracion">
+                    <router-link to="/usuarios" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        <span>Usuarios</span>
+                    </router-link>
+                    <router-link to="/roles" class="nav-item">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Roles</span>
+                    </router-link>
+                </div>
             </div>
         </nav>
 
@@ -112,31 +138,35 @@ const userInitials = computed(() => {
 
 <style scoped>
 .sidebar {
-    width: 240px;
-    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    width: 250px;
+    height: 100vh;
     background-color: #1a3a2e;
     display: flex;
     flex-direction: column;
     color: #ffffff;
     font-family: sans-serif;
+    flex-shrink: 0;
+    z-index: 100;
 }
 
 .sidebar-header {
-    padding: 20px 16px;
+    padding: 14px 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .logo-icon {
-    font-size: 28px;
+    font-size: 20px;
     background: rgba(255, 255, 255, 0.1);
-    padding: 8px;
-    border-radius: 8px;
+    padding: 6px;
+    border-radius: 6px;
 }
 
 .logo-text {
@@ -145,9 +175,10 @@ const userInitials = computed(() => {
 }
 
 .logo-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #ffffff;
+    line-height: 1.2;
 }
 
 .logo-subtitle {
@@ -157,28 +188,59 @@ const userInitials = computed(() => {
 
 .sidebar-nav {
     flex: 1;
-    padding: 12px 0;
+    padding: 6px 0;
     overflow-y: auto;
 }
 
 .nav-section {
-    margin-bottom: 8px;
+    margin-bottom: 2px;
 }
 
 .nav-section-title {
     display: block;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 1px;
-    padding: 10px 16px 4px;
+    letter-spacing: 0.5px;
+}
+
+.nav-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 9px 16px 5px;
+    color: inherit;
+    font-family: inherit;
+}
+
+.nav-section-toggle .nav-section-title {
+    padding: 0;
+}
+
+.nav-chevron {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s;
+}
+
+.nav-chevron.open {
+    transform: rotate(180deg);
+}
+
+.nav-collapsible {
+    display: flex;
+    flex-direction: column;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 16px;
+    padding: 7px 16px;
     color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     font-size: 14px;
@@ -198,21 +260,21 @@ const userInitials = computed(() => {
 
 .nav-icon {
     font-size: 16px;
-    width: 20px;
+    width: 18px;
     text-align: center;
 }
 
 .sidebar-footer {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 16px;
+    gap: 8px;
+    padding: 10px 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: #4caf82;
     border-radius: 50%;
     display: flex;

@@ -10,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 namespace AduanasExpress.Infrastructure.Services;
 
-
-
 public class AuthServices : IAuthService {
 
     private readonly IUsuarioRepositories _usuarioRepositories;
@@ -60,6 +58,7 @@ public class AuthServices : IAuthService {
 
         return new AuthResponseDTOs
         {
+            Id = usuario.Id,
             Token = tokenString,
             Rol = usuario.Rol.ToString(),
             Nombre = usuario.Nombre
@@ -92,6 +91,7 @@ public class AuthServices : IAuthService {
         };
         await _usuarioRepositories.Crear(usuario);
     }
+    // Genera una contraseña temporal y la devuelve para que el usuario pueda acceder y cambiarla
     public async Task<string> ResetPassword(ResetPasswordDTO resetPasswordDTO)
     {
         var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(resetPasswordDTO.Email);

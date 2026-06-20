@@ -33,7 +33,7 @@ public class ConsumoCombustibleRepositories : IConsumoCombustibleRepositories{
         consumoCombustibles.CostoPorGalon = consumoCombustible.CostoPorGalon;
         consumoCombustibles.CostoTotal = consumoCombustible.CostoTotal;
         consumoCombustibles.VehiculoId = consumoCombustible.VehiculoId;
-        // consumoCombustibles.SolicitudId = consumoCombustibles.SolicitudId;
+
         await _context.SaveChangesAsync();
     }
     public async Task Eliminar(int Id){

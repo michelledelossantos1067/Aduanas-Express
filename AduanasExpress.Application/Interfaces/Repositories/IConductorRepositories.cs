@@ -7,4 +7,5 @@ public interface IConductorRepositories{
     public Task Crear(Conductor conductor);
     public Task Actualizar(int Id,Conductor conductor);
     public Task Eliminar(int Id);
+    Task<List<Conductor>> ObtenerDisponiblesEnFecha(DateTime fecha);
 }

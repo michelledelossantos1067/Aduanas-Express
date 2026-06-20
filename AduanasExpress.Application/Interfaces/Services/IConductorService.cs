@@ -7,4 +7,5 @@ public interface IConductorService{
     public Task Crear(CreateConductorDTOs createConductorDTOs);
     public Task Actualizar(int Id,UpdateConductorDTOs updateConductorDTOs);
     public Task Eliminar(int Id);
+    Task<List<ConductorReponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha);
 }

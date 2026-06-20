@@ -36,8 +36,17 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<int>("ConductorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("FechaAsignacion")
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FechaAsignacion")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaFinalizacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("KilometrajeFin")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SolicitudId")
                         .HasColumnType("int");
@@ -124,16 +133,21 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<decimal>("CostoTotal")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTime?>("Fecha")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Galones")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("SolicitudId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VehiculoId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SolicitudId");
 
                     b.HasIndex("VehiculoId");
 
@@ -155,7 +169,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTime?>("Fecha")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ProximoMantenimiento")
@@ -194,9 +208,6 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<int>("CantidadColaboradores")
                         .HasColumnType("int");
 
-                    b.Property<int>("ConductorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Destino")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -207,7 +218,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("FechaViaje")
+                    b.Property<DateTime?>("FechaViaje")
                         .HasColumnType("datetime2");
 
                     b.Property<TimeSpan>("HoraSalida")
@@ -217,19 +228,19 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UsuarioSolicitaId")
+                    b.Property<string>("PuntoOrigen")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TipoViaje")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehiculoId")
+                    b.Property<int>("UsuarioSolicitaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConductorId");
-
                     b.HasIndex("UsuarioSolicitaId");
-
-                    b.HasIndex("VehiculoId");
 
                     b.ToTable("SolicitudesTransporte");
                 });
@@ -362,11 +373,17 @@ namespace AduanasExpress.Infrastructure.Migrations
 
             modelBuilder.Entity("AduanasExpress.Domain.Entitis.ConsumoCombustible", b =>
                 {
+                    b.HasOne("AduanasExpress.Domain.Entitis.SolicitudTransporte", "Solicitud")
+                        .WithMany()
+                        .HasForeignKey("SolicitudId");
+
                     b.HasOne("AduanasExpress.Domain.Entitis.Vehiculo", "Vehiculo")
                         .WithMany()
                         .HasForeignKey("VehiculoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Solicitud");
 
                     b.Navigation("Vehiculo");
                 });
@@ -384,29 +401,13 @@ namespace AduanasExpress.Infrastructure.Migrations
 
             modelBuilder.Entity("AduanasExpress.Domain.Entitis.SolicitudTransporte", b =>
                 {
-                    b.HasOne("AduanasExpress.Domain.Entitis.Conductor", "Conductor")
-                        .WithMany()
-                        .HasForeignKey("ConductorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("AduanasExpress.Domain.Entitis.Usuario", "UsuarioSolicita")
                         .WithMany()
                         .HasForeignKey("UsuarioSolicitaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("AduanasExpress.Domain.Entitis.Vehiculo", "Vehiculo")
-                        .WithMany()
-                        .HasForeignKey("VehiculoId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Conductor");
-
                     b.Navigation("UsuarioSolicita");
-
-                    b.Navigation("Vehiculo");
                 });
 #pragma warning restore 612, 618
         }

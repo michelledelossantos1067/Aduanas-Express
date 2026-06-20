@@ -145,10 +145,11 @@ function exportar() {
 }
 
 function formatFecha(fecha) {
-    if (!fecha) return '—'
-    return new Date(fecha).toLocaleDateString('es-DO', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-    })
+    if (!fecha || fecha.startsWith('0001')) return '—'
+
+    const parte = fecha.split('T')[0]
+    const [anio, mes, dia] = parte.split('-')
+    return `${dia}/${mes}/${anio}`
 }
 
 onMounted(cargarConductores)
@@ -157,7 +158,6 @@ onMounted(cargarConductores)
 <template>
     <div class="cond-page">
 
-        <!-- ── Encabezado ── -->
         <div class="cond-header">
             <h1 class="cond-title">Conductores</h1>
             <div class="cond-header-actions">
@@ -180,7 +180,6 @@ onMounted(cargarConductores)
             </div>
         </div>
 
-        <!-- ── Tarjetas resumen ── -->
         <div class="cond-resumen">
             <div class="resumen-card">
 
@@ -220,7 +219,6 @@ onMounted(cargarConductores)
             </div>
         </div>
 
-        <!-- ── Barra de filtros ── -->
         <div class="cond-filtros">
             <div class="filtro-search">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
@@ -244,7 +242,6 @@ onMounted(cargarConductores)
             </select>
         </div>
 
-        <!-- ── Estado de carga / error ── -->
         <div v-if="loading" class="cond-estado">
             <div class="spinner"></div>
             <p>Cargando conductores....</p>
@@ -255,10 +252,9 @@ onMounted(cargarConductores)
             <button class="btn-reintentar" @click="cargarConductores">Reintentar</button>
         </div>
 
-        <!-- ── Grilla de tarjetas ── -->
         <div v-else-if="conductoresFiltrados.length > 0" class="cond-grid">
             <div v-for="v in conductoresFiltrados" :key="v.id" class="cond-card">
-                <!-- Cabecera de tarjeta -->
+
                 <div class="card-top">
 
                     <span class="card-cedula">{{ v.nombre }}</span>
@@ -267,13 +263,10 @@ onMounted(cargarConductores)
                     </span>
                 </div>
 
-                <!-- Info principal -->
-                <!-- <p class="card-nombre">{{ v.numeroLicencia }} {{ v.cedula }} {{ v.fechaVencLicencia }}</p> -->
                 <p class="card-subtitulo">{{ v.tipo }} · {{ v.capacidad }} pasajeros</p>
 
                 <div class="card-divider"></div>
 
-                <!-- Detalles -->
                 <div class="card-detalles">
                     <div class="detalle-fila">
                         <span class="detalle-label">Licencia</span>
@@ -281,7 +274,8 @@ onMounted(cargarConductores)
                     </div>
                     <div class="detalle-fila">
                         <span class="detalle-label">Vence licencia</span>
-                        <span class="detalle-valor">{{ v.fechaVencLicencia?.toLocaleString('es-DO') ?? '—' }}</span>
+                        <span class="detalle-valor">{{ formatFecha(v.fechaVencLicencia) }}</span>
+
                     </div>
                     <div class="detalle-fila">
                         <span class="detalle-label">Teléfono</span>
@@ -297,7 +291,6 @@ onMounted(cargarConductores)
             </div>
         </div>
 
-        <!-- ── Sin resultados ── -->
         <div v-else class="cond-vacio">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
                 <rect x="1" y="3" width="15" height="13" rx="2" />
@@ -318,7 +311,7 @@ onMounted(cargarConductores)
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .cond-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -326,7 +319,6 @@ onMounted(cargarConductores)
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .cond-header {
     display: flex;
     align-items: center;
@@ -386,14 +378,12 @@ onMounted(cargarConductores)
     background: #14532d;
 }
 
-/* ── Resumen ── */
 .cond-resumen {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
-
 
 .resumen-card {
     background: #fff;
@@ -442,7 +432,6 @@ onMounted(cargarConductores)
     margin: 4px 0 0;
 }
 
-/* ── Filtros ── */
 .cond-filtros {
     display: flex;
     gap: 12px;
@@ -496,14 +485,12 @@ onMounted(cargarConductores)
     border-color: #1a3a2a;
 }
 
-/* ── Grilla ── */
 .cond-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
 }
 
-/* ── Tarjeta ── */
 .cond-card {
     background: #fff;
     border-radius: 14px;
@@ -577,7 +564,6 @@ onMounted(cargarConductores)
     font-weight: 500;
 }
 
-/* ── Acciones tarjeta ── */
 .card-acciones {
     display: flex;
     gap: 8px;
@@ -614,7 +600,6 @@ onMounted(cargarConductores)
     color: #991b1b;
 }
 
-/* ── Badges ── */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -643,7 +628,6 @@ onMounted(cargarConductores)
     color: #991b1b;
 }
 
-/* ── Estados especiales ── */
 .cond-estado {
     display: flex;
     flex-direction: column;
@@ -711,7 +695,6 @@ onMounted(cargarConductores)
     font-size: 0.85rem;
 }
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -777,7 +760,6 @@ onMounted(cargarConductores)
     background: #b91c1c;
 }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
     .cond-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -810,7 +792,7 @@ onMounted(cargarConductores)
         align-items: flex-start;
         gap: 14px;
     }
-    
+
 }
 @media (max-width: 1024px) {
     .cond-resumen {

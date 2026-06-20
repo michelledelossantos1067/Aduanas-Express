@@ -65,9 +65,7 @@ namespace AduanasExpress.Tests.Services
                 Destino = "Norte",
                 MotivoViaje = "Reunion",
                 Estado = EstadosSolicitudes.Pendiente,
-                VehiculoId = 1,
-                ConductorId = 1,
-                UsuarioSolicitaId = 1
+                UsuarioSolicitaId = 2005
             };
             _repositoryMock.Setup(r => r.Crear(It.IsAny<SolicitudTransporte>())).Returns(Task.CompletedTask);
 

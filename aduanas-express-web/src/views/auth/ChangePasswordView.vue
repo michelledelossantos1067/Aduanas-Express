@@ -39,11 +39,7 @@ async function handleChangePassword() {
     error.value = ''
 
     try {
-        // await changePassword({
-        //     email: form.value.email,
-        //     passwordActual: form.value.passwordActual,
-        //     passwordNueva: form.value.passwordNueva
-        // })
+
         success.value = true
     } catch (e) {
         error.value = e.response?.data?.message || 'Error al cambiar la contraseña'
@@ -58,7 +54,6 @@ async function handleChangePassword() {
         <div class="change-card">
             <div class="change-container">
 
-                <!-- Panel izquierdo -->
                 <div class="change-left">
                     <div>
                         <div class="brand">
@@ -94,10 +89,8 @@ async function handleChangePassword() {
                     <p class="info">© 2025 Aduanas Express — Uso institucional exclusivo.<br>Acceso restringido a personal autorizado.</p>
                 </div>
 
-                <!-- Panel derecho -->
                 <div class="change-right">
 
-                    <!-- Formulario -->
                     <template v-if="!success">
                         <h1>Cambiar contraseña</h1>
                         <h4>Verifica tu identidad e ingresa tu nueva contraseña</h4>
@@ -148,7 +141,6 @@ async function handleChangePassword() {
                         </div>
                     </template>
 
-                    <!-- Éxito -->
                     <template v-else>
                         <div class="success-state">
                             <div class="success-icon">
@@ -203,7 +195,6 @@ async function handleChangePassword() {
     min-height: 500px;
 }
 
-/* ── Panel izquierdo ── */
 .change-left {
     background: #1a4a2e;
     display: flex;
@@ -263,7 +254,6 @@ async function handleChangePassword() {
     margin: 24px 0 0;
 }
 
-/* ── Panel derecho ── */
 .change-right {
     background: white;
     width: 60%;
@@ -320,7 +310,6 @@ async function handleChangePassword() {
     text-decoration: underline;
 }
 
-/* ── Éxito ── */
 .success-state {
     display: flex; flex-direction: column;
     align-items: center; text-align: center;
@@ -338,7 +327,6 @@ async function handleChangePassword() {
 .success-state p { color: #555; font-size: 14px; max-width: 300px; line-height: 1.6; }
 .success-state .btn-action { width: auto; padding: 12px 32px; }
 
-/* ── Footer ── */
 .form-footer {
     width: 900px; margin-top: 0;
     padding: 14px 24px; background: white;
@@ -354,7 +342,6 @@ async function handleChangePassword() {
 
 .mobile-footer { display: none; }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
     .change-page { background: #1a4a2e; align-items: flex-end; padding: 0; }
     .change-card { width: 100%; }

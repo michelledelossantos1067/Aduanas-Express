@@ -31,10 +31,11 @@ const estadoLabel = (valor) =>
     estadosConductor.find((e) => e.value === valor)?.label ?? valor
 
 function formatFecha(fecha) {
-    if (!fecha) return '—'
-    return new Date(fecha).toLocaleDateString('es-DO', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-    })
+    if (!fecha || fecha.startsWith('0001')) return '—'
+
+    const parte = fecha.split('T')[0]
+    const [anio, mes, dia] = parte.split('-')
+    return `${dia}/${mes}/${anio}`
 }
 
 async function cargarConductor(id) {

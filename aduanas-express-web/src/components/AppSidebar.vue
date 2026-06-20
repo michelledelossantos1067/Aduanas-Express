@@ -14,7 +14,6 @@ const userInitials = computed(() => {
         .toUpperCase()
 })
 
-// Estado de apertura/cierre de cada sección (tipo dropdown)
 const openSections = reactive({
     gestion: true,
     operacion: false,
@@ -28,7 +27,7 @@ function toggleSection(key) {
 
 <template>
     <aside class="sidebar">
-        <!-- Header -->
+
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <div class="logo-icon">🚛</div>
@@ -39,9 +38,8 @@ function toggleSection(key) {
             </div>
         </div>
 
-        <!-- Navigation -->
         <nav class="sidebar-nav">
-            <!-- PRINCIPAL (siempre visible) -->
+
             <div class="nav-section">
                 <span class="nav-section-title">PRINCIPAL</span>
                 <router-link to="/dashboard" class="nav-item">
@@ -50,7 +48,6 @@ function toggleSection(key) {
                 </router-link>
             </div>
 
-            <!-- GESTIÓN (dropdown) -->
             <div class="nav-section">
                 <button class="nav-section-toggle" @click="toggleSection('gestion')">
                     <span class="nav-section-title">GESTIÓN</span>
@@ -76,7 +73,6 @@ function toggleSection(key) {
                 </div>
             </div>
 
-            <!-- OPERACIÓN (dropdown) -->
             <div class="nav-section">
                 <button class="nav-section-toggle" @click="toggleSection('operacion')">
                     <span class="nav-section-title">OPERACIÓN</span>
@@ -106,7 +102,6 @@ function toggleSection(key) {
                 </div>
             </div>
 
-            <!-- ADMINISTRACIÓN (dropdown) -->
             <div class="nav-section">
                 <button class="nav-section-toggle" @click="toggleSection('administracion')">
                     <span class="nav-section-title">ADMINISTRACIÓN</span>
@@ -125,7 +120,6 @@ function toggleSection(key) {
             </div>
         </nav>
 
-        <!-- Footer -->
         <div class="sidebar-footer">
             <div class="user-avatar">{{ userInitials }}</div>
             <div class="user-info">

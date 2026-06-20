@@ -2,6 +2,7 @@
 using System.Text.Json;
 using AduanasExpress.API.Middleware;
 using AduanasExpress.Infrastructure.Exceptions;
+using ValidationException = AduanasExpress.Infrastructure.Exceptions.ValidationException;
 
 namespace AduanasExpress.API.Middleware
 {
@@ -29,6 +30,7 @@ namespace AduanasExpress.API.Middleware
             }
         }
 
+        // Traduce excepciones del dominio a códigos HTTP y mensajes seguros para el cliente
         private static Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var (statusCode, mensajeUsuario, detalleSeguro) = ex switch

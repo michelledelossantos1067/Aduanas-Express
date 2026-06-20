@@ -30,28 +30,51 @@ const form = ref({
     supervisorId: null,
     estado: 0
 })
-
+function formatearCedula(e) {
+    let digits = e.target.value.replace(/\D/g, '').slice(0, 11)
+    console.log('digits:', digits)
+    let formatted = digits
+    if (digits.length > 3 && digits.length <= 10) {
+        formatted = digits.slice(0, 3) + '-' + digits.slice(3)
+    } else if (digits.length > 10) {
+        formatted = digits.slice(0, 3) + '-' + digits.slice(3, 10) + '-' + digits.slice(10)
+    }
+    form.value.cedula = formatted
+    console.log('formatted:', formatted)
+}
 async function guardar() {
     try {
         loading.value = true
         error.value = ''
 
-        if (!form.value.nombre)            { error.value = 'El nombre es requerido.'; return }
-        if (!form.value.apellido)          { error.value = 'El apellido es requerido.'; return }
-        if (!form.value.cedula)            { error.value = 'La cédula es requerida.'; return }
-        if (!form.value.numeroLicencia)    { error.value = 'El número de licencia es requerido.'; return }
-        if (!form.value.tipoLicencia)      { error.value = 'El tipo de licencia es requerido.'; return }
+        if (!form.value.nombre) { error.value = 'El nombre es requerido.'; return }
+        if (!form.value.apellido) { error.value = 'El apellido es requerido.'; return }
+        if (!form.value.cedula) { error.value = 'La cédula es requerida.'; return }
+
+        const cedulaRegex = /^\d{3}-\d{7}-\d{1}$/
+if (!cedulaRegex.test(form.value.cedula)) {
+    error.value = 'Cédula inválida. Use el formato 001-0000000-0.'
+    return
+}
+
+        if (!form.value.numeroLicencia) { error.value = 'El número de licencia es requerido.'; return }
+        if (!form.value.tipoLicencia) { error.value = 'El tipo de licencia es requerido.'; return }
         if (!form.value.fechaVencLicencia) { error.value = 'La fecha de vencimiento es requerida.'; return }
-        if (!form.value.telefono)          { error.value = 'El teléfono es requerido.'; return }
-        if (!form.value.direccion)         { error.value = 'La dirección es requerida.'; return }
+        if (!form.value.telefono) { error.value = 'El teléfono es requerido.'; return }
+        if (!form.value.direccion) { error.value = 'La dirección es requerida.'; return }
 
         const payload = {
-            ...form.value,
-            supervisorId: Number(form.value.supervisorId),
-            estado: Number(form.value.estado)
-        }
+    ...form.value,
+    cedula: form.value.cedula.replace(/-/g, ''),
+    supervisorId: Number(form.value.supervisorId),
+    estado: Number(form.value.estado),
+    fechaVencLicencia: form.value.fechaVencLicencia
+        ? new Date(form.value.fechaVencLicencia + 'T00:00:00').toISOString()
+        : null
+}
 
         if (esEdicion.value) {
+            console.log('payload completo:', JSON.stringify(payload))
             await actualizarConductor(route.params.id, payload)
         } else {
             await crearConductor(payload)
@@ -59,12 +82,17 @@ async function guardar() {
 
         router.push('/conductores')
     } catch (e) {
-        error.value = e?.response?.data?.message || 'Error al guardar el conductor.'
-    } finally {
+    console.log('error completo:', JSON.stringify(e?.response?.data))
+    const data = e?.response?.data
+    if (data?.errors) {
+        error.value = Object.values(data.errors).flat().join(' ')
+    } else {
+        error.value = data?.message || data?.title || 'Error al guardar el conductor.'
+    }
+} finally {
         loading.value = false
     }
 }
-
 function confirmarEliminar() {
     mostrarConfirmacion.value = true
 }
@@ -84,6 +112,7 @@ async function eliminar() {
 async function cargarConductor() {
     try {
         loading.value = true
+
         const response = await verConductorPorId(route.params.id)
         const data = Array.isArray(response.data)
             ? response.data.find(c => c.id == route.params.id)
@@ -95,12 +124,14 @@ async function cargarConductor() {
             cedula: data.cedula ?? '',
             numeroLicencia: data.numeroLicencia ?? '',
             tipoLicencia: data.tipoLicencia ?? '',
-            fechaVencLicencia: data.fechaVencLicencia ? data.fechaVencLicencia.split('T')[0] : '',
+            fechaVencLicencia: (data.fechaVencLicencia && !data.fechaVencLicencia.startsWith('0001')) ? data.fechaVencLicencia.split('T')[0] : '',
             telefono: data.telefono ?? '',
             direccion: data.direccion ?? '',
             supervisorId: data.supervisorId ?? null,
             estado: data.estado ?? 0
         }
+        console.log('data completo:', JSON.stringify(data))
+console.log('fechaVencLicencia raw:', data.fechaVencLicencia)
     } catch (e) {
         error.value = e?.response?.data?.message || 'No se pudo cargar el conductor.'
     } finally {
@@ -116,11 +147,11 @@ onMounted(async () => {
 <template>
     <div class="cf-page">
 
-        <!-- ── Breadcrumb ── -->
         <div class="cf-header">
             <div class="cf-header-left">
                 <button class="btn-back" @click="router.push('/conductores')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
                         <polyline points="15 18 9 12 15 6" />
                     </svg>
                     Conductores
@@ -130,7 +161,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Título de página ── -->
         <div class="cf-page-title">
             <div class="cf-title-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -144,18 +174,17 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Error ── -->
         <div v-if="error" class="cf-alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {{ error }}
         </div>
 
-        <!-- ── Layout ── -->
         <div class="cf-layout">
 
-            <!-- Panel lateral -->
             <aside class="cf-aside">
                 <div class="aside-section">
                     <p class="aside-label">Módulo</p>
@@ -183,25 +212,23 @@ onMounted(async () => {
                 <div class="aside-section">
                     <p class="aside-label">Estado actual</p>
                     <span class="aside-badge" :class="{
-                        'badge-activo':      form.estado === 0,
-                        'badge-disponible':  form.estado === 1,
-                        'badge-suspendido':  form.estado === 2,
-                        'badge-inactivo':    form.estado === 3,
+                        'badge-activo': form.estado === 0,
+                        'badge-disponible': form.estado === 1,
+                        'badge-suspendido': form.estado === 2,
+                        'badge-inactivo': form.estado === 3,
                     }">
                         {{
                             form.estado === 0 ? 'Activo' :
-                            form.estado === 1 ? 'Disponible' :
-                            form.estado === 2 ? 'Suspendido' :
-                            'Inactivo'
+                                form.estado === 1 ? 'Disponible' :
+                                    form.estado === 2 ? 'Suspendido' :
+                                        'Inactivo'
                         }}
                     </span>
                 </div>
             </aside>
 
-            <!-- Formulario -->
             <div class="cf-card">
 
-                <!-- Sección 01: Identidad -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">01</span>
@@ -218,14 +245,13 @@ onMounted(async () => {
                         </div>
                         <div class="field field-highlight">
                             <label>Cédula <span class="req">*</span></label>
-                            <input v-model="form.cedula" type="text" placeholder="001-0000000-0" autocomplete="off" />
+                            <input :value="form.cedula" type="text" placeholder="001-0000000-0" maxlength="13" @input="formatearCedula" autocomplete="off" />
                         </div>
                     </div>
                 </div>
 
                 <div class="section-divider"></div>
 
-                <!-- Sección 02: Licencia -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">02</span>
@@ -234,7 +260,8 @@ onMounted(async () => {
                     <div class="form-grid col-3">
                         <div class="field field-highlight">
                             <label>Número de licencia <span class="req">*</span></label>
-                            <input v-model="form.numeroLicencia" type="text" placeholder="LIC-000000" autocomplete="off" />
+                            <input v-model="form.numeroLicencia" type="text" placeholder="LIC-000000"
+                                autocomplete="off" />
                         </div>
                         <div class="field">
                             <label>Tipo de licencia <span class="req">*</span></label>
@@ -256,7 +283,6 @@ onMounted(async () => {
 
                 <div class="section-divider"></div>
 
-                <!-- Sección 03: Contacto y operación -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">03</span>
@@ -287,12 +313,15 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <!-- Barra de acciones -->
                 <div class="action-bar">
                     <div class="action-bar-left">
                         <button v-if="esEdicion" class="btn-danger" @click="confirmarEliminar" :disabled="loading">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                <path d="M10 11v6" />
+                                <path d="M14 11v6" />
                             </svg>
                             Eliminar registro
                         </button>
@@ -303,7 +332,8 @@ onMounted(async () => {
                         </button>
                         <button class="btn-primary" @click="guardar" :disabled="loading">
                             <span v-if="loading" class="btn-spinner"></span>
-                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
                             {{ loading ? 'Guardando…' : (esEdicion ? 'Actualizar Conductor' : 'Registrar Conductor') }}
@@ -314,14 +344,16 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Modal confirmación eliminar ── -->
         <Teleport to="body">
             <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="mostrarConfirmacion = false">
                 <div class="modal">
                     <div class="modal-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                            <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                     </div>
                     <h2 class="modal-titulo">¿Eliminar este conductor?</h2>
@@ -342,7 +374,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .cf-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -351,7 +383,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Breadcrumb ── */
 .cf-header {
     margin-bottom: 24px;
 }
@@ -375,9 +406,15 @@ onMounted(async () => {
     padding: 0;
     transition: color 0.15s;
 }
-.btn-back:hover { color: #1a3a2a; }
 
-.cf-breadcrumb-sep { color: #d1d5db; font-size: 0.875rem; }
+.btn-back:hover {
+    color: #1a3a2a;
+}
+
+.cf-breadcrumb-sep {
+    color: #d1d5db;
+    font-size: 0.875rem;
+}
 
 .cf-breadcrumb-current {
     font-size: 0.875rem;
@@ -385,7 +422,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Título ── */
 .cf-page-title {
     display: flex;
     align-items: center;
@@ -419,7 +455,6 @@ onMounted(async () => {
     margin: 3px 0 0;
 }
 
-/* ── Alerta ── */
 .cf-alert {
     display: flex;
     align-items: center;
@@ -433,7 +468,6 @@ onMounted(async () => {
     margin-bottom: 20px;
 }
 
-/* ── Layout dos columnas ── */
 .cf-layout {
     display: grid;
     grid-template-columns: 220px 1fr;
@@ -441,17 +475,18 @@ onMounted(async () => {
     align-items: start;
 }
 
-/* ── Panel lateral ── */
 .cf-aside {
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
     position: sticky;
     top: 24px;
 }
 
-.aside-section { padding: 4px 0; }
+.aside-section {
+    padding: 4px 0;
+}
 
 .aside-label {
     font-size: 0.7rem;
@@ -495,21 +530,36 @@ onMounted(async () => {
     font-weight: 600;
 }
 
-.badge-activo     { background: #d1fae5; color: #065f46; }
-.badge-disponible { background: #dbeafe; color: #1e40af; }
-.badge-suspendido { background: #fef3c7; color: #92400e; }
-.badge-inactivo   { background: #f3f4f6; color: #6b7280; }
+.badge-activo {
+    background: #d1fae5;
+    color: #065f46;
+}
 
-/* ── Card formulario ── */
+.badge-disponible {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-suspendido {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-inactivo {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
 .cf-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
     overflow: hidden;
 }
 
-/* ── Sección ── */
-.form-section { padding: 28px 32px; }
+.form-section {
+    padding: 28px 32px;
+}
 
 .section-header {
     display: flex;
@@ -544,7 +594,6 @@ onMounted(async () => {
     margin: 0 32px;
 }
 
-/* ── Grid ── */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -555,9 +604,10 @@ onMounted(async () => {
     grid-template-columns: repeat(3, 1fr);
 }
 
-.field-span2 { grid-column: span 2; }
+.field-span2 {
+    grid-column: span 2;
+}
 
-/* ── Campo ── */
 .field {
     display: flex;
     flex-direction: column;
@@ -579,7 +629,10 @@ onMounted(async () => {
     letter-spacing: 0.05em;
 }
 
-.req { color: #dc2626; margin-left: 2px; }
+.req {
+    color: #dc2626;
+    margin-left: 2px;
+}
 
 .field input,
 .field select {
@@ -601,9 +654,10 @@ onMounted(async () => {
     box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
 }
 
-.field input::placeholder { color: #9ca3af; }
+.field input::placeholder {
+    color: #9ca3af;
+}
 
-/* ── Barra de acciones ── */
 .action-bar {
     display: flex;
     align-items: center;
@@ -638,34 +692,60 @@ onMounted(async () => {
 
 .btn-primary:disabled,
 .btn-secondary:disabled,
-.btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-.btn-primary { background: #1a3a2a; color: #fff; }
-.btn-primary:hover:not(:disabled) { background: #14532d; }
+.btn-primary {
+    background: #1a3a2a;
+    color: #fff;
+}
 
-.btn-secondary { background: #f3f4f6; color: #374151; border: 1.5px solid #e5e7eb; }
-.btn-secondary:hover:not(:disabled) { background: #e5e7eb; }
+.btn-primary:hover:not(:disabled) {
+    background: #14532d;
+}
 
-.btn-danger { background: #fff; color: #991b1b; border: 1.5px solid #fecaca; }
-.btn-danger:hover:not(:disabled) { background: #fef2f2; }
+.btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1.5px solid #e5e7eb;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.btn-danger {
+    background: #fff;
+    color: #991b1b;
+    border: 1.5px solid #fecaca;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #fef2f2;
+}
 
 .btn-spinner {
     width: 13px;
     height: 13px;
-    border: 2px solid rgba(255,255,255,.4);
+    border: 2px solid rgba(255, 255, 255, .4);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.65s linear infinite;
     flex-shrink: 0;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(0, 0, 0, .45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -678,7 +758,7 @@ onMounted(async () => {
     padding: 32px;
     width: 420px;
     max-width: 90vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
     text-align: center;
 }
 
@@ -738,25 +818,65 @@ onMounted(async () => {
     font-family: inherit;
     transition: background 0.15s;
 }
-.btn-confirmar-modal:hover:not(:disabled) { background: #b91c1c; }
-.btn-confirmar-modal:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ── Responsive ── */
+.btn-confirmar-modal:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.btn-confirmar-modal:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
-    .cf-layout { grid-template-columns: 1fr; }
-    .cf-aside { position: static; }
-    .form-grid.col-3 { grid-template-columns: repeat(2, 1fr); }
-    .field-span2 { grid-column: span 1; }
+    .cf-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cf-aside {
+        position: static;
+    }
+
+    .form-grid.col-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .field-span2 {
+        grid-column: span 1;
+    }
 }
 
 @media (max-width: 640px) {
-    .cf-page { padding: 20px 16px; }
-    .form-section { padding: 20px 16px; }
-    .section-divider { margin: 0 16px; }
-    .action-bar { padding: 16px; flex-direction: column; gap: 12px; }
-    .action-bar-right { width: 100%; justify-content: flex-end; }
+    .cf-page {
+        padding: 20px 16px;
+    }
+
+    .form-section {
+        padding: 20px 16px;
+    }
+
+    .section-divider {
+        margin: 0 16px;
+    }
+
+    .action-bar {
+        padding: 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-bar-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
     .form-grid,
-    .form-grid.col-3 { grid-template-columns: 1fr; }
-    .field-span2 { grid-column: span 1; }
+    .form-grid.col-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .field-span2 {
+        grid-column: span 1;
+    }
 }
 </style>

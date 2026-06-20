@@ -40,9 +40,9 @@ namespace AduanasExpress.Application.Validaciones
                 .GreaterThan(0).WithMessage("El ID del supervisor debe ser mayor que 0.");
             RuleFor(c => c.Estado)
                .IsInEnum().WithMessage("El estado no es válido.");
-       
+
         }
-       
+
     }
     public class ConductorValidatorUpdate : AbstractValidator<UpdateConductorDTOs>
     {

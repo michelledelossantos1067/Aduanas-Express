@@ -18,16 +18,12 @@ public class SolicitudTransporteRepositories : ISolicitudTransporteRepositories
     public async Task<List<SolicitudTransporte?>> ObtenerTodos()
     {
         return await _context.SolicitudesTransporte
-            .Include(s => s.Vehiculo)
-            .Include(s => s.Conductor)
             .Include(s => s.UsuarioSolicita)
             .ToListAsync();
     }
     public async Task<SolicitudTransporte?> ObtenerPorId(int Id)
     {
         return await _context.SolicitudesTransporte
-            .Include(s => s.Vehiculo)
-            .Include(s => s.Conductor)
             .Include(s => s.UsuarioSolicita)
             .FirstOrDefaultAsync(s => s.Id == Id);
     }
@@ -46,8 +42,6 @@ public class SolicitudTransporteRepositories : ISolicitudTransporteRepositories
         solicitudTrans.Destino = solicitudTransporte.Destino;
         solicitudTrans.MotivoViaje = solicitudTransporte.MotivoViaje;
         solicitudTrans.Estado = solicitudTransporte.Estado;
-        solicitudTrans.VehiculoId = solicitudTransporte.VehiculoId;
-        solicitudTrans.ConductorId = solicitudTransporte.ConductorId;
         solicitudTrans.FechaCreacion = solicitudTransporte.FechaCreacion;
         await _context.SaveChangesAsync();
     }

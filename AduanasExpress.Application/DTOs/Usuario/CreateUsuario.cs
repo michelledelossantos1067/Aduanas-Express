@@ -1,4 +1,3 @@
-
 namespace AduanasExpress.Application.DTOs.Usuario;
 public class CreateUsuario{
     public string Nombre {get;set;}
@@ -6,5 +5,5 @@ public class CreateUsuario{
     public string Email {get;set;}
     public string Password {get;set;}
     public Roles Rol{get;set;}
-    
+
 }

@@ -6,14 +6,9 @@ import { verVehiculos } from '@/services/vehiculoService.js'
 import { verSolicitud } from '@/services/solicitudService.js'
 import { verMantenimiento } from '@/services/mantenimientoService.js'
 
-// ─────────────────────────────────────────────────────────────
-// CONSTANTES — ajustadas a los enums reales del backend
-// EstadosSolicitudes: ajusta estos valores según tu enum real
-// ─────────────────────────────────────────────────────────────
 const ESTADOS_SOLICITUD_ACTIVA = [1, 2, 3, 'Aprobada', 'Asignada', 'EnCurso', 'En curso', 'En progreso']
 const CIUDAD_REFERENCIA = 'Santo Domingo, República Dominicana'
 
-// ── Estado general ────────────────────────────────────────────
 const filtroActivo        = ref('todos')
 const busqueda            = ref('')
 const vehiculoSelId       = ref(null)
@@ -26,7 +21,6 @@ const loading             = ref(false)
 const error               = ref('')
 const ultimaActualizacion = ref(null)
 
-// ── Computed ──────────────────────────────────────────────────
 const vehiculosFiltrados = computed(() => {
   const q = busqueda.value.toLowerCase()
   return vehiculos.value.filter(v => {
@@ -44,7 +38,6 @@ const resumen = computed(() => ({
   taller:   vehiculos.value.filter(v => v.estado === 'taller').length,
 }))
 
-// ── Helpers de presentación ───────────────────────────────────
 function estadoLabel(e) {
   return { en_viaje: 'En viaje', libre: 'Disponible', taller: 'Taller' }[e] ?? e
 }
@@ -59,7 +52,7 @@ function seleccionar(id) {
 }
 function formatHora(h) {
   if (!h) return '—'
-  // HoraSalida viene como "HH:mm:ss" string desde TimeSpan
+
   return h.substring(0, 5)
 }
 function formatFecha(f) {
@@ -67,8 +60,9 @@ function formatFecha(f) {
   return new Date(f).toLocaleDateString('es-DO', { day: '2-digit', month: 'short' })
 }
 
-// ── Geocodificación (Nominatim) ───────────────────────────────
 const geocodeCache = new Map()
+
+// Convierte una dirección en coordenadas mediante Nominatim y almacena el resultado en caché
 async function geocodificar(direccion) {
   if (!direccion) return null
   const clave = direccion.trim().toLowerCase()
@@ -89,7 +83,7 @@ async function geocodificar(direccion) {
   return null
 }
 
-// ── Ruteo OSRM ────────────────────────────────────────────────
+// Obtiene la ruta de conducción entre dos puntos usando el servicio OSRM
 async function obtenerRuta(origen, destino) {
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`
@@ -113,13 +107,13 @@ async function obtenerRuta(origen, destino) {
   }
 }
 
-// Sede central de referencia (Santo Domingo) — usada como origen estimado
 const SEDE = { lat: 18.4861, lng: -69.9312 }
 
+// Estima la ubicación actual del vehículo en la ruta según el tiempo transcurrido desde la salida
 function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
   if (!coords?.length || !fechaViaje || !horaSalida || !duracionMin) return null
   try {
-    // Reconstruir datetime de salida a partir de FechaViaje + HoraSalida
+
     const dateStr = fechaViaje.substring(0, 10)
     const inicioMs = new Date(`${dateStr}T${horaSalida}`).getTime()
     if (Number.isNaN(inicioMs)) return null
@@ -130,21 +124,19 @@ function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
   } catch { return null }
 }
 
-// ── Procesamiento de cada vehículo ────────────────────────────
+// Combina datos de mantenimiento y solicitudes activas para determinar el estado y posición de cada vehículo
 async function procesarVehiculo(v) {
-  // Mantenimiento: está en taller si tiene un mantenimiento cuyo ProximoMantenimiento
-  // es futuro (aún no terminó) o si FechaUltimoMant es reciente (< 7 días)
+
   const hoy = new Date()
   const enTaller = mantenimientosRaw.value.some(m => {
     if (m.vehiculoId !== v.id) return false
     if (m.proximoMantenimiento) {
-      // Si el próximo mantenimiento aún no llegó, el actual sigue en curso
+
       return new Date(m.proximoMantenimiento) > hoy
     }
     return false
   })
 
-  // Solicitud activa: coincide por VehiculoId y estado activo
   const solicitudActiva = solicitudesRaw.value.find(s =>
     s.vehiculoId === v.id && ESTADOS_SOLICITUD_ACTIVA.includes(s.estado)
   )
@@ -168,13 +160,11 @@ async function procesarVehiculo(v) {
     fechaViaje = solicitudActiva.fechaViaje ?? null
     horaSalida = solicitudActiva.horaSalida ?? null
 
-    // Nombre del conductor desde el objeto relacionado
     const cond = solicitudActiva.conductor
     if (cond) {
       conductor = [cond.nombre, cond.apellido].filter(Boolean).join(' ') || cond.nombreCompleto || null
     }
 
-    // Geocodificar solo el destino; usamos la sede como origen estimado
     const coordDestino = await geocodificar(destino)
     if (coordDestino) {
       const r = await obtenerRuta(SEDE, coordDestino)
@@ -207,7 +197,6 @@ async function procesarVehiculo(v) {
   }
 }
 
-// ── Carga de datos ────────────────────────────────────────────
 async function cargarDatos() {
   loading.value = true
   error.value   = ''
@@ -231,9 +220,6 @@ async function cargarDatos() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// MAPA LEAFLET
-// ─────────────────────────────────────────────────────────────
 const mapaEl = ref(null)
 let mapInstance    = null
 let capaCalles     = null
@@ -258,7 +244,6 @@ function initMap() {
   capaMarcadores = L.layerGroup().addTo(mapInstance)
   capaRutas      = L.layerGroup().addTo(mapInstance)
 
-  // Marcador de sede
   const iconSede = L.divIcon({
     className: '',
     html: `<div class="marker-sede">S</div>`,
@@ -331,7 +316,6 @@ watch(vehiculoSelId, id => {
   if (v?.lat != null && mapInstance) mapInstance.flyTo([v.lat, v.lng], 14, { duration: 1 })
 })
 
-// ── Ciclo de vida ─────────────────────────────────────────────
 let intervalo = null
 onMounted(async () => {
   await nextTick()
@@ -348,7 +332,6 @@ onUnmounted(() => {
 <template>
 <div class="mon-page">
 
-  <!-- ══ ENCABEZADO ══ -->
   <div class="mon-header">
     <div class="mon-header-left">
       <h1 class="mon-title">Monitoreo de flota</h1>
@@ -372,18 +355,14 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <!-- Error banner -->
   <div v-if="error" class="error-banner">
     ⚠️ {{ error }}
   </div>
 
-  <!-- ══ LAYOUT ══ -->
   <div class="mon-layout">
 
-    <!-- ─── PANEL IZQUIERDO ─── -->
     <div class="panel-izq">
 
-      <!-- Búsqueda -->
       <div class="search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -391,7 +370,6 @@ onUnmounted(() => {
         <input v-model="busqueda" type="text" placeholder="Buscar matrícula, modelo o conductor…" class="search-input"/>
       </div>
 
-      <!-- Filtros -->
       <div class="filtros-row">
         <button class="filtro-btn"            :class="{ activo: filtroActivo === 'todos' }"    @click="filtroActivo = 'todos'">Todos</button>
         <button class="filtro-btn filtro-vj"  :class="{ activo: filtroActivo === 'en_viaje' }" @click="filtroActivo = 'en_viaje'">En viaje</button>
@@ -403,10 +381,8 @@ onUnmounted(() => {
         {{ vehiculosFiltrados.length }} de {{ vehiculos.length }} vehículos
       </p>
 
-      <!-- Lista -->
       <div class="vehiculos-lista">
 
-        <!-- Skeleton loader -->
         <template v-if="loading && vehiculos.length === 0">
           <div v-for="n in 4" :key="n" class="vehiculo-card skeleton">
             <div class="sk-line sk-w70"></div>
@@ -415,7 +391,6 @@ onUnmounted(() => {
           </div>
         </template>
 
-        <!-- Sin resultados -->
         <div v-else-if="!loading && vehiculosFiltrados.length === 0" class="empty-state">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
             <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h4"/>
@@ -467,7 +442,6 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Resumen -->
       <div class="resumen-pie">
         <div class="res-item">
           <span class="res-num azul">{{ resumen.en_viaje }}</span>
@@ -486,17 +460,14 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- ─── MAPA ─── -->
     <div class="mapa-wrap">
 
-      <!-- Controles del mapa -->
       <div class="mapa-controles">
         <div class="mapa-tabs">
           <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'mapa' }"     @click="cambiarTipoMapa('mapa')">Mapa</button>
           <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'satelite' }" @click="cambiarTipoMapa('satelite')">Satélite</button>
         </div>
 
-        <!-- Leyenda -->
         <div class="leyenda">
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#2563eb"></span>En viaje</div>
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#16a34a"></span>Libre</div>
@@ -505,10 +476,8 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Contenedor del mapa Leaflet -->
       <div ref="mapaEl" class="leaflet-container"></div>
 
-      <!-- Panel del vehículo seleccionado -->
       <transition name="popup-fade">
         <div v-if="vehiculoSel" class="popup-vehiculo">
           <div class="popup-header">
@@ -569,7 +538,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* ── Reset / Base ── */
+
 * { box-sizing: border-box; }
 
 .mon-page {
@@ -582,7 +551,6 @@ onUnmounted(() => {
   gap: 14px;
 }
 
-/* ── Encabezado ── */
 .mon-header {
   display: flex;
   align-items: center;
@@ -669,7 +637,6 @@ onUnmounted(() => {
   to   { transform: rotate(360deg); }
 }
 
-/* Error banner */
 .error-banner {
   background: #fef2f2;
   border: 1px solid #fca5a5;
@@ -680,7 +647,6 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* ── Layout ── */
 .mon-layout {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -689,7 +655,6 @@ onUnmounted(() => {
   min-height: 0;
 }
 
-/* ═══ PANEL IZQ ═══ */
 .panel-izq {
   background: #fff;
   border-radius: 14px;
@@ -753,7 +718,6 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-/* Lista */
 .vehiculos-lista {
   flex: 1;
   overflow-y: auto;
@@ -763,7 +727,6 @@ onUnmounted(() => {
   gap: 6px;
 }
 
-/* Skeleton */
 .skeleton { pointer-events: none; }
 .sk-line {
   height: 11px;
@@ -783,7 +746,6 @@ onUnmounted(() => {
   100% { background-position: -200% 0; }
 }
 
-/* Empty */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -797,7 +759,6 @@ onUnmounted(() => {
 }
 .empty-state p { margin: 0; }
 
-/* Cards */
 .vehiculo-card {
   background: #fafafa;
   border: 1.5px solid #f3f4f6;
@@ -869,7 +830,6 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-/* Badges */
 .badge {
   display: inline-block;
   padding: 2px 9px;
@@ -882,7 +842,6 @@ onUnmounted(() => {
 .badge-libre    { background: #d1fae5; color: #065f46; }
 .badge-taller   { background: #fef3c7; color: #92400e; }
 
-/* Resumen */
 .resumen-pie {
   display: flex;
   align-items: center;
@@ -921,7 +880,6 @@ onUnmounted(() => {
   background: #f3f4f6;
 }
 
-/* ═══ MAPA ═══ */
 .mapa-wrap {
   background: #fff;
   border-radius: 14px;
@@ -933,7 +891,6 @@ onUnmounted(() => {
   min-height: 560px;
 }
 
-/* Controles flotantes sobre el mapa */
 .mapa-controles {
   position: absolute;
   top: 12px;
@@ -965,7 +922,6 @@ onUnmounted(() => {
 .mapa-tab:not(:last-child) { border-right: 1px solid #e5e7eb; }
 .tab-activo { background: #1a3a2a; color: #fff; }
 
-/* Leyenda */
 .leyenda {
   background: rgba(255,255,255,.95);
   border-radius: 8px;
@@ -994,19 +950,16 @@ onUnmounted(() => {
   box-shadow: 0 0 0 1px rgba(0,0,0,.1);
 }
 
-/* Contenedor Leaflet */
 .leaflet-container {
   flex: 1;
   width: 100%;
   min-height: 0;
 }
 
-/* Override del z-index de Leaflet para que no tape nuestro UI */
 :deep(.leaflet-control-zoom) {
   margin-top: 60px !important;
 }
 
-/* Estilo del marcador de sede */
 :global(.marker-sede) {
   width: 28px;
   height: 28px;
@@ -1023,7 +976,6 @@ onUnmounted(() => {
   box-shadow: 0 2px 8px rgba(0,0,0,.35);
 }
 
-/* Popup del vehículo seleccionado */
 .popup-vehiculo {
   position: absolute;
   bottom: 16px;
@@ -1126,7 +1078,6 @@ onUnmounted(() => {
   line-height: 1.5;
 }
 
-/* ── Responsive ── */
 @media (max-width: 960px) {
   .mon-layout { grid-template-columns: 1fr; }
   .mapa-wrap  { min-height: 420px; }

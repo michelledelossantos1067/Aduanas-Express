@@ -6,7 +6,7 @@ namespace AduanasExpress.Application.Validaciones
 {
     public class UsuarioValidator:AbstractValidator<CreateUsuario>
     {
-        public UsuarioValidator() 
+        public UsuarioValidator()
         {
             RuleFor(u => u.Nombre)
                 .NotEmpty().WithMessage("El nombre es requerido.")
@@ -23,7 +23,7 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(u => u.Rol)
                .IsInEnum().WithMessage("El rol no es válido.");
         }
-        
+
     }
     public class UsuarioValidatorUpdate : AbstractValidator<UpdateUsuario>
     {

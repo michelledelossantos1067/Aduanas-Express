@@ -14,12 +14,6 @@ namespace AduanasExpress.Application.Mappings
                 FechaViaje = solicitud.FechaViaje,
                 CantidadPasajeros = solicitud.CantidadColaboradores,
                 Estado = solicitud.Estado.ToString(),
-                NombreConductor = solicitud.Conductor != null
-                    ? $"{solicitud.Conductor.Nombre} {solicitud.Conductor.Apellido}"
-                    : "Sin asignar",
-                VehiculoPlaca = solicitud.Vehiculo != null
-                    ? solicitud.Vehiculo.Matricula
-                    : "Sin asignar"
             };
         }
     }

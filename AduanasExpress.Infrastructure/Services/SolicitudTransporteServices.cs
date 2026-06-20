@@ -6,7 +6,6 @@ using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Application.Mappings;
 using AduanasExpress.Domain.Entitis;
 
-
 namespace AduanasExpress.Infrastructure.Services;
 
 public class SolicitudTransporteServices : ISolicitudTransporteService
@@ -46,11 +45,11 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
             CantidadColaboradores = createSolicitudTransporteDTOs.CantidadColaboradores,
             FechaViaje = createSolicitudTransporteDTOs.FechaViaje,
             HoraSalida = createSolicitudTransporteDTOs.HoraSalida,
+            PuntoOrigen = createSolicitudTransporteDTOs.PuntoOrigen,
             Destino = createSolicitudTransporteDTOs.Destino,
+            TipoViaje = createSolicitudTransporteDTOs.TipoViaje,
             MotivoViaje = createSolicitudTransporteDTOs.MotivoViaje,
             Estado = createSolicitudTransporteDTOs.Estado,
-            VehiculoId = createSolicitudTransporteDTOs.VehiculoId ?? 0,
-            ConductorId = createSolicitudTransporteDTOs.ConductorId ?? 0,
             UsuarioSolicitaId = usuarioId,
         };
         await _solicitudTransporteRepositories.Crear(solicitudTrans);
@@ -62,16 +61,16 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
         {
             throw new Exception("Error al actualizar el solicitud transporte.");
         }
-        
+
         solicitudTrans.AreaSolicitante = updateSolicitudTransporteDTOs.AreaSolicitante;
         solicitudTrans.CantidadColaboradores = updateSolicitudTransporteDTOs.CantidadColaboradores;
         solicitudTrans.FechaViaje = updateSolicitudTransporteDTOs.FechaViaje;
         solicitudTrans.HoraSalida = updateSolicitudTransporteDTOs.HoraSalida;
+        solicitudTrans.PuntoOrigen = updateSolicitudTransporteDTOs.PuntoOrigen;
         solicitudTrans.Destino = updateSolicitudTransporteDTOs.Destino;
+        solicitudTrans.TipoViaje = updateSolicitudTransporteDTOs.TipoViaje;
         solicitudTrans.MotivoViaje = updateSolicitudTransporteDTOs.MotivoViaje;
         solicitudTrans.Estado = updateSolicitudTransporteDTOs.Estado;
-        solicitudTrans.VehiculoId = updateSolicitudTransporteDTOs.VehiculoId;
-        solicitudTrans.ConductorId = updateSolicitudTransporteDTOs.ConductorId;
         await _solicitudTransporteRepositories.Actualizar(Id, solicitudTrans);
     }
     public async Task Eliminar(int Id)

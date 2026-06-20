@@ -2,12 +2,11 @@
 using AduanasExpress.Domain.Entitis;
 using FluentValidation;
 
-
 namespace AduanasExpress.Application.Validaciones
 {
     public class MantenimientoValidator : AbstractValidator<CreateMantenimientoDTOs>
     {
-        public MantenimientoValidator() 
+        public MantenimientoValidator()
         {
             RuleFor(m => m.TipoMantenimiento)
                 .NotEmpty().WithMessage("El tipo de mantenimiento es requerido.")
@@ -26,7 +25,6 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(m => m.VehiculoId)
                 .NotEmpty().WithMessage("El ID del vehículo es requerido.")
                 .GreaterThan(0).WithMessage("El ID del vehículo debe ser mayor que 0.");
-
 
         }
     }

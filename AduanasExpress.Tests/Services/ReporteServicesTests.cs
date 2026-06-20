@@ -69,7 +69,6 @@ namespace AduanasExpress.Tests.Services
             };
             _consumoMock.Setup(r => r.ObtenerTodos()).ReturnsAsync(consumos);
 
-            
             var resultado = await _service.GetReporteConsumoAsync(1, 2026);
 
             Assert.NotNull(resultado);

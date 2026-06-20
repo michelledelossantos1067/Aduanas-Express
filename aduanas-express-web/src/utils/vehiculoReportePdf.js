@@ -17,19 +17,12 @@ function formatFecha(fecha) {
         day: '2-digit', month: '2-digit', year: 'numeric',
     })
 }
-
-/**
- * Genera y descarga un PDF con el reporte de vehículos.
- * @param {Array} vehiculos - Lista de vehículos a incluir en el reporte.
- * @param {Object} resumen - Resumen con totales { total, disponibles, enViaje, mantenim, fuera }.
- */
 export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
     const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' })
     const pageWidth = doc.internal.pageSize.getWidth()
     const margin = 40
 
-    // ── Encabezado ──
-    doc.setFillColor(26, 58, 42) // #1a3a2a
+    doc.setFillColor(26, 58, 42)
     doc.rect(0, 0, pageWidth, 70, 'F')
 
     doc.setTextColor(255, 255, 255)
@@ -44,7 +37,6 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
     })
     doc.text(`Generado el ${fechaGeneracion}`, margin, 53)
 
-    // ── Resumen ──
     let cursorY = 95
 
     if (resumen) {
@@ -62,15 +54,15 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
         cards.forEach((card, i) => {
             const x = margin + i * (cardWidth + 10)
 
-            doc.setFillColor(243, 244, 246) // #f3f4f6
+            doc.setFillColor(243, 244, 246)
             doc.roundedRect(x, cursorY, cardWidth, cardHeight, 6, 6, 'F')
 
-            doc.setTextColor(17, 24, 39) // #111827
+            doc.setTextColor(17, 24, 39)
             doc.setFont('helvetica', 'bold')
             doc.setFontSize(16)
             doc.text(String(card.valor), x + 14, cursorY + 24)
 
-            doc.setTextColor(107, 114, 128) // #6b7280
+            doc.setTextColor(107, 114, 128)
             doc.setFont('helvetica', 'normal')
             doc.setFontSize(8)
             doc.text(card.label, x + 14, cursorY + 38)
@@ -79,7 +71,6 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
         cursorY += cardHeight + 25
     }
 
-    // ── Tabla de vehículos ──
     const head = [[
         'Matrícula', 'Marca', 'Modelo', 'Año', 'Tipo', 'Color',
         'Capacidad', 'Kilometraje', 'Estado', 'Últ. Mantenimiento'
@@ -121,7 +112,6 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
             0: { fontStyle: 'bold' },
         },
         didParseCell: (data) => {
-            // Resaltar la columna de Estado con color según valor
             if (data.section === 'body' && data.column.index === 8) {
                 const estado = data.row.raw[8]
                 const colores = {
@@ -144,7 +134,6 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
             }
         },
         didDrawPage: () => {
-            // Pie de página con número de página
             const pageCount = doc.internal.getNumberOfPages()
             const currentPage = doc.internal.getCurrentPageInfo().pageNumber
             doc.setFontSize(8)
@@ -163,7 +152,6 @@ export function generarReporteVehiculosPdf(vehiculos = [], resumen = null) {
         },
     })
 
-    // ── Descargar ──
     const nombreArchivo = `reporte-vehiculos-${new Date().toISOString().slice(0, 10)}.pdf`
     doc.save(nombreArchivo)
 }

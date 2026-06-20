@@ -260,6 +260,9 @@ function badgeEstado(estado) {
                 </div>
 
                 <div class="cal-grid">
+
+                    <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
+
                     <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
                     <div
                         v-for="(fecha, i) in celdasMes"

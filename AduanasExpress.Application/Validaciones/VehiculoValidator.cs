@@ -16,7 +16,7 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(15).WithMessage("El modelo no puede exceder los 15 caracteres.");
             RuleFor(v => v.Año)
                 .NotEmpty().WithMessage("El año es requerido.")
-                .InclusiveBetween(1885, DateTime.Now.Year).WithMessage($"El año debe estar entre 1885 y {DateTime.Now.Year}."); 
+                .InclusiveBetween(1885, DateTime.Now.Year).WithMessage($"El año debe estar entre 1885 y {DateTime.Now.Year}.");
             RuleFor(v => v.Matricula)
                 .NotEmpty().WithMessage("matricula es requerida.")
                 .MinimumLength(7).WithMessage("La placa debe tener 7 caracteres.")

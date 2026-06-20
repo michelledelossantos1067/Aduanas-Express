@@ -20,6 +20,7 @@ async function handleLogin() {
     try {
         const response = await login(form.value.email, form.value.password)
         authStore.iniciarSesion(response.data.token, {
+            id: response.data.id,
             nombre: response.data.nombre,
             rol: response.data.rol
         })
@@ -36,7 +37,6 @@ async function handleLogin() {
     <div class="login-page">
         <div class="login-card">
 
-        
         <div class="login-container">
 
             <div class="login-left">
@@ -151,12 +151,11 @@ h1 {
 .login-container {
     display: flex;
     width: 900px;
-    border-radius: 10px 10px 0 0; 
+    border-radius: 10px 10px 0 0;
     overflow: hidden;
     min-height: 500px;
 }
 
-/* ── Panel izquierdo ── */
 .login-left {
     background: #1a4a2e;
     display: flex;
@@ -283,7 +282,6 @@ h1 {
     margin: 24px 0 0;
 }
 
-/* ── Panel derecho ── */
 .login-right {
     background: white;
     width: 60%;
@@ -376,7 +374,6 @@ h1 {
     display: none;
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
     .login-page {
         background: #1a4a2e;

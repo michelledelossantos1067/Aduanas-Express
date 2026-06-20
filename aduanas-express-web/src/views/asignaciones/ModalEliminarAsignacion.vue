@@ -1,18 +1,15 @@
 <script setup>
-const props = defineProps({
+import { formatNumero } from './composables/useAsignacionHelpers'
+
+defineProps({
     show:       { type: Boolean, default: false },
     asignacion: { type: Object,  default: null  },
 })
 
 const emit = defineEmits(['close', 'confirmar'])
 
-function cerrar()     { emit('close') }
-function confirmar()  { emit('confirmar') }
-
-function formatNumero(id) {
-    if (!id) return ''
-    return `#${String(id).padStart(4, '0')}`
-}
+function cerrar() { emit('close') }
+function confirmar() { emit('confirmar') }
 </script>
 
 <template>
@@ -20,7 +17,6 @@ function formatNumero(id) {
         <div v-if="show" class="modal-overlay" @click.self="cerrar">
             <div class="modal">
 
-                <!-- Ícono de advertencia -->
                 <div class="modal-icono">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <polyline points="3 6 5 6 21 6"/>

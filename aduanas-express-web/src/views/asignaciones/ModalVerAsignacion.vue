@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { verAsignacionesPorId } from '@/services/asignacionService'
+import { formatFecha, formatNumero } from './composables/useAsignacionHelpers'
 
 const props = defineProps({
     show:         { type: Boolean, default: false },
@@ -29,17 +30,6 @@ const estadoBadgeClase = {
 
 const estadoLabel = (valor) =>
     estadosAsignacion.find((e) => e.value === valor)?.label ?? valor
-
-function formatFecha(fecha) {
-    if (!fecha) return '—'
-    return new Date(fecha).toLocaleDateString('es-DO', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-    })
-}
-
-function formatNumero(id) {
-    return `#${String(id).padStart(4, '0')}`
-}
 
 watch(
     () => [props.show, props.asignacionId],
@@ -72,7 +62,6 @@ function editar() {
         <div v-if="show" class="modal-overlay" @click.self="cerrar">
             <div class="modal">
 
-                <!-- Cabecera -->
                 <div class="modal-head">
                     <div>
                         <p class="modal-eyebrow">Detalle</p>
@@ -86,25 +75,20 @@ function editar() {
                     </button>
                 </div>
 
-                <!-- Cargando -->
                 <div v-if="loading" class="modal-loading">
                     <div class="spinner"></div>
                 </div>
 
-                <!-- Error -->
                 <div v-else-if="errorMsg" class="modal-error">{{ errorMsg }}</div>
 
-                <!-- Contenido -->
                 <template v-else-if="asignacion">
 
-                    <!-- Badge de estado -->
                     <div class="detalle-badge">
                         <span class="badge" :class="estadoBadgeClase[asignacion.estado]">
                             {{ estadoLabel(asignacion.estado) }}
                         </span>
                     </div>
 
-                    <!-- Sección: Conductor -->
                     <div class="seccion">
                         <p class="seccion-titulo">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -126,7 +110,6 @@ function editar() {
                         <p v-else class="detalle-valor text-muted">Sin conductor asignado</p>
                     </div>
 
-                    <!-- Sección: Vehículo -->
                     <div class="seccion">
                         <p class="seccion-titulo">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -158,7 +141,6 @@ function editar() {
                         <p v-else class="detalle-valor text-muted">Sin vehículo asignado</p>
                     </div>
 
-                    <!-- Sección: Solicitud -->
                     <div class="seccion" v-if="asignacion.solicitud">
                         <p class="seccion-titulo">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -187,7 +169,6 @@ function editar() {
                         </div>
                     </div>
 
-                    <!-- Sección: Asignación -->
                     <div class="seccion">
                         <p class="seccion-titulo">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -215,7 +196,6 @@ function editar() {
                     </div>
                 </template>
 
-                <!-- Acciones -->
                 <div class="modal-acciones">
                     <button class="btn-cancelar-modal" @click="cerrar">Cerrar</button>
                     <button class="btn-editar-modal" @click="editar" :disabled="loading || !!errorMsg">
@@ -254,7 +234,6 @@ function editar() {
     box-shadow: 0 20px 60px rgba(0,0,0,.2);
 }
 
-/* ── Cabecera ── */
 .modal-head {
     display: flex;
     align-items: flex-start;
@@ -294,7 +273,6 @@ function editar() {
 
 .btn-cerrar:hover { background: #e5e7eb; }
 
-/* ── Carga / Error ── */
 .modal-loading {
     display: flex;
     justify-content: center;
@@ -322,7 +300,6 @@ function editar() {
     margin-bottom: 16px;
 }
 
-/* ── Badge ── */
 .detalle-badge { margin-bottom: 20px; }
 
 .badge {
@@ -338,7 +315,6 @@ function editar() {
 .badge-completada { background: #dbeafe; color: #1e40af; }
 .badge-cancelada  { background: #fee2e2; color: #991b1b; }
 
-/* ── Secciones ── */
 .seccion {
     margin-bottom: 24px;
     padding-bottom: 24px;
@@ -359,7 +335,6 @@ function editar() {
     margin: 0 0 14px;
 }
 
-/* ── Conductor bloque ── */
 .conductor-bloque {
     display: flex;
     align-items: center;
@@ -397,7 +372,6 @@ function editar() {
     margin: 0;
 }
 
-/* ── Grid detalle ── */
 .detalle-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -432,7 +406,6 @@ function editar() {
     font-style: italic;
 }
 
-/* ── Acciones ── */
 .modal-acciones {
     display: flex;
     gap: 10px;

@@ -2,7 +2,6 @@
 using AduanasExpress.Domain.Entitis;
 using FluentValidation;
 
-
 namespace AduanasExpress.Application.Validaciones
 {
     public class SolicitudTransporteValidator : AbstractValidator<CreateSolicitudTransporteDTOs>
@@ -27,12 +26,6 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(200).WithMessage("El motivo del viaje no puede exceder los 200 caracteres.");
             RuleFor(s => s.Estado)
                 .IsInEnum().WithMessage("El estado no es válido.");
-            RuleFor(s => s.VehiculoId)
-                .NotEmpty().WithMessage("El ID del vehículo es requerido.")
-                .GreaterThan(0).WithMessage("El ID del vehículo debe ser mayor que 0.");
-            RuleFor(s => s.ConductorId)
-                .NotEmpty().WithMessage("El ID del conductor es requerido.")
-                .GreaterThan(0).WithMessage("El ID del conductor debe ser mayor que 0.");
         }
     }
     public class SolicitudTransporteValidatorUpdate : AbstractValidator<UpdateSolicitudTransporteDTOs>
@@ -57,12 +50,6 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(200).WithMessage("El motivo del viaje no puede exceder los 200 caracteres.");
             RuleFor(s => s.Estado)
                 .IsInEnum().WithMessage("El estado no es válido.");
-            RuleFor(s => s.VehiculoId)
-                .NotEmpty().WithMessage("El ID del vehículo es requerido.")
-                .GreaterThan(0).WithMessage("El ID del vehículo debe ser mayor que 0.");
-            RuleFor(s => s.ConductorId)
-                .NotEmpty().WithMessage("El ID del conductor es requerido.")
-                .GreaterThan(0).WithMessage("El ID del conductor debe ser mayor que 0.");
         }
     }
 }

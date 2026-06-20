@@ -5,7 +5,6 @@ using AduanasExpress.Application.DTOs.ConsumoCombustible;
 using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.Mappings;
 
-
 namespace AduanasExpress.Infrastructure.Services;
 public class ConsumoCombustibleServices : IConsumoCombustibleService{
     private readonly IConsumoCombustibleRepositories _consumoCombustibleRepositories;
@@ -34,7 +33,7 @@ public class ConsumoCombustibleServices : IConsumoCombustibleService{
             CostoPorGalon = createConsumoCombustibleDTOs.CostoPorGalon,
             CostoTotal = createConsumoCombustibleDTOs.CostoTotal,
             VehiculoId = createConsumoCombustibleDTOs.VehiculoId,
-            // SolicitudId = createConsumoCombustibleDTOs.SolicitudId
+
         };
         await _consumoCombustibleRepositories.Crear(consumo);
     }
@@ -49,7 +48,7 @@ public class ConsumoCombustibleServices : IConsumoCombustibleService{
             consumo.CostoPorGalon = updateConsumoCombustibleDTOs.CostoPorGalon;
             consumo.CostoTotal = updateConsumoCombustibleDTOs.CostoTotal;
             consumo.VehiculoId = updateConsumoCombustibleDTOs.VehiculoId;
-            // consumo.SolicitudId = updateConsumoCombustibleDTOs.SolicitudId;
+
         await _consumoCombustibleRepositories.Actualizar(Id,consumo);
     }
     public async Task Eliminar(int Id){

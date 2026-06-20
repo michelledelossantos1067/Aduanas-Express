@@ -11,26 +11,12 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Evitar ciclos de cascade
         modelBuilder.Entity<SolicitudTransporte>()
             .HasOne(s => s.UsuarioSolicita)
             .WithMany()
             .HasForeignKey(s => s.UsuarioSolicitaId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<SolicitudTransporte>()
-            .HasOne(s => s.Conductor)
-            .WithMany()
-            .HasForeignKey(s => s.ConductorId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<SolicitudTransporte>()
-            .HasOne(s => s.Vehiculo)
-            .WithMany()
-            .HasForeignKey(s => s.VehiculoId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        // Asignacion
         modelBuilder.Entity<Asignacion>()
             .HasOne(a => a.Solicitud)
             .WithMany()
@@ -54,17 +40,6 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(a => a.AsignadoPorId)
             .OnDelete(DeleteBehavior.NoAction);
-        modelBuilder.Entity<SolicitudTransporte>()
-.HasOne(s => s.Vehiculo)
-.WithMany()
-.HasForeignKey(s => s.VehiculoId)
-.IsRequired(false);  // ← permite null
-
-        modelBuilder.Entity<SolicitudTransporte>()
-            .HasOne(s => s.Conductor)
-            .WithMany()
-            .HasForeignKey(s => s.ConductorId)
-            .IsRequired(false);  // ← permite null
     }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Vehiculo> Vehiculos { get; set; }

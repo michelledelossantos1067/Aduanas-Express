@@ -5,4 +5,5 @@ public interface IAsignacionRepository{
     public Task<List<Asignacion?>> ObtenerTodos();
     public Task<Asignacion?> ObtenerPorId(int Id);
     public Task Crear(Asignacion asignacion);
+    public Task Actualizar(int id, Asignacion asignacion);
 }

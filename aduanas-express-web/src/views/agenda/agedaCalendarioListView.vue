@@ -1,19 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// ── Estado ────────────────────────────────────────────────
-const vistaActiva = ref('mes') // 'dia' | 'semana' | 'mes'
+const vistaActiva = ref('mes')
 const hoy = new Date()
 const fechaActual = ref(new Date(hoy.getFullYear(), hoy.getMonth(), 1))
 
-// ── Filtros activos ───────────────────────────────────────
 const filtros = ref({ vehiculos: false, conductores: false, pendientes: false, cancelados: false })
 
 function toggleFiltro(key) {
     filtros.value[key] = !filtros.value[key]
 }
 
-// ── Datos mock ────────────────────────────────────────────
 const viajes = ref([
     { id: 1,  titulo: 'Reunión MICI',         fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 2),  horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'programado',  tipo: 'normal'  },
     { id: 2,  titulo: 'Aeropuerto',            fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 6),  horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'en_viaje',   tipo: 'normal'  },
@@ -27,7 +24,6 @@ const viajes = ref([
     { id: 10, titulo: 'Urgente - Presidencia', fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 20), horaInicio: '07:30', horaFin: '09:00', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'cancelado',   tipo: 'urgente' },
 ])
 
-// ── Navegación de mes ─────────────────────────────────────
 function mesAnterior() {
     fechaActual.value = new Date(fechaActual.value.getFullYear(), fechaActual.value.getMonth() - 1, 1)
 }
@@ -36,9 +32,39 @@ function mesSiguiente() {
 }
 function irAHoy() {
     fechaActual.value = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+    mostrarPicker.value = false
 }
 
-// ── Helpers ───────────────────────────────────────────────
+// ── Mini calendario picker ────────────────────────────────
+const mostrarPicker = ref(false)
+const vistaPickerAño = ref(false)
+const pickerAño = ref(fechaActual.value.getFullYear())
+
+const MESES_CORTOS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+
+function seleccionarMesPicker(mes) {
+    fechaActual.value = new Date(pickerAño.value, mes, 1)
+    mostrarPicker.value = false
+    vistaPickerAño.value = false
+}
+
+function toggleVistaAño() {
+    vistaPickerAño.value = !vistaPickerAño.value
+}
+
+function añoAnteriorPicker() { pickerAño.value-- }
+function añoSiguientePicker() { pickerAño.value++ }
+
+function seleccionarAñoPicker(año) {
+    pickerAño.value = año
+    vistaPickerAño.value = false
+}
+
+const añosRango = computed(() => {
+    const base = Math.floor(pickerAño.value / 12) * 12
+    return Array.from({ length: 12 }, (_, i) => base + i)
+})
+
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 const DIAS  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
 
@@ -60,7 +86,6 @@ function formatFechaCorta(d) {
     return d.toLocaleDateString('es-DO', { day: '2-digit', month: 'long' })
 }
 
-// ── Celdas del calendario ─────────────────────────────────
 const celdasMes = computed(() => {
     const año  = fechaActual.value.getFullYear()
     const mes  = fechaActual.value.getMonth()
@@ -68,15 +93,12 @@ const celdasMes = computed(() => {
     const ultimo  = new Date(año, mes + 1, 0)
     const celdas  = []
 
-    // días del mes anterior
     for (let i = 0; i < primero.getDay(); i++) {
         celdas.push(new Date(año, mes, -primero.getDay() + i + 1))
     }
-    // días del mes
     for (let d = 1; d <= ultimo.getDate(); d++) {
         celdas.push(new Date(año, mes, d))
     }
-    // completar hasta múltiplo de 7
     while (celdas.length % 7 !== 0) {
         celdas.push(new Date(año, mes + 1, celdas.length - ultimo.getDate() - primero.getDay() + 1))
     }
@@ -87,24 +109,21 @@ function viajesEnFecha(fecha) {
     return viajes.value.filter(v => esMismaFecha(v.fecha, fecha))
 }
 
-// ── Resumen del mes ───────────────────────────────────────
 const resumen = computed(() => {
     const mes = viajes.value.filter(v =>
         v.fecha.getMonth() === fechaActual.value.getMonth() &&
         v.fecha.getFullYear() === fechaActual.value.getFullYear()
     )
     return {
-        total:      mes.length,
+        total:       mes.length,
         completados: mes.filter(v => v.estado === 'programado').length,
         pendientes:  mes.filter(v => v.estado === 'pendiente' || v.estado === 'espera').length,
         cancelados:  mes.filter(v => v.estado === 'cancelado').length,
     }
 })
 
-// ── Viajes de hoy ─────────────────────────────────────────
 const viajesHoy = computed(() => viajes.value.filter(v => esMismaFecha(v.fecha, hoy)))
 
-// ── Próximos viajes (después de hoy) ─────────────────────
 const proximosViajes = computed(() =>
     viajes.value
         .filter(v => v.fecha > hoy && !esMismaFecha(v.fecha, hoy))
@@ -112,14 +131,12 @@ const proximosViajes = computed(() =>
         .slice(0, 6)
 )
 
-// ── Estilo de chip en calendario ──────────────────────────
 function chipClase(viaje) {
     if (viaje.tipo === 'urgente') return 'chip-urgente'
     if (viaje.estado === 'en_viaje') return 'chip-en-viaje'
     return 'chip-normal'
 }
 
-// ── Estilo borde lateral tarjeta ─────────────────────────
 function bordeClase(estado) {
     const map = {
         en_viaje:  'borde-en-viaje',
@@ -144,9 +161,8 @@ function badgeEstado(estado) {
 </script>
 
 <template>
-    <div class="agenda-page">
+    <div class="agenda-page" @click.self="mostrarPicker = false">
 
-        <!-- ── Encabezado ── -->
         <div class="agenda-header">
             <div>
                 <h1 class="agenda-title">Agenda y Calendario</h1>
@@ -159,42 +175,92 @@ function badgeEstado(estado) {
             </div>
         </div>
 
-        <!-- ── Layout principal ── -->
         <div class="agenda-layout">
-
-            <!-- ═══ COLUMNA IZQUIERDA: Calendario ═══ -->
             <div class="cal-panel">
 
-                <!-- Navegación de mes -->
                 <div class="cal-nav">
                     <button class="nav-btn" @click="mesAnterior">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polyline points="15 18 9 12 15 6"/>
-                        </svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <span class="cal-mes-label">{{ nombreMes(fechaActual) }}</span>
+
+                    <!-- Título clickeable que abre el picker -->
+                    <div class="picker-wrapper">
+                        <button class="cal-mes-label-btn" @click.stop="mostrarPicker = !mostrarPicker; pickerAño = fechaActual.getFullYear(); vistaPickerAño = false">
+                            {{ nombreMes(fechaActual) }}
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+
+                        <!-- Mini calendario picker -->
+                        <div v-if="mostrarPicker" class="picker-dropdown" @click.stop>
+
+                            <!-- Vista de meses -->
+                            <template v-if="!vistaPickerAño">
+                                <div class="picker-nav">
+                                    <button class="picker-nav-btn" @click="añoAnteriorPicker">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                                    </button>
+                                    <button class="picker-año-btn" @click="toggleVistaAño">{{ pickerAño }}</button>
+                                    <button class="picker-nav-btn" @click="añoSiguientePicker">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </div>
+                                <div class="picker-meses-grid">
+                                    <button
+                                        v-for="(mes, i) in MESES_CORTOS"
+                                        :key="i"
+                                        class="picker-mes-btn"
+                                        :class="{
+                                            'picker-mes-activo': i === fechaActual.getMonth() && pickerAño === fechaActual.getFullYear(),
+                                            'picker-mes-hoy': i === hoy.getMonth() && pickerAño === hoy.getFullYear()
+                                        }"
+                                        @click="seleccionarMesPicker(i)"
+                                    >{{ mes }}</button>
+                                </div>
+                            </template>
+
+                            <!-- Vista de años -->
+                            <template v-else>
+                                <div class="picker-nav">
+                                    <button class="picker-nav-btn" @click="pickerAño -= 12">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                                    </button>
+                                    <span class="picker-rango-label">{{ añosRango[0] }} – {{ añosRango[11] }}</span>
+                                    <button class="picker-nav-btn" @click="pickerAño += 12">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </div>
+                                <div class="picker-meses-grid">
+                                    <button
+                                        v-for="año in añosRango"
+                                        :key="año"
+                                        class="picker-mes-btn"
+                                        :class="{
+                                            'picker-mes-activo': año === fechaActual.getFullYear(),
+                                            'picker-mes-hoy': año === hoy.getFullYear()
+                                        }"
+                                        @click="seleccionarAñoPicker(año)"
+                                    >{{ año }}</button>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+
                     <button class="nav-btn" @click="mesSiguiente">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                     <button class="btn-hoy" @click="irAHoy">Hoy</button>
                 </div>
 
-                <!-- Filtros -->
                 <div class="filtros-row">
-                    <button class="filtro-btn filtro-vehiculos" :class="{ activo: filtros.vehiculos }" @click="toggleFiltro('vehiculos')">Vehículos</button>
+                    <button class="filtro-btn filtro-vehiculos"   :class="{ activo: filtros.vehiculos }"   @click="toggleFiltro('vehiculos')">Vehículos</button>
                     <button class="filtro-btn filtro-conductores" :class="{ activo: filtros.conductores }" @click="toggleFiltro('conductores')">Conductores</button>
-                    <button class="filtro-btn filtro-pendientes" :class="{ activo: filtros.pendientes }" @click="toggleFiltro('pendientes')">Pendientes</button>
-                    <button class="filtro-btn filtro-cancelados" :class="{ activo: filtros.cancelados }" @click="toggleFiltro('cancelados')">Cancelados</button>
+                    <button class="filtro-btn filtro-pendientes"  :class="{ activo: filtros.pendientes }"  @click="toggleFiltro('pendientes')">Pendientes</button>
+                    <button class="filtro-btn filtro-cancelados"  :class="{ activo: filtros.cancelados }"  @click="toggleFiltro('cancelados')">Cancelados</button>
                 </div>
 
-                <!-- Grid del mes -->
                 <div class="cal-grid">
-                    <!-- Cabecera días -->
                     <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
-
-                    <!-- Celdas -->
                     <div
                         v-for="(fecha, i) in celdasMes"
                         :key="i"
@@ -223,10 +289,7 @@ function badgeEstado(estado) {
                 </div>
             </div>
 
-            <!-- ═══ COLUMNA DERECHA: Panel lateral ═══ -->
             <div class="side-panel">
-
-                <!-- Resumen del mes -->
                 <div class="side-section">
                     <h3 class="side-titulo">Resumen del mes</h3>
                     <div class="resumen-grid">
@@ -249,7 +312,6 @@ function badgeEstado(estado) {
                     </div>
                 </div>
 
-                <!-- Viajes de hoy -->
                 <div class="side-section" v-if="viajesHoy.length > 0">
                     <h3 class="side-titulo">Viajes para hoy &mdash; {{ formatFechaCorta(hoy) }}</h3>
                     <div class="viajes-lista">
@@ -257,14 +319,11 @@ function badgeEstado(estado) {
                             <div class="viaje-hora">{{ viaje.horaInicio }} - {{ viaje.horaFin }}</div>
                             <div class="viaje-titulo">{{ viaje.titulo }}</div>
                             <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}</div>
-                            <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">
-                                {{ badgeEstado(viaje.estado).label }}
-                            </span>
+                            <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">{{ badgeEstado(viaje.estado).label }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Próximos viajes -->
                 <div class="side-section" v-if="proximosViajes.length > 0">
                     <h3 class="side-titulo">Próximos Viajes</h3>
                     <div class="viajes-lista">
@@ -275,20 +334,16 @@ function badgeEstado(estado) {
                             </div>
                             <div class="viaje-titulo">{{ viaje.titulo }}</div>
                             <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}</div>
-                            <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">
-                                {{ badgeEstado(viaje.estado).label }}
-                            </span>
+                            <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">{{ badgeEstado(viaje.estado).label }}</span>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-/* ── Base ── */
 .agenda-page {
     padding: 28px 32px;
     background: #f3f4f6;
@@ -296,7 +351,6 @@ function badgeEstado(estado) {
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .agenda-header {
     display: flex;
     align-items: center;
@@ -318,7 +372,6 @@ function badgeEstado(estado) {
     margin: 0;
 }
 
-/* ── Tabs de vista ── */
 .vista-tabs {
     display: flex;
     background: #fff;
@@ -337,15 +390,9 @@ function badgeEstado(estado) {
     cursor: pointer;
     transition: all .15s;
 }
-
 .tab-btn:hover { background: #f9fafb; color: #374151; }
+.tab-activo { background: #1a3a2a !important; color: #fff !important; }
 
-.tab-activo {
-    background: #1a3a2a !important;
-    color: #fff !important;
-}
-
-/* ── Layout ── */
 .agenda-layout {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -353,7 +400,6 @@ function badgeEstado(estado) {
     align-items: start;
 }
 
-/* ═══ CALENDARIO ═══ */
 .cal-panel {
     background: #fff;
     border-radius: 14px;
@@ -361,7 +407,6 @@ function badgeEstado(estado) {
     overflow: hidden;
 }
 
-/* Navegación del mes */
 .cal-nav {
     display: flex;
     align-items: center;
@@ -385,12 +430,104 @@ function badgeEstado(estado) {
 }
 .nav-btn:hover { background: #f3f4f6; }
 
-.cal-mes-label {
+/* Título clickeable */
+.picker-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.cal-mes-label-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
     font-size: .95rem;
     font-weight: 700;
     color: #111827;
-    flex: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 7px;
+    transition: background .15s;
 }
+.cal-mes-label-btn:hover { background: #f3f4f6; }
+
+/* Dropdown picker */
+.picker-dropdown {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    z-index: 200;
+    width: 220px;
+}
+
+.picker-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.picker-nav-btn {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    color: #374151;
+    transition: background .15s;
+}
+.picker-nav-btn:hover { background: #f3f4f6; }
+
+.picker-año-btn {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #111827;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+.picker-año-btn:hover { background: #f3f4f6; }
+
+.picker-rango-label {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.picker-meses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.picker-mes-btn {
+    padding: 8px 4px;
+    border: none;
+    border-radius: 7px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #374151;
+    background: transparent;
+    cursor: pointer;
+    transition: background .15s;
+    text-align: center;
+}
+.picker-mes-btn:hover { background: #f3f4f6; }
+.picker-mes-activo { background: #1a3a2a !important; color: #fff !important; }
+.picker-mes-hoy { color: #1a3a2a; font-weight: 800; }
 
 .btn-hoy {
     padding: 6px 16px;
@@ -405,7 +542,6 @@ function badgeEstado(estado) {
 }
 .btn-hoy:hover { background: #14532d; }
 
-/* Filtros */
 .filtros-row {
     display: flex;
     gap: 8px;
@@ -433,7 +569,6 @@ function badgeEstado(estado) {
 .filtro-cancelados { border-color: #d1d5db; color: #374151; }
 .filtro-cancelados.activo  { background: #f3f4f6; }
 
-/* Grid del calendario */
 .cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -458,7 +593,6 @@ function badgeEstado(estado) {
     vertical-align: top;
     position: relative;
 }
-
 .cal-celda:nth-child(7n) { border-right: none; }
 
 .celda-numero {
@@ -468,12 +602,8 @@ function badgeEstado(estado) {
     color: #374151;
     margin-bottom: 4px;
 }
-
 .celda-otro-mes .celda-numero { color: #d1d5db; }
-
-.celda-hoy {
-    background: #f0fdf4;
-}
+.celda-hoy { background: #f0fdf4; }
 .celda-hoy .celda-numero {
     background: #1a3a2a;
     color: #fff;
@@ -486,12 +616,7 @@ function badgeEstado(estado) {
     font-size: .75rem;
 }
 
-/* Chips en celdas */
-.celda-chips {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
+.celda-chips { display: flex; flex-direction: column; gap: 2px; }
 
 .cal-chip {
     font-size: .68rem;
@@ -503,24 +628,12 @@ function badgeEstado(estado) {
     text-overflow: ellipsis;
     cursor: pointer;
 }
-
 .chip-normal   { background: #a7f3d0; color: #065f46; }
 .chip-en-viaje { background: #bfdbfe; color: #1e40af; }
 .chip-urgente  { background: #fecaca; color: #991b1b; }
+.chip-mas { font-size: .65rem; color: #9ca3af; padding: 1px 4px; font-weight: 600; }
 
-.chip-mas {
-    font-size: .65rem;
-    color: #9ca3af;
-    padding: 1px 4px;
-    font-weight: 600;
-}
-
-/* ═══ PANEL LATERAL ═══ */
-.side-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+.side-panel { display: flex; flex-direction: column; gap: 14px; }
 
 .side-section {
     background: #fff;
@@ -529,19 +642,9 @@ function badgeEstado(estado) {
     padding: 18px 18px 14px;
 }
 
-.side-titulo {
-    font-size: .9rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 14px;
-}
+.side-titulo { font-size: .9rem; font-weight: 700; color: #111827; margin: 0 0 14px; }
 
-/* Resumen */
-.resumen-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
+.resumen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .resumen-card {
     background: #f9fafb;
@@ -554,29 +657,14 @@ function badgeEstado(estado) {
     gap: 2px;
 }
 
-.resumen-num {
-    font-size: 1.7rem;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.resumen-label {
-    font-size: .74rem;
-    color: #6b7280;
-    font-weight: 500;
-}
-
+.resumen-num { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.resumen-label { font-size: .74rem; color: #6b7280; font-weight: 500; }
 .azul  { color: #2563eb; }
 .verde { color: #16a34a; }
 .rojo  { color: #dc2626; }
 .gris  { color: #374151; }
 
-/* Lista de viajes */
-.viajes-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.viajes-lista { display: flex; flex-direction: column; gap: 10px; }
 
 .viaje-card {
     border-left: 3.5px solid #e5e7eb;
@@ -594,25 +682,10 @@ function badgeEstado(estado) {
 .borde-espera     { border-left-color: #9ca3af; }
 .borde-cancelado  { border-left-color: #dc2626; }
 
-.viaje-hora {
-    font-size: .72rem;
-    color: #6b7280;
-    font-weight: 500;
-}
+.viaje-hora { font-size: .72rem; color: #6b7280; font-weight: 500; }
+.viaje-titulo { font-size: .95rem; font-weight: 700; color: #111827; }
+.viaje-recurso { font-size: .75rem; color: #6b7280; margin-bottom: 4px; }
 
-.viaje-titulo {
-    font-size: .95rem;
-    font-weight: 700;
-    color: #111827;
-}
-
-.viaje-recurso {
-    font-size: .75rem;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
-
-/* Badges de estado */
 .badge-pill {
     display: inline-block;
     padding: 2px 10px;
@@ -628,7 +701,6 @@ function badgeEstado(estado) {
 .badge-espera-pill     { background: #f3f4f6; color: #374151; }
 .badge-cancelado-pill  { background: #fee2e2; color: #991b1b; }
 
-/* ── Responsive ── */
 @media (max-width: 1100px) {
     .agenda-layout { grid-template-columns: 1fr; }
     .side-panel { flex-direction: row; flex-wrap: wrap; }

@@ -6,7 +6,7 @@ namespace AduanasExpress.Application.Validaciones
 {
     public class AsignacionValidator : AbstractValidator<CreateAsignacionDTO>
     {
-        public AsignacionValidator() 
+        public AsignacionValidator()
         {
             RuleFor(a => a.SolicitudId)
                 .NotEmpty().WithMessage("El ID de la solicitud es requerido.")

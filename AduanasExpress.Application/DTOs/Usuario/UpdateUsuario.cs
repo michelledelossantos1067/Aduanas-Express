@@ -1,4 +1,3 @@
-
 namespace AduanasExpress.Application.DTOs.Usuario;
 public class UpdateUsuario{
     public int Id {get;set;}

@@ -16,6 +16,6 @@ namespace AduanasExpress.Application.Mappings
                 CostoTotal = consumo.CostoTotal,
                 VehiculoId = consumo.VehiculoId,
             };
-        }           
+        }
     }
 }

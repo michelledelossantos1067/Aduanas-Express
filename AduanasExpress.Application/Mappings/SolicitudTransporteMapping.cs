@@ -17,8 +17,6 @@ namespace AduanasExpress.Application.Mappings
                 Destino = solicitudTransporte.Destino,
                 MotivoViaje = solicitudTransporte.MotivoViaje,
                 Estado = solicitudTransporte.Estado,
-                VehiculoId = solicitudTransporte.VehiculoId,
-                ConductorId = solicitudTransporte.ConductorId,
                 UsuarioSolicitaId = solicitudTransporte.UsuarioSolicitaId,
                 FechaCreacion = solicitudTransporte.FechaCreacion
             };

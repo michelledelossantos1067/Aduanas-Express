@@ -19,23 +19,20 @@ public class VehiculoServices : IVehiculoService
     {
         var vehiculo = await _vehiculoRepositories.ObtenerTodos();
         if (vehiculo == null)
-        {
-            throw new Exception("Error al obtener los vehiculo.");
-        }
-        ;
+            throw new Exception("Error al obtener los vehiculos.");
+
         return vehiculo.Select(c => c.ToResponse()).ToList();
     }
+
     public async Task<VehiculoResponseDTOs?> ObtenerPorId(int Id)
     {
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if (vehiculo == null)
-        {
             throw new Exception("Error al buscar el vehiculo.");
-        }
-        ;
-        return vehiculo.ToResponse();
 
+        return vehiculo.ToResponse();
     }
+
     public async Task Crear(CreateVehiculoDTOs createVehiculoDTOs)
     {
         var vehiculo = new Vehiculo
@@ -53,14 +50,13 @@ public class VehiculoServices : IVehiculoService
         };
         await _vehiculoRepositories.Crear(vehiculo);
     }
+
     public async Task Actualizar(int Id, UpdateVehiculoDTOs updateVehiculoDTOs)
     {
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if (vehiculo == null)
-        {
             throw new Exception("Error al actualizar el vehiculo.");
-        }
-        ;
+
         vehiculo.Marca = updateVehiculoDTOs.Marca;
         vehiculo.Modelo = updateVehiculoDTOs.Modelo;
         vehiculo.Año = updateVehiculoDTOs.Año;
@@ -74,14 +70,19 @@ public class VehiculoServices : IVehiculoService
 
         await _vehiculoRepositories.Actualizar(Id, vehiculo);
     }
+
     public async Task Eliminar(int Id)
     {
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if (vehiculo == null)
-        {
             throw new Exception("Error al eliminar el vehiculo.");
-        }
-        ;
+
         await _vehiculoRepositories.Eliminar(Id);
+    }
+
+    public async Task<List<VehiculoResponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha)
+    {
+        var vehiculos = await _vehiculoRepositories.ObtenerDisponiblesEnFecha(fecha);
+        return vehiculos.Select(v => v.ToResponse()).ToList();
     }
 }

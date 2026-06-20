@@ -109,7 +109,6 @@ onMounted(async () => {
 <template>
     <div class="vf-page">
 
-        <!-- ── Encabezado ── -->
         <div class="vf-header">
             <div class="vf-header-left">
                 <button class="btn-back" @click="router.push('/vehiculos')">
@@ -123,7 +122,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Título de página ── -->
         <div class="vf-page-title">
             <div class="vf-title-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -139,7 +137,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Error ── -->
         <div v-if="error" class="vf-alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
@@ -147,10 +144,8 @@ onMounted(async () => {
             {{ error }}
         </div>
 
-        <!-- ── Layout principal ── -->
         <div class="vf-layout">
 
-            <!-- Panel lateral -->
             <aside class="vf-aside">
                 <div class="aside-section">
                     <p class="aside-label">Módulo</p>
@@ -191,10 +186,8 @@ onMounted(async () => {
                 </div>
             </aside>
 
-            <!-- Formulario -->
             <div class="vf-card">
 
-                <!-- Sección: Identificación -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">01</span>
@@ -214,7 +207,6 @@ onMounted(async () => {
 
                 <div class="section-divider"></div>
 
-                <!-- Sección: Descripción del vehículo -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">02</span>
@@ -258,7 +250,6 @@ onMounted(async () => {
 
                 <div class="section-divider"></div>
 
-                <!-- Sección: Operación -->
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">03</span>
@@ -288,7 +279,6 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <!-- Barra de acciones -->
                 <div class="action-bar">
                     <div class="action-bar-left">
                         <button v-if="esEdicion" class="btn-danger" @click="confirmarEliminar" :disabled="loading">
@@ -315,7 +305,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Modal confirmación eliminar ── -->
         <Teleport to="body">
             <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="mostrarConfirmacion = false">
                 <div class="modal">
@@ -343,7 +332,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ── Tokens ── */
+
 :root {
     --green:     #1a3a2a;
     --green-h:   #14532d;
@@ -356,7 +345,6 @@ onMounted(async () => {
     --tag-text:  #166534;
 }
 
-/* ── Base ── */
 .vf-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -365,7 +353,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Encabezado breadcrumb ── */
 .vf-header {
     margin-bottom: 24px;
     display: flex;
@@ -405,7 +392,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Título de página ── */
 .vf-page-title {
     display: flex;
     align-items: center;
@@ -439,7 +425,6 @@ onMounted(async () => {
     margin: 3px 0 0;
 }
 
-/* ── Alerta de error ── */
 .vf-alert {
     display: flex;
     align-items: center;
@@ -453,7 +438,6 @@ onMounted(async () => {
     margin-bottom: 20px;
 }
 
-/* ── Layout dos columnas ── */
 .vf-layout {
     display: grid;
     grid-template-columns: 220px 1fr;
@@ -461,7 +445,6 @@ onMounted(async () => {
     align-items: start;
 }
 
-/* ── Panel lateral ── */
 .vf-aside {
     background: #fff;
     border-radius: 12px;
@@ -520,7 +503,6 @@ onMounted(async () => {
 .badge-mantenimiento { background: #fef3c7; color: #92400e; }
 .badge-fuera-servicio { background: #fee2e2; color: #991b1b; }
 
-/* ── Card del formulario ── */
 .vf-card {
     background: #fff;
     border-radius: 12px;
@@ -528,7 +510,6 @@ onMounted(async () => {
     overflow: hidden;
 }
 
-/* ── Sección ── */
 .form-section {
     padding: 28px 32px;
 }
@@ -566,7 +547,6 @@ onMounted(async () => {
     margin: 0 32px;
 }
 
-/* ── Grid de campos ── */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -577,7 +557,6 @@ onMounted(async () => {
     grid-template-columns: repeat(3, 1fr);
 }
 
-/* ── Campo ── */
 .field {
     display: flex;
     flex-direction: column;
@@ -623,7 +602,6 @@ onMounted(async () => {
 
 .field input::placeholder { color: #9ca3af; }
 
-/* ── Input con sufijo ── */
 .input-suffix-wrap {
     display: flex;
     align-items: stretch;
@@ -656,7 +634,6 @@ onMounted(async () => {
     white-space: nowrap;
 }
 
-/* ── Barra de acciones ── */
 .action-bar {
     display: flex;
     align-items: center;
@@ -673,7 +650,6 @@ onMounted(async () => {
     align-items: center;
 }
 
-/* Botones */
 .btn-primary,
 .btn-secondary,
 .btn-danger {
@@ -729,7 +705,6 @@ onMounted(async () => {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -809,7 +784,6 @@ onMounted(async () => {
 .btn-confirmar-modal:hover:not(:disabled) { background: #b91c1c; }
 .btn-confirmar-modal:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ── Responsive ── */
 @media (max-width: 900px) {
     .vf-layout { grid-template-columns: 1fr; }
     .vf-aside { position: static; }

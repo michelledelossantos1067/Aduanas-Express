@@ -116,7 +116,6 @@ onMounted(cargarVehiculos)
 <template>
     <div class="veh-page">
 
-        <!-- ── Encabezado ── -->
         <div class="veh-header">
             <h1 class="veh-title">Vehículos</h1>
             <div class="veh-header-actions">
@@ -141,7 +140,6 @@ onMounted(cargarVehiculos)
             </div>
         </div>
 
-        <!-- ── Tarjetas resumen ── -->
         <div class="veh-resumen">
             <div class="resumen-card">
                 <span class="resumen-dot dot-total"></span>
@@ -173,7 +171,6 @@ onMounted(cargarVehiculos)
             </div>
         </div>
 
-        <!-- ── Barra de filtros ── -->
         <div class="veh-filtros">
             <div class="filtro-search">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
@@ -197,7 +194,6 @@ onMounted(cargarVehiculos)
             </select>
         </div>
 
-        <!-- ── Estado de carga / error ── -->
         <div v-if="loading" class="veh-estado">
             <div class="spinner"></div>
             <p>Cargando vehículos…</p>
@@ -208,10 +204,9 @@ onMounted(cargarVehiculos)
             <button class="btn-reintentar" @click="cargarVehiculos">Reintentar</button>
         </div>
 
-        <!-- ── Grilla de tarjetas ── -->
         <div v-else-if="vehiculosFiltrados.length > 0" class="veh-grid">
             <div v-for="v in vehiculosFiltrados" :key="v.id" class="veh-card">
-                <!-- Cabecera de tarjeta -->
+
                 <div class="card-top">
                     <span class="card-matricula">{{ v.matricula }}</span>
                     <span class="badge" :class="estadoBadgeClase[v.estado]">
@@ -219,13 +214,11 @@ onMounted(cargarVehiculos)
                     </span>
                 </div>
 
-                <!-- Info principal -->
                 <p class="card-nombre">{{ v.marca }} {{ v.modelo }} {{ v.año }}</p>
                 <p class="card-subtitulo">{{ v.tipo }} · {{ v.capacidad }} pasajeros</p>
 
                 <div class="card-divider"></div>
 
-                <!-- Detalles -->
                 <div class="card-detalles">
                     <div class="detalle-fila">
                         <span class="detalle-label">Color</span>
@@ -241,7 +234,6 @@ onMounted(cargarVehiculos)
                     </div>
                 </div>
 
-                <!-- Acciones -->
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verVehiculo(v.id)">Ver</button>
                     <button class="btn-accion btn-editar" @click="editarVehiculo(v.id)">Editar</button>
@@ -250,7 +242,6 @@ onMounted(cargarVehiculos)
             </div>
         </div>
 
-        <!-- ── Sin resultados ── -->
         <div v-else class="veh-vacio">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
                 <rect x="1" y="3" width="15" height="13" rx="2" />
@@ -275,7 +266,7 @@ onMounted(cargarVehiculos)
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .veh-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -283,7 +274,6 @@ onMounted(cargarVehiculos)
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .veh-header {
     display: flex;
     align-items: center;
@@ -343,7 +333,6 @@ onMounted(cargarVehiculos)
     background: #14532d;
 }
 
-/* ── Resumen ── */
 .veh-resumen {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -398,7 +387,6 @@ onMounted(cargarVehiculos)
     margin: 4px 0 0;
 }
 
-/* ── Filtros ── */
 .veh-filtros {
     display: flex;
     gap: 12px;
@@ -452,14 +440,12 @@ onMounted(cargarVehiculos)
     border-color: #1a3a2a;
 }
 
-/* ── Grilla ── */
 .veh-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
 }
 
-/* ── Tarjeta ── */
 .veh-card {
     background: #fff;
     border-radius: 14px;
@@ -533,7 +519,6 @@ onMounted(cargarVehiculos)
     font-weight: 500;
 }
 
-/* ── Acciones tarjeta ── */
 .card-acciones {
     display: flex;
     gap: 8px;
@@ -570,7 +555,6 @@ onMounted(cargarVehiculos)
     color: #991b1b;
 }
 
-/* ── Badges ── */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -599,7 +583,6 @@ onMounted(cargarVehiculos)
     color: #991b1b;
 }
 
-/* ── Estados especiales ── */
 .veh-estado {
     display: flex;
     flex-direction: column;
@@ -667,7 +650,6 @@ onMounted(cargarVehiculos)
     font-size: 0.85rem;
 }
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -733,7 +715,6 @@ onMounted(cargarVehiculos)
     background: #b91c1c;
 }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
     .veh-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -768,4 +749,3 @@ onMounted(cargarVehiculos)
     }
 }
 </style>
-

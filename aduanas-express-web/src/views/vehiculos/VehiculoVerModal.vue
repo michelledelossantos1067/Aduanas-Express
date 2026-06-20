@@ -70,7 +70,6 @@ function cerrar() {
         <div v-if="modelValue" class="modal-overlay" @click.self="cerrar">
             <div class="modal">
 
-                <!-- Header -->
                 <div class="modal-header">
                     <div class="modal-header-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -91,13 +90,11 @@ function cerrar() {
                     </button>
                 </div>
 
-                <!-- Loading -->
                 <div v-if="loading" class="modal-estado">
                     <div class="spinner"></div>
                     <p>Cargando información…</p>
                 </div>
 
-                <!-- Error -->
                 <div v-else-if="error" class="modal-alert">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
@@ -105,10 +102,8 @@ function cerrar() {
                     {{ error }}
                 </div>
 
-                <!-- Contenido -->
                 <div v-else-if="vehiculo" class="modal-body">
 
-                    <!-- Matrícula destacada + estado -->
                     <div class="ver-top">
                         <div class="ver-matricula">{{ vehiculo.matricula }}</div>
                         <span class="badge" :class="estadoBadgeClase[vehiculo.estado]">
@@ -121,7 +116,6 @@ function cerrar() {
 
                     <div class="ver-divider"></div>
 
-                    <!-- Grid de detalles -->
                     <div class="ver-grid">
                         <div class="ver-item">
                             <span class="ver-label">Marca</span>
@@ -158,7 +152,6 @@ function cerrar() {
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn-cerrar-modal" @click="cerrar">Cerrar</button>
                 </div>
@@ -190,7 +183,6 @@ function cerrar() {
     box-shadow: 0 20px 60px rgba(0,0,0,.2);
 }
 
-/* Header */
 .modal-header {
     display: flex;
     align-items: center;
@@ -241,7 +233,6 @@ function cerrar() {
     color: #374151;
 }
 
-/* Estados */
 .modal-estado {
     display: flex;
     flex-direction: column;
@@ -275,7 +266,6 @@ function cerrar() {
     margin: 24px 28px;
 }
 
-/* Body */
 .modal-body {
     padding: 24px 28px;
 }
@@ -342,7 +332,6 @@ function cerrar() {
     color: #111827;
 }
 
-/* Badges */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -355,7 +344,6 @@ function cerrar() {
 .badge-mantenimiento { background: #fef3c7; color: #92400e; }
 .badge-fuera-servicio { background: #fee2e2; color: #991b1b; }
 
-/* Footer */
 .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -378,7 +366,6 @@ function cerrar() {
 }
 .btn-cerrar-modal:hover { background: #e5e7eb; }
 
-/* Responsive */
 @media (max-width: 640px) {
     .modal { width: 95vw; }
     .ver-grid { grid-template-columns: 1fr; }

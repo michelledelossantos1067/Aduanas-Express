@@ -1,9 +1,7 @@
 <script setup>
-import { ref, computed, watch, onMounted ,nextTick} from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { verSolicitudPorId, crearSolicitud, actualizarSolicitud } from '../../services/solicitudService'
-import { verVehiculos } from '../../services/vehiculoService'
-import { verConductores } from '../../services/conductorService'
 
 const router = useRouter()
 const route  = useRoute()
@@ -11,21 +9,18 @@ const route  = useRoute()
 const loading  = ref(false)
 const error    = ref('')
 
-const vehiculos    = ref([])
-const conductores  = ref([])
-
 const esEdicion = computed(() => !!route.params.id)
 
 const form = ref({
     areaSolicitante:       '',
     destino:               '',
+    puntoOrigen:           '',
+    tipoViaje:             0,
     motivoViaje:           '',
     fechaViaje:            '',
     horaSalida:            '',
     horaLlegada:           '',
     cantidadColaboradores: 1,
-    vehiculoId:            null,
-    conductorId:           null,
     estado:                0,
 })
 
@@ -35,6 +30,11 @@ const estadosSolicitud = [
     { label: 'Rechazada',  value: 2 },
     { label: 'Cancelada',  value: 3 },
     { label: 'Finalizada', value: 4 },
+]
+
+const tiposViaje = [
+    { label: 'Solo ida',    value: 0 },
+    { label: 'Ida y vuelta', value: 1 },
 ]
 
 const estadoLabel = computed(() =>
@@ -59,17 +59,15 @@ async function cargarSolicitud() {
         form.value = {
             areaSolicitante:       s.areaSolicitante       ?? '',
             destino:               s.destino               ?? '',
+            puntoOrigen:           s.puntoOrigen           ?? '',
+            tipoViaje:             s.tipoViaje             ?? 0,
             motivoViaje:           s.motivoViaje           ?? '',
             fechaViaje:            s.fechaViaje            ? s.fechaViaje.substring(0, 10) : '',
             horaSalida:            s.horaSalida            ? s.horaSalida.substring(0, 5)  : '',
             horaLlegada:           s.horaLlegada           ? s.horaLlegada.substring(0, 5) : '',
             cantidadColaboradores: s.cantidadColaboradores ?? 1,
-            vehiculoId:            s.vehiculoId            ?? null,
-            conductorId:           s.conductorId           ?? null,
             estado:                s.estado                ?? 0,
         }
-        console.log('vehiculoId cargado:', form.value.vehiculoId, typeof form.value.vehiculoId)
-console.log('IDs disponibles:', vehiculos.value.map(v => ({ id: v.id, tipo: typeof v.id })))
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar la solicitud.'
     } finally {
@@ -81,11 +79,10 @@ async function guardar() {
     error.value = ''
 
     if (!form.value.areaSolicitante) { error.value = 'El área solicitante es requerida.';  return }
+    if (!form.value.puntoOrigen)     { error.value = 'El punto de origen es requerido.';   return }
     if (!form.value.destino)         { error.value = 'El destino es requerido.';            return }
     if (!form.value.fechaViaje)      { error.value = 'La fecha de viaje es requerida.';     return }
     if (!form.value.horaSalida)      { error.value = 'La hora de salida es requerida.';     return }
-    if (!form.value.vehiculoId)      { error.value = 'Debe seleccionar un vehículo.';       return }
-    if (!form.value.conductorId)     { error.value = 'Debe seleccionar un conductor.';      return }
 
     const horaSalidaFmt = form.value.horaSalida.length === 5
         ? `${form.value.horaSalida}:00`
@@ -96,14 +93,12 @@ async function guardar() {
         cantidadColaboradores: form.value.cantidadColaboradores,
         fechaViaje:            `${form.value.fechaViaje}T00:00:00`,
         horaSalida:            horaSalidaFmt,
+        puntoOrigen:           form.value.puntoOrigen,
         destino:               form.value.destino,
+        tipoViaje:             form.value.tipoViaje,
         motivoViaje:           form.value.motivoViaje,
         estado:                form.value.estado,
-        vehiculoId:            form.value.vehiculoId  ?? 0,
-        conductorId:           form.value.conductorId ?? 0,
     }
-
-    console.log('Payload enviado:', JSON.stringify(payload, null, 2))
 
     loading.value = true
     try {
@@ -114,31 +109,13 @@ async function guardar() {
         }
         router.push('/solicitudes')
     } catch (e) {
-            console.error('Error detalle:', e?.response?.data)
         error.value = e?.response?.data?.message || e?.message || 'Error al guardar la solicitud.'
     } finally {
         loading.value = false
     }
 }
 
-async function cargarListas() {
-    try {
-        const [resVehiculos, resConductores] = await Promise.all([
-            verVehiculos(),
-            verConductores(),
-        ])
-        vehiculos.value   = resVehiculos.data
-        conductores.value = resConductores.data
-
-        console.log('Vehículo ejemplo:', { ...vehiculos.value[0] })
-        console.log('Conductor ejemplo:', { ...conductores.value[0] })
-    } catch (e) {
-        console.error(e)
-    }
-}
-
 onMounted(async () => {
-    await cargarListas()
     if (esEdicion.value) await cargarSolicitud()
 })
 </script>
@@ -146,7 +123,6 @@ onMounted(async () => {
 <template>
     <div class="sf-page">
 
-        <!-- ── Encabezado breadcrumb ── -->
         <div class="sf-header">
             <div class="sf-header-left">
                 <button class="btn-back" @click="router.push('/solicitudes')">
@@ -162,7 +138,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Título de página ── -->
         <div class="sf-page-title">
             <div class="sf-title-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -178,7 +153,6 @@ onMounted(async () => {
             </div>
         </div>
 
-        <!-- ── Alerta de error ── -->
         <div v-if="error" class="sf-alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" />
@@ -188,10 +162,8 @@ onMounted(async () => {
             {{ error }}
         </div>
 
-        <!-- ── Layout dos columnas ── -->
         <div class="sf-layout">
 
-            <!-- Panel lateral -->
             <aside class="sf-aside">
                 <div class="aside-section">
                     <p class="aside-label">Módulo</p>
@@ -207,11 +179,11 @@ onMounted(async () => {
                     <p class="aside-label">Campos obligatorios</p>
                     <ul class="aside-list">
                         <li>Área solicitante</li>
+                        <li>Punto de origen</li>
                         <li>Destino</li>
+                        <li>Tipo de viaje</li>
                         <li>Fecha de viaje</li>
                         <li>Hora de salida</li>
-                        <li>Vehículo</li>
-                        <li>Conductor</li>
                     </ul>
                 </div>
                 <div v-if="esEdicion" class="aside-divider"></div>
@@ -223,17 +195,14 @@ onMounted(async () => {
                 </div>
             </aside>
 
-            <!-- Formulario -->
             <div class="sf-card">
 
-                <!-- Carga -->
                 <div v-if="loading && esEdicion" class="sf-loading">
                     <div class="spinner"></div>
                 </div>
 
                 <template v-else>
 
-                    <!-- Sección 01: Solicitante -->
                     <div class="form-section">
                         <div class="section-header">
                             <span class="section-tag">01</span>
@@ -261,14 +230,21 @@ onMounted(async () => {
 
                     <div class="section-divider"></div>
 
-                    <!-- Sección 02: Destino y fechas -->
                     <div class="form-section">
                         <div class="section-header">
                             <span class="section-tag">02</span>
-                            <h3>Destino y Horario</h3>
+                            <h3>Ruta y Horario</h3>
                         </div>
                         <div class="form-grid">
-                            <div class="field form-full">
+                            <div class="field">
+                                <label>Punto de origen <span class="req">*</span></label>
+                                <input
+                                    v-model="form.puntoOrigen"
+                                    type="text"
+                                    placeholder="Ej. Sede central, Santo Domingo"
+                                />
+                            </div>
+                            <div class="field">
                                 <label>Destino <span class="req">*</span></label>
                                 <input
                                     v-model="form.destino"
@@ -276,19 +252,52 @@ onMounted(async () => {
                                     placeholder="Ej. Santiago de los Caballeros"
                                 />
                             </div>
+                            <div class="field form-full">
+                                <label>Tipo de viaje <span class="req">*</span></label>
+                                <div class="tipo-viaje-group">
+                                    <button
+                                        type="button"
+                                        class="tipo-btn"
+                                        :class="{ 'tipo-btn-activo': form.tipoViaje === 0 }"
+                                        @click="form.tipoViaje = 0"
+                                    >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                            <polyline points="12 5 19 12 12 19"/>
+                                        </svg>
+                                        Solo ida
+                                        <span class="tipo-hint">El vehículo queda en destino</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="tipo-btn"
+                                        :class="{ 'tipo-btn-activo': form.tipoViaje === 1 }"
+                                        @click="form.tipoViaje = 1"
+                                    >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="17 1 21 5 17 9"/>
+                                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                            <polyline points="7 23 3 19 7 15"/>
+                                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                                        </svg>
+                                        Ida y vuelta
+                                        <span class="tipo-hint">El vehículo regresa al origen</span>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="field">
                                 <label>Fecha de viaje <span class="req">*</span></label>
                                 <input v-model="form.fechaViaje" type="date" />
                             </div>
                             <div class="field">
-                                <!-- spacer on large screens -->
+
                             </div>
                             <div class="field">
                                 <label>Hora de salida <span class="req">*</span></label>
                                 <input v-model="form.horaSalida" type="time" />
                             </div>
                             <div class="field">
-                                <label>Hora de llegada</label>
+                                <label>Hora de llegada estimada</label>
                                 <input v-model="form.horaLlegada" type="time" />
                             </div>
                         </div>
@@ -296,31 +305,12 @@ onMounted(async () => {
 
                     <div class="section-divider"></div>
 
-                    <!-- Sección 03: Detalles -->
                     <div class="form-section">
                         <div class="section-header">
                             <span class="section-tag">03</span>
                             <h3>Detalles del viaje</h3>
                         </div>
                         <div class="form-grid">
-                            <div class="field">
-                                <label>Vehículo <span class="req">*</span></label>
-                                <select v-model.number="form.vehiculoId">
-                                    <option :value="null" disabled>Seleccione un vehículo</option>
-                                    <option v-for="v in vehiculos" :key="v.id" :value="v.id">
-                                        {{ v.matricula }} {{ v.marca ? `— ${v.marca} ${v.modelo ?? ''}` : '' }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label>Conductor <span class="req">*</span></label>
-                                <select v-model.number="form.conductorId">
-                                    <option :value="null" disabled>Seleccione un conductor</option>
-                                    <option v-for="c in conductores" :key="c.id" :value="c.id">
-                                        {{ c.nombre }} {{ c.apellido }}
-                                    </option>
-                                </select>
-                            </div>
                             <div class="field form-full">
                                 <label>Motivo del viaje</label>
                                 <textarea
@@ -330,7 +320,6 @@ onMounted(async () => {
                                 ></textarea>
                             </div>
 
-                            <!-- Estado: solo en edición -->
                             <div v-if="esEdicion" class="field">
                                 <label>Estado</label>
                                 <select v-model.number="form.estado">
@@ -342,7 +331,6 @@ onMounted(async () => {
                         </div>
                     </div>
 
-                    <!-- Barra de acciones -->
                     <div class="action-bar">
                         <div class="action-bar-left"></div>
                         <div class="action-bar-right">
@@ -366,7 +354,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .sf-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -375,7 +363,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Breadcrumb ── */
 .sf-header {
     margin-bottom: 24px;
     display: flex;
@@ -415,7 +402,6 @@ onMounted(async () => {
     color: #111827;
 }
 
-/* ── Título ── */
 .sf-page-title {
     display: flex;
     align-items: center;
@@ -449,7 +435,6 @@ onMounted(async () => {
     margin: 3px 0 0;
 }
 
-/* ── Alerta ── */
 .sf-alert {
     display: flex;
     align-items: center;
@@ -463,7 +448,6 @@ onMounted(async () => {
     margin-bottom: 20px;
 }
 
-/* ── Layout ── */
 .sf-layout {
     display: grid;
     grid-template-columns: 220px 1fr;
@@ -471,7 +455,6 @@ onMounted(async () => {
     align-items: start;
 }
 
-/* ── Aside ── */
 .sf-aside {
     background: #fff;
     border-radius: 12px;
@@ -531,7 +514,6 @@ onMounted(async () => {
 .badge-cancelada  { background: #dbeafe; color: #1e40af; }
 .badge-finalizada { background: #ede9fe; color: #6d28d9; }
 
-/* ── Card ── */
 .sf-card {
     background: #fff;
     border-radius: 12px;
@@ -556,7 +538,6 @@ onMounted(async () => {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Sección ── */
 .form-section { padding: 28px 32px; }
 
 .section-header {
@@ -592,7 +573,6 @@ onMounted(async () => {
     margin: 0 32px;
 }
 
-/* ── Grid ── */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -603,7 +583,6 @@ onMounted(async () => {
     grid-column: 1 / -1;
 }
 
-/* ── Campo ── */
 .field {
     display: flex;
     flex-direction: column;
@@ -663,7 +642,6 @@ onMounted(async () => {
 .field input::placeholder,
 .field textarea::placeholder { color: #9ca3af; }
 
-/* ── Input con sufijo ── */
 .input-suffix-wrap {
     display: flex;
     align-items: stretch;
@@ -698,7 +676,6 @@ onMounted(async () => {
     white-space: nowrap;
 }
 
-/* ── Barra de acciones ── */
 .action-bar {
     display: flex;
     align-items: center;
@@ -715,7 +692,6 @@ onMounted(async () => {
     align-items: center;
 }
 
-/* ── Botones ── */
 .btn-primary,
 .btn-secondary {
     display: inline-flex;
@@ -760,7 +736,6 @@ onMounted(async () => {
     flex-shrink: 0;
 }
 
-/* ── Responsive ── */
 @media (max-width: 900px) {
     .sf-layout { grid-template-columns: 1fr; }
     .sf-aside  { position: static; }
@@ -773,5 +748,51 @@ onMounted(async () => {
     .action-bar    { padding: 16px; flex-direction: column; gap: 12px; }
     .action-bar-right { width: 100%; justify-content: flex-end; }
     .form-grid     { grid-template-columns: 1fr; }
+    .tipo-viaje-group { flex-direction: column; }
+}
+
+.tipo-viaje-group {
+    display: flex;
+    gap: 12px;
+}
+
+.tipo-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    font-family: inherit;
+    text-align: left;
+}
+
+.tipo-btn:hover {
+    border-color: #1a3a2a;
+    background: #f0fdf4;
+}
+
+.tipo-btn-activo {
+    border-color: #1a3a2a;
+    background: #f0fdf4;
+    color: #1a3a2a;
+}
+
+.tipo-hint {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: #9ca3af;
+    margin-left: auto;
+}
+
+.tipo-btn-activo .tipo-hint {
+    color: #4d7c5f;
 }
 </style>

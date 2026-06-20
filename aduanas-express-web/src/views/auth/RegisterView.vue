@@ -260,7 +260,7 @@ h1 {
 .register-container {
     display: flex;
     width: 900px;
-    border-radius: 10px 10px 0 0; 
+    border-radius: 10px 10px 0 0;
     overflow: hidden;
     min-height: 500px;
 }
@@ -342,7 +342,7 @@ h1 {
 .register-container {
     display: flex;
     width: 900px;
-    border-radius: 10px 10px 0 0;  /* ya lo tenías, ok */
+    border-radius: 10px 10px 0 0;
     overflow: hidden;
     min-height: 500px;
 }
@@ -399,7 +399,6 @@ h1 {
     display: none;
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
     .register-page {
         background: #1a4a2e;

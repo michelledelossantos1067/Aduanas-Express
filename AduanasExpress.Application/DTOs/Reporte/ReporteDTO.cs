@@ -3,7 +3,7 @@ public class ReporteViajeDTO
 {
     public string AreaSolicitante { get; set; }
     public string Destino { get; set; }
-    public DateTime FechaViaje { get; set; }
+    public DateTime? FechaViaje { get; set; }
     public string NombreConductor { get; set; }
     public string VehiculoPlaca { get; set; }
     public int CantidadPasajeros { get; set; }

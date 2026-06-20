@@ -21,7 +21,6 @@ namespace AduanasExpress.Application.Mappings
                 Kilometraje = vehiculo.Kilometraje,
                 FechaUltimoMant = vehiculo.FechaUltimoMant
 
-
             };
         }
     }

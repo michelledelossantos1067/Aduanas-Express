@@ -1,7 +1,6 @@
 <template>
     <div class="usr-page">
 
-        <!-- Encabezado -->
         <div class="usr-header">
             <h1 class="usr-title">Gestión de Usuarios</h1>
             <div class="usr-header-actions">
@@ -24,7 +23,6 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="usr-stats">
             <div class="stat-card">
                 <p class="stat-num">{{ resumen.total }}</p>
@@ -44,7 +42,6 @@
             </div>
         </div>
 
-        <!-- Filtros -->
         <div class="usr-filtros">
             <div class="filtro-search">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
@@ -59,7 +56,6 @@
             </select>
         </div>
 
-        <!-- Estado carga -->
         <div v-if="loading" class="usr-estado">
             <div class="spinner"></div>
             <p>Cargando usuarios…</p>
@@ -70,7 +66,6 @@
             <button class="btn-reintentar" @click="cargarUsuarios">Reintentar</button>
         </div>
 
-        <!-- Tabla -->
         <div v-else class="usr-tabla-wrap">
             <div class="tabla-header">
                 <h2 class="tabla-titulo">Listado de usuarios</h2>
@@ -119,7 +114,6 @@
                 </table>
             </div>
 
-            <!-- Paginación -->
             <div class="usr-paginacion">
                 <span class="pag-info">
                     Mostrando {{ desde }}–{{ hasta }} de {{ usuariosFiltrados.length }} usuarios
@@ -139,7 +133,6 @@
             </div>
         </div>
 
-        <!-- Modal Ver -->
         <div v-if="mostrarVer && usuarioSeleccionado" class="modal-overlay" @click.self="mostrarVer = false">
             <div class="modal">
                 <div class="modal-top">
@@ -171,7 +164,6 @@
             </div>
         </div>
 
-        <!-- Modal Eliminar -->
         <div v-if="mostrarEliminar && usuarioAEliminar" class="modal-overlay" @click.self="mostrarEliminar = false">
             <div class="modal">
                 <h3 class="modal-titulo">Eliminar usuario</h3>
@@ -199,7 +191,6 @@ import { obtenerUsuario, eliminarUsuario } from '../../services/usuarioService'
 
 const router = useRouter()
 
-// ── Constantes ───────────────────────────────────────────────
 const ROLES = [
     { label: 'Administrador', value: 0 },
     { label: 'Supervisor', value: 1 },
@@ -216,7 +207,6 @@ const rolClase = {
 
 const avatarColors = ['av-purple', 'av-blue', 'av-green', 'av-orange', 'av-teal']
 
-// ── Estado ───────────────────────────────────────────────────
 const usuarios = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -229,7 +219,6 @@ const mostrarEliminar = ref(false)
 const usuarioAEliminar = ref(null)
 const eliminando = ref(false)
 
-// ── Helpers ──────────────────────────────────────────────────
 function getInitials(nombre = '', apellido = '') {
     return `${nombre[0] ?? ''}${apellido[0] ?? ''}`.toUpperCase()
 }
@@ -242,7 +231,6 @@ function avatarColor(id) {
     return avatarColors[id % avatarColors.length]
 }
 
-// ── Resumen ──────────────────────────────────────────────────
 const resumen = computed(() => ({
     total: usuarios.value.length,
     administradores: usuarios.value.filter(u => u.rol === 0).length,
@@ -250,7 +238,6 @@ const resumen = computed(() => ({
     operadores: usuarios.value.filter(u => u.rol === 2).length,
 }))
 
-// ── Filtrado ─────────────────────────────────────────────────
 const usuariosFiltrados = computed(() =>
     usuarios.value.filter(u => {
         const q = busqueda.value.toLowerCase()
@@ -264,7 +251,6 @@ const usuariosFiltrados = computed(() =>
     })
 )
 
-// ── Paginación ───────────────────────────────────────────────
 const totalPaginas = computed(() =>
     Math.max(1, Math.ceil(usuariosFiltrados.value.length / ITEMS_POR_PAGINA))
 )
@@ -302,7 +288,6 @@ const paginasVisibles = computed(() => {
 
 watch([busqueda, filtroRol], () => { pagina.value = 1 })
 
-// ── Carga ────────────────────────────────────────────────────
 async function cargarUsuarios() {
     loading.value = true
     error.value = ''
@@ -316,7 +301,6 @@ async function cargarUsuarios() {
     }
 }
 
-// ── Acciones ─────────────────────────────────────────────────
 function irANuevo() {
     router.push('/usuarios/nuevo')
 }
@@ -350,7 +334,7 @@ async function ejecutarEliminar() {
 }
 
 function exportarPdf() {
-    // implementar con librería de PDF
+
     console.log('Exportar PDF', usuariosFiltrados.value)
 }
 
@@ -358,7 +342,7 @@ onMounted(cargarUsuarios)
 </script>
 
 <style scoped>
-/* ── Base ── */
+
 .usr-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -366,7 +350,6 @@ onMounted(cargarUsuarios)
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .usr-header {
     display: flex;
     align-items: center;
@@ -426,7 +409,6 @@ onMounted(cargarUsuarios)
     background: #14532d;
 }
 
-/* ── Stats ── */
 .usr-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -455,7 +437,6 @@ onMounted(cargarUsuarios)
     margin: 6px 0 0;
 }
 
-/* ── Filtros ── */
 .usr-filtros {
     display: flex;
     gap: 12px;
@@ -509,7 +490,6 @@ onMounted(cargarUsuarios)
     border-color: #1a3a2a;
 }
 
-/* ── Estados especiales ── */
 .usr-estado {
     display: flex;
     flex-direction: column;
@@ -556,7 +536,6 @@ onMounted(cargarUsuarios)
     cursor: pointer;
 }
 
-/* ── Tabla ── */
 .usr-tabla-wrap {
     background: #fff;
     border-radius: 14px;
@@ -638,7 +617,6 @@ tbody td {
     font-size: 0.85rem;
 }
 
-/* ── Avatar ── */
 .usuario-cell {
     display: flex;
     align-items: center;
@@ -689,7 +667,6 @@ tbody td {
     color: #111827;
 }
 
-/* ── Badges rol ── */
 .badge-rol {
     display: inline-block;
     padding: 4px 12px;
@@ -713,7 +690,6 @@ tbody td {
     color: #065f46;
 }
 
-/* ── Acciones ── */
 .acciones {
     display: flex;
     gap: 4px;
@@ -741,7 +717,6 @@ tbody td {
     border-color: #fca5a5;
 }
 
-/* ── Paginación ── */
 .usr-paginacion {
     display: flex;
     align-items: center;
@@ -795,7 +770,6 @@ tbody td {
     padding: 0 4px;
 }
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -909,7 +883,6 @@ tbody td {
     cursor: default;
 }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
     .usr-stats {
         grid-template-columns: repeat(2, 1fr);

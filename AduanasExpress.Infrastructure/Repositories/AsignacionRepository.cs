@@ -7,21 +7,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AduanasExpress.Infrastructure.Repositories;
 
-public class AsignacionRepository : IAsignacionRepository{
+public class AsignacionRepository : IAsignacionRepository
+{
     private readonly AppDbContext _context;
 
-    public AsignacionRepository(AppDbContext context){
+    public AsignacionRepository(AppDbContext context)
+    {
         _context = context;
     }
 
-    public async Task<List<Asignacion?>> ObtenerTodos(){
-        return await _context.Asignaciones.ToListAsync();
+    public async Task<List<Asignacion?>> ObtenerTodos()
+    {
+        return await _context.Asignaciones
+            .Include(a => a.Conductor)
+            .Include(a => a.Vehiculo)
+            .Include(a => a.Solicitud)
+            .ToListAsync();
     }
-    public async Task<Asignacion?> ObtenerPorId(int Id){
+    public async Task<Asignacion?> ObtenerPorId(int Id)
+    {
         return await _context.Asignaciones.FindAsync(Id);
     }
-    public async Task Crear(Asignacion asignacion){
+    public async Task Crear(Asignacion asignacion)
+    {
         _context.AddAsync(asignacion);
+        await _context.SaveChangesAsync();
+    }
+    public async Task Actualizar(int id, Asignacion asignacion)
+    {
+        _context.Asignaciones.Update(asignacion);
         await _context.SaveChangesAsync();
     }
 }

@@ -1,4 +1,3 @@
-
 namespace AduanasExpress.Domain.Entitis;
 public class Vehiculo{
     public int Id {get;set;}

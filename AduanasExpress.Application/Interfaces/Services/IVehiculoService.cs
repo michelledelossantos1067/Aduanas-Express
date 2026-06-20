@@ -1,4 +1,3 @@
-
 using AduanasExpress.Application.DTOs.Vehiculo;
 
 namespace AduanasExpress.Application.interfaces.Services;
@@ -8,4 +7,5 @@ public interface IVehiculoService{
     public Task Crear(CreateVehiculoDTOs createVehiculoDTOs);
     public Task Actualizar(int Id,UpdateVehiculoDTOs updateVehiculoDTOs);
     public Task Eliminar(int Id);
+    Task<List<VehiculoResponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha);
 }

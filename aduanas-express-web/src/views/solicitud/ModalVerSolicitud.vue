@@ -74,7 +74,7 @@ function editar() {
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="cerrar">
             <div class="modal">
-                <!-- Cabecera -->
+
                 <div class="modal-head">
                     <h2 class="modal-titulo">Detalle de solicitud</h2>
                     <button class="btn-cerrar" @click="cerrar">
@@ -85,15 +85,12 @@ function editar() {
                     </button>
                 </div>
 
-                <!-- Cargando -->
                 <div v-if="loading" class="modal-loading">
                     <div class="spinner"></div>
                 </div>
 
-                <!-- Error -->
                 <div v-else-if="errorMsg" class="modal-error">{{ errorMsg }}</div>
 
-                <!-- Contenido -->
                 <template v-else-if="solicitud">
                     <div class="detalle-badge">
                         <span class="badge" :class="estadoBadgeClase[solicitud.estado]">
@@ -147,7 +144,6 @@ function editar() {
                     </div>
                 </template>
 
-                <!-- Acciones -->
                 <div class="modal-acciones">
                     <button class="btn-cancelar-modal" @click="cerrar">Cerrar</button>
                     <button class="btn-editar-modal" @click="editar">
@@ -241,7 +237,6 @@ function editar() {
     margin-bottom: 16px;
 }
 
-/* Badge de estado */
 .detalle-badge {
     margin-bottom: 20px;
 }
@@ -260,7 +255,6 @@ function editar() {
 .badge-cancelada  { background: #dbeafe; color: #1e40af; }
 .badge-finalizada { background: #ede9fe; color: #6d28d9; }
 
-/* Grid de detalle */
 .detalle-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -292,7 +286,6 @@ function editar() {
     font-weight: 500;
 }
 
-/* Acciones */
 .modal-acciones {
     display: flex;
     gap: 10px;

@@ -2,12 +2,11 @@
 using AduanasExpress.Domain.Entitis;
 using FluentValidation;
 
-
 namespace AduanasExpress.Application.Validaciones
 {
     public class LoginValidator : AbstractValidator<AuthDTOs>
     {
-        public LoginValidator() 
+        public LoginValidator()
         {
             RuleFor(l => l.Email)
                 .NotEmpty().WithMessage("El email es requerido.")
@@ -60,7 +59,7 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(r => r.Email)
                 .NotEmpty().WithMessage("El email es requerido.")
                 .EmailAddress().WithMessage("El email no es válido.");
-            
+
         }
     }
 }

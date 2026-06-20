@@ -1,11 +1,11 @@
 using System.Security.Claims;
-using AduanasExpress.Application.DTOs.SolicitudTransporte;
-using AduanasExpress.Application.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
-using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Application.DTOs.SolicitudTransporte;
+using AduanasExpress.Application.DTOs.SolicitudTransporte;
+using AduanasExpress.Application.Interfaces.Services;
+using AduanasExpress.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 [ApiController]
 [Route("api/[controller]")]
 public class SolicitudTransporteController : ControllerBase
@@ -31,7 +31,11 @@ public class SolicitudTransporteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Crear([FromBody] CreateSolicitudTransporteDTOs dto)
     {
-        var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (claim == null)
+            return Unauthorized("No se encontró el usuario en el token.");
+
+        var usuarioId = int.Parse(claim.Value);
         await _solicitudTransporteService.Crear(dto, usuarioId);
         return Created();
     }

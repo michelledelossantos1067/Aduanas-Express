@@ -33,7 +33,7 @@ public class ReporteService : IReporteService
         var consumos = await _consumoRepository.ObtenerTodos();
 
         return consumos
-            .Where(c => c.Fecha.Month == mes && c.Fecha.Year == año)
+            .Where(c => c.Fecha.HasValue && c.Fecha.Value.Month == mes && c.Fecha.Value.Year == año)
             .GroupBy(c => c.Vehiculo)
             .Select(g => new ReporteConsumoDTO
             {
@@ -75,15 +75,15 @@ public class ReporteService : IReporteService
             }).ToList();
     }
 
+    // Pendiente de implementar con una librería de generación de PDF
     public Task<byte[]> ExportarPdfAsync(int mes, int año)
     {
-        // Se implementa con una librería como iTextSharp o QuestPDF
         throw new NotImplementedException();
     }
 
+    // Pendiente de implementar con una librería de generación de Excel
     public Task<byte[]> ExportarExcelAsync(int mes, int año)
     {
-        // Se implementa con ClosedXML o EPPlus
         throw new NotImplementedException();
     }
 }

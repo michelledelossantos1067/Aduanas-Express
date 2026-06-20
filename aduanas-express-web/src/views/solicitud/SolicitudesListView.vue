@@ -5,7 +5,7 @@ import ModalVerSolicitud from './ModalVerSolicitud.vue'
 import ModalEliminarSolicitud from './ModalEliminarSolicitud.vue'
 import { verVehiculos } from '../../services/vehiculoService'
 import { verConductores } from '../../services/conductorService'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const solicitudes = ref([])
@@ -18,7 +18,6 @@ const tabActivo = ref('todas')
 const mostrarConfirmacion = ref(false)
 const solicitudAEliminar = ref(null)
 
-// Paginación
 const paginaActual = ref(1)
 const porPagina = 10
 
@@ -41,7 +40,6 @@ const estadoBadgeClase = {
 const estadoLabel = (valor) =>
     estadosSolicitud.find((e) => e.value === valor)?.label ?? valor
 
-// ── Resumen ──────────────────────────────────────────────
 const resumen = computed(() => ({
     total: solicitudes.value.length,
     pendientes: solicitudes.value.filter(s => s.estado === 0).length,
@@ -51,7 +49,6 @@ const resumen = computed(() => ({
     finalizadas: solicitudes.value.filter(s => s.estado === 4).length,
 }))
 
-// ── Filtrado ──────────────────────────────────────────────
 const solicitudesFiltradas = computed(() => {
     return solicitudes.value.filter((s) => {
         const q = busqueda.value.toLowerCase()
@@ -77,7 +74,7 @@ const solicitudesFiltradas = computed(() => {
         return coincideBusqueda && coincideEstado && coincideTab
     })
 })
-// ── Estado modales ──
+
 const modalVer = ref({ show: false, id: null })
 const modalEliminar = ref({ show: false, solicitud: null })
 
@@ -87,7 +84,7 @@ function abrirVer(id) {
 
 function abrirNuevo()      { router.push('/solicitudes/nuevo') }
 function abrirEditar(id){
-    router.push(`/solicitudes/${id}/editar`) 
+    router.push(`/solicitudes/${id}/editar`)
 }
 function confirmarEliminar(solicitud) {
     modalEliminar.value = { show: true, solicitud }
@@ -106,7 +103,7 @@ async function ejecutarEliminar() {
         modalEliminar.value.show = false
     }
 }
-// ── Paginación ────────────────────────────────────────────
+
 const totalPaginas = computed(() =>
     Math.max(1, Math.ceil(solicitudesFiltradas.value.length / porPagina))
 )
@@ -141,7 +138,6 @@ function irPagina(p) {
     paginaActual.value = p
 }
 
-// ── Acciones ──────────────────────────────────────────────
 async function cargarSolicitudes() {
     loading.value = true
     error.value = ''
@@ -219,7 +215,6 @@ onMounted(cargarSolicitudes)
 <template>
     <div class="sol-page">
 
-        <!-- ── Encabezado ── -->
         <div class="sol-header">
             <h1 class="sol-title">Solicitudes de transporte</h1>
             <div class="sol-header-actions">
@@ -242,7 +237,6 @@ onMounted(cargarSolicitudes)
             </div>
         </div>
 
-        <!-- ── Tarjetas resumen ── -->
         <div class="sol-resumen">
             <div class="resumen-card">
                 <span class="resumen-dot dot-pendiente"></span>
@@ -281,7 +275,6 @@ onMounted(cargarSolicitudes)
             </div>
         </div>
 
-        <!-- ── Barra de filtros ── -->
         <div class="sol-filtros">
             <div class="filtro-search">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
@@ -304,7 +297,6 @@ onMounted(cargarSolicitudes)
             </select>
         </div>
 
-        <!-- ── Tabs ── -->
         <div class="sol-tabs">
             <button v-for="tab in [
                 { key: 'todas', label: 'Todas' },
@@ -317,7 +309,6 @@ onMounted(cargarSolicitudes)
             </button>
         </div>
 
-        <!-- ── Carga / Error ── -->
         <div v-if="loading" class="sol-estado">
             <div class="spinner"></div>
             <p>Cargando solicitudes...</p>
@@ -328,7 +319,6 @@ onMounted(cargarSolicitudes)
             <button class="btn-reintentar" @click="cargarSolicitudes">Reintentar</button>
         </div>
 
-        <!-- ── Tabla ── -->
         <div v-else-if="solicitudesFiltradas.length > 0" class="sol-tabla-wrap">
             <table class="sol-tabla">
                 <thead>
@@ -400,7 +390,6 @@ onMounted(cargarSolicitudes)
                 </tbody>
             </table>
 
-            <!-- ── Paginación ── -->
             <div class="paginacion">
                 <button v-for="(p, i) in paginasVisibles" :key="i" class="pag-btn"
                     :class="{ 'pag-activo': p === paginaActual, 'pag-dots': p === '...' }" @click="irPagina(p)">{{ p
@@ -410,7 +399,6 @@ onMounted(cargarSolicitudes)
             </div>
         </div>
 
-        <!-- ── Sin resultados ── -->
         <div v-else class="sol-vacio">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
                 <rect x="1" y="3" width="15" height="13" rx="2" />
@@ -423,14 +411,14 @@ onMounted(cargarSolicitudes)
         </div>
         <ModalVerSolicitud :show="modalVer.show" :solicitud-id="modalVer.id" @close="modalVer.show = false"
             @editar="abrirEditar" />
-            
+
         <ModalEliminarSolicitud :show="modalEliminar.show" :solicitud="modalEliminar.solicitud"
             @close="modalEliminar.show = false" @confirmar="ejecutarEliminar" />
     </div>
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .sol-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -438,7 +426,6 @@ onMounted(cargarSolicitudes)
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .sol-header {
     display: flex;
     align-items: center;
@@ -498,7 +485,6 @@ onMounted(cargarSolicitudes)
     background: #14532d;
 }
 
-/* ── Resumen ── */
 .sol-resumen {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -557,7 +543,6 @@ onMounted(cargarSolicitudes)
     margin: 4px 0 0;
 }
 
-/* ── Filtros ── */
 .sol-filtros {
     display: flex;
     gap: 12px;
@@ -611,7 +596,6 @@ onMounted(cargarSolicitudes)
     border-color: #1a3a2a;
 }
 
-/* ── Tabs ── */
 .sol-tabs {
     display: flex;
     gap: 4px;
@@ -642,7 +626,6 @@ onMounted(cargarSolicitudes)
     box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
 }
 
-/* ── Tabla ── */
 .sol-tabla-wrap {
     background: #fff;
     border-radius: 14px;
@@ -716,7 +699,6 @@ onMounted(cargarSolicitudes)
     margin-top: 2px;
 }
 
-/* ── Botones icono ── */
 .td-acciones {
     display: flex;
     gap: 6px;
@@ -753,7 +735,6 @@ onMounted(cargarSolicitudes)
     color: #991b1b;
 }
 
-/* ── Badges ── */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -788,7 +769,6 @@ onMounted(cargarSolicitudes)
     color: #6d28d9;
 }
 
-/* ── Paginación ── */
 .paginacion {
     display: flex;
     align-items: center;
@@ -836,7 +816,6 @@ onMounted(cargarSolicitudes)
     cursor: default;
 }
 
-/* ── Estados especiales ── */
 .sol-estado {
     display: flex;
     flex-direction: column;
@@ -904,7 +883,6 @@ onMounted(cargarSolicitudes)
     font-size: .85rem;
 }
 
-/* ── Modal ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -970,7 +948,6 @@ onMounted(cargarSolicitudes)
     background: #b91c1c;
 }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
     .sol-resumen {
         grid-template-columns: repeat(3, 1fr);

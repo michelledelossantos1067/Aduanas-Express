@@ -2,12 +2,11 @@
 using AduanasExpress.Domain.Entitis;
 using FluentValidation;
 
-
 namespace AduanasExpress.Application.Validaciones
 {
     public class ConsumoCombustibleValidator: AbstractValidator<CreateConsumoCombustibleDTOs>
     {
-        public ConsumoCombustibleValidator() 
+        public ConsumoCombustibleValidator()
         {
             RuleFor(c => c.Galones)
                 .NotEmpty().WithMessage("La cantidad de galones es requerida.")

@@ -22,7 +22,7 @@ async function handleVerifyEmail() {
     loading.value = true
     error.value = ''
     try {
-        // await checkEmailExists(form.value.email)
+
         step.value = 'password'
     } catch (e) {
         error.value = e.response?.data?.message || 'Correo no encontrado'
@@ -47,7 +47,7 @@ async function handleResetPassword() {
     loading.value = true
     error.value = ''
     try {
-        // await resetPassword(form.value.email, form.value.password)
+
         step.value = 'done'
     } catch (e) {
         error.value = e.response?.data?.message || 'Error al restablecer la contraseña'
@@ -99,7 +99,6 @@ async function handleResetPassword() {
 
                 <div class="reset-right">
 
-                    <!-- Paso 1: Email -->
                     <template v-if="step === 'email'">
                         <h1>Recuperar contraseña</h1>
                         <h4>Ingresa tu correo para continuar</h4>
@@ -116,7 +115,6 @@ async function handleResetPassword() {
                         </div>
                     </template>
 
-                    <!-- Paso 2: Nueva contraseña -->
                     <template v-if="step === 'password'">
                         <h1>Nueva contraseña</h1>
                         <h4>Elige una contraseña segura para <strong>{{ form.email }}</strong></h4>
@@ -135,7 +133,6 @@ async function handleResetPassword() {
                         </div>
                     </template>
 
-                    <!-- Éxito -->
                     <template v-if="step === 'done'">
                         <div class="success-state">
                             <div class="success-icon">

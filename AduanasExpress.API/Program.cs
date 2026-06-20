@@ -31,8 +31,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<ConsumoCombustibleValidator
 builder.Services.AddValidatorsFromAssemblyContaining<MantenimientoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<SolicitudTransporteValidator>();
 
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
@@ -93,8 +91,6 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseMiddleware<AduanasExpress.API.Middleware.ManejoErroresMiddleware>();
-
-
 
 if (app.Environment.IsDevelopment())
 {

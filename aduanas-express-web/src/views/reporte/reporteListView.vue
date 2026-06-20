@@ -9,13 +9,11 @@ import {
     exportarExcel,
 } from '@/services/reporteService.js'
 
-// ── Estado general ────────────────────────────────────────
-const tabActiva   = ref('viajes')   // 'viajes' | 'consumo' | 'solicitudes' | 'conductores'
+const tabActiva   = ref('viajes')
 const loading     = ref(false)
-const exportando  = ref('')         // '' | 'pdf' | 'excel'
+const exportando  = ref('')
 const errorMsg    = ref('')
 
-// ── Selector de período (viajes y consumo) ────────────────
 const hoy    = new Date()
 const mesRef = ref(hoy.getMonth() + 1)
 const añoRef = ref(hoy.getFullYear())
@@ -30,13 +28,11 @@ const periodoLabel = computed(() =>
     `${MESES[mesRef.value - 1]} ${añoRef.value}`
 )
 
-// ── Datos de reportes ─────────────────────────────────────
 const datosViajes      = ref(null)
 const datosConsumo     = ref(null)
 const datosSolicitudes = ref(null)
 const datosConductores = ref(null)
 
-// ── Helpers ───────────────────────────────────────────────
 function formatFecha(f) {
     if (!f) return '—'
     return new Date(f).toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -52,7 +48,6 @@ function formatNumero(id) {
     return `#${String(id).padStart(4, '0')}`
 }
 
-// ── Carga por tab ─────────────────────────────────────────
 async function cargar() {
     loading.value = true
     errorMsg.value = ''
@@ -81,7 +76,6 @@ async function cargar() {
 watch([tabActiva, mesRef, añoRef], cargar, { immediate: false })
 onMounted(cargar)
 
-// ── Exportar ──────────────────────────────────────────────
 async function descargar(tipo) {
     exportando.value = tipo
     errorMsg.value   = ''
@@ -107,7 +101,6 @@ async function descargar(tipo) {
     }
 }
 
-// ── Acceso fácil a datos actuales ─────────────────────────
 const datos = computed(() => ({
     viajes:      datosViajes.value,
     consumo:     datosConsumo.value,
@@ -115,7 +108,6 @@ const datos = computed(() => ({
     conductores: datosConductores.value,
 })[tabActiva.value])
 
-// ── KPIs dinámicos según tab ──────────────────────────────
 const kpis = computed(() => {
     const d = datos.value
     if (!d) return []
@@ -151,7 +143,6 @@ const kpis = computed(() => {
     return []
 })
 
-// ── Columnas de tabla por tab ─────────────────────────────
 const tablaConfig = computed(() => {
     if (tabActiva.value === 'viajes') return {
         cols: ['#', 'Destino', 'Fecha', 'Conductor', 'Vehículo', 'Km', 'Estado'],
@@ -209,7 +200,6 @@ const tablaConfig = computed(() => {
     return { cols: [], rows: [], estadoIdx: -1 }
 })
 
-// ── Badge de estado ───────────────────────────────────────
 function estadoBadgeClase(val) {
     const v = (val ?? '').toLowerCase()
     if (['completado','aprobada','aprobado','finalizado'].some(x => v.includes(x))) return 'badge-completado'
@@ -219,7 +209,6 @@ function estadoBadgeClase(val) {
     return 'badge-default'
 }
 
-// ── Tabs config ───────────────────────────────────────────
 const TABS = [
     { key: 'viajes',      label: 'Viajes',      icono: 'viajes'   },
     { key: 'consumo',     label: 'Consumo',     icono: 'dinero'   },
@@ -233,7 +222,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 <template>
     <div class="rep-page">
 
-        <!-- ── Encabezado ── -->
         <div class="rep-header">
             <div>
                 <h1 class="rep-title">Reportes</h1>
@@ -268,10 +256,8 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
             </div>
         </div>
 
-        <!-- ── Error ── -->
         <div v-if="errorMsg" class="notif notif-error">{{ errorMsg }}</div>
 
-        <!-- ── Tabs ── -->
         <div class="tabs-row">
             <button
                 v-for="tab in TABS"
@@ -280,23 +266,23 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
                 :class="{ 'tab-activo': tabActiva === tab.key }"
                 @click="tabActiva = tab.key"
             >
-                <!-- Viajes -->
+
                 <svg v-if="tab.icono === 'viajes'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/>
                     <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                 </svg>
-                <!-- Dinero -->
+
                 <svg v-else-if="tab.icono === 'dinero'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <line x1="12" y1="1" x2="12" y2="23"/>
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
-                <!-- Docs -->
+
                 <svg v-else-if="tab.icono === 'docs'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                     <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                <!-- Persona -->
+
                 <svg v-else-if="tab.icono === 'persona'" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
@@ -304,7 +290,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
                 {{ tab.label }}
             </button>
 
-            <!-- Selector de período -->
             <div class="periodo-wrap" v-if="conPeriodo">
                 <select v-model="mesRef" class="periodo-select">
                     <option v-for="(m, i) in MESES" :key="i" :value="i+1">{{ m }}</option>
@@ -315,55 +300,54 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
             </div>
         </div>
 
-        <!-- ── KPIs ── -->
         <div class="kpi-row">
             <div v-for="(k, i) in kpis" :key="i" class="kpi-card">
                 <div class="kpi-icon" :class="`kpi-icon-${k.color}`">
-                    <!-- Viajes -->
+
                     <svg v-if="k.icono === 'viajes'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/>
                         <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
-                    <!-- Check -->
+
                     <svg v-else-if="k.icono === 'check'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
-                    <!-- X -->
+
                     <svg v-else-if="k.icono === 'x'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
-                    <!-- km -->
+
                     <svg v-else-if="k.icono === 'km'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <!-- dinero -->
+
                     <svg v-else-if="k.icono === 'dinero'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <line x1="12" y1="1" x2="12" y2="23"/>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     </svg>
-                    <!-- fuel -->
+
                     <svg v-else-if="k.icono === 'fuel'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M3 22V8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14"/><path d="M2 22h12"/><path d="M13 8h3l2 2v8a2 2 0 0 1-2 2h-1"/>
                     </svg>
-                    <!-- llave -->
+
                     <svg v-else-if="k.icono === 'llave'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                     </svg>
-                    <!-- grafico -->
+
                     <svg v-else-if="k.icono === 'grafico'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
                         <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
                     </svg>
-                    <!-- docs -->
+
                     <svg v-else-if="k.icono === 'docs'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                         <polyline points="14 2 14 8 20 8"/>
                     </svg>
-                    <!-- reloj -->
+
                     <svg v-else-if="k.icono === 'reloj'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <!-- persona -->
+
                     <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
@@ -375,10 +359,8 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
             </div>
         </div>
 
-        <!-- ── Tabla ── -->
         <div class="tabla-wrap">
 
-            <!-- Cabecera tabla -->
             <div class="tabla-header">
                 <h3 class="tabla-titulo">
                     Detalle — {{ TABS.find(t => t.key === tabActiva)?.label }}
@@ -389,13 +371,11 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
                 </span>
             </div>
 
-            <!-- Spinner -->
             <div v-if="loading" class="estado-carga">
                 <div class="spinner"></div>
                 <p>Cargando reporte...</p>
             </div>
 
-            <!-- Sin datos -->
             <div v-else-if="!datos || tablaConfig.rows.length === 0" class="estado-vacio">
                 <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.2">
                     <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
@@ -404,7 +384,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
                 <p>No hay datos para este período.</p>
             </div>
 
-            <!-- Tabla -->
             <div v-else class="tabla-scroll">
                 <table class="rep-tabla">
                     <thead>
@@ -440,7 +419,7 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .rep-page {
     padding: 28px 32px;
     background: #f3f4f6;
@@ -448,7 +427,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .rep-header {
     display: flex;
     align-items: center;
@@ -512,7 +490,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 .btn-pdf { background: #fee2e2; color: #991b1b; border: 1.5px solid #fca5a5; }
 .btn-pdf:hover:not(:disabled) { background: #fecaca; }
 
-/* ── Notificación ── */
 .notif {
     padding: 12px 18px;
     border-radius: 10px;
@@ -522,7 +499,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 }
 .notif-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
-/* ── Tabs ── */
 .tabs-row {
     display: flex;
     align-items: center;
@@ -556,7 +532,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
     color: #fff !important;
 }
 
-/* Período */
 .periodo-wrap {
     display: flex;
     gap: 8px;
@@ -577,7 +552,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 }
 .periodo-select:focus { border-color: #1a3a2a; }
 
-/* ── KPIs ── */
 .kpi-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -626,7 +600,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
     margin: 0;
 }
 
-/* ── Tabla ── */
 .tabla-wrap {
     background: #fff;
     border-radius: 14px;
@@ -702,7 +675,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 .td-id   { font-weight: 700; color: #111827; }
 .td-mono { font-family: monospace; font-weight: 700; font-size: .8rem; background: #111827; color: #fff; padding: 2px 8px; border-radius: 5px; display: inline-block; }
 
-/* ── Badges ── */
 .badge {
     display: inline-block;
     padding: 3px 9px;
@@ -718,7 +690,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 .badge-en-proceso { background: #dbeafe; color: #1e40af; }
 .badge-default    { background: #f3f4f6; color: #374151; }
 
-/* ── Estados carga / vacío ── */
 .estado-carga {
     display: flex;
     flex-direction: column;
@@ -738,7 +709,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
     font-size: .9rem;
 }
 
-/* ── Spinners ── */
 .spinner {
     width: 32px; height: 32px;
     border: 3px solid #e5e7eb;
@@ -765,7 +735,6 @@ const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Responsive ── */
 @media (max-width: 1000px) {
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }

@@ -1,7 +1,6 @@
 <template>
   <div class="hist-page">
 
-    <!-- Header -->
     <div class="hist-header">
       <h1 class="hist-title">Historial de Viajes</h1>
       <div class="hist-header-actions">
@@ -18,7 +17,6 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="hist-stats">
       <div v-for="stat in stats" :key="stat.label" class="stat-card" :class="stat.colorClass">
         <p class="stat-value">{{ stat.value }}</p>
@@ -26,7 +24,6 @@
       </div>
     </div>
 
-    <!-- Filtros -->
     <div class="hist-filtros">
       <input
         v-model="filtro"
@@ -47,7 +44,6 @@
       </select>
     </div>
 
-    <!-- Tabla -->
     <div class="hist-tabla-wrap">
       <div class="tabla-header">
         <h2 class="tabla-titulo">Registro de viajes</h2>
@@ -94,7 +90,6 @@
         </table>
       </div>
 
-      <!-- Paginación -->
       <div class="hist-paginacion">
         <span class="pag-info">
           Mostrando {{ (pagina - 1) * ITEMS_POR_PAGINA + 1 }}–{{ Math.min(pagina * ITEMS_POR_PAGINA, viajesFiltrados.length) }}
@@ -122,7 +117,6 @@
 import { ref, computed, watch } from 'vue'
 import { exportarPdf, exportarExcel } from '../../services/reporteService'
 
-// ── Constantes ──────────────────────────────────────────────
 const ESTADOS = ['Todos los estados', 'Activo', 'Inactivo', 'Bloqueado']
 const ROLES   = ['Todos los roles', 'Conductor', 'Admin']
 const AREAS   = ['Área - Todos', 'Sede Central', 'Sucursal Norte', 'Sucursal Sur']
@@ -138,7 +132,6 @@ const estadoClasses = {
   Bloqueado: 'estado-bloqueado',
 }
 
-// ── Estado reactivo ──────────────────────────────────────────
 const filtro       = ref('')
 const estadoFiltro = ref('Todos los estados')
 const rol          = ref('Todos los roles')
@@ -147,7 +140,6 @@ const fechaDesde   = ref('2026-01-01')
 const fechaHasta   = ref('2026-01-30')
 const pagina       = ref(1)
 
-// ── Datos mock ───────────────────────────────────────────────
 const datosMock = Array.from({ length: 48 }, (_, i) => ({
   id:          `V-${1248 + i}`,
   ruta:        'Sede Central',
@@ -160,7 +152,6 @@ const datosMock = Array.from({ length: 48 }, (_, i) => ({
   avatarClass: avatarClasses[i % avatarClasses.length],
 }))
 
-// ── Stats ────────────────────────────────────────────────────
 const stats = [
   { label: 'Viajes totales', value: '1,240', colorClass: 'blue' },
   { label: 'Completas',      value: '1,190', colorClass: 'green' },
@@ -169,7 +160,6 @@ const stats = [
   { label: 'KM Recorridos',  value: '43,320',colorClass: 'gray' },
 ]
 
-// ── Computadas ───────────────────────────────────────────────
 const viajesFiltrados = computed(() =>
   datosMock.filter((v) => {
     const matchFiltro =
@@ -196,7 +186,6 @@ const viajesPagina = computed(() =>
 
 watch([filtro, estadoFiltro, area], () => { pagina.value = 1 })
 
-// ── Métodos ──────────────────────────────────────────────────
 function getInitials(name = '') {
   return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
 }
@@ -241,7 +230,7 @@ function eliminarViaje(viaje) {
 </script>
 
 <style scoped>
-/* ── Base ── */
+
 .hist-page {
   padding: 32px 40px;
   background: #f3f4f6;
@@ -249,7 +238,6 @@ function eliminarViaje(viaje) {
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .hist-header {
   display: flex;
   align-items: center;
@@ -326,7 +314,6 @@ function eliminarViaje(viaje) {
 }
 .btn-filtros:hover { background: #111827; }
 
-/* ── Stats ── */
 .hist-stats {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -361,7 +348,6 @@ function eliminarViaje(viaje) {
   margin: 5px 0 0;
 }
 
-/* ── Filtros ── */
 .hist-filtros {
   display: flex;
   flex-wrap: wrap;
@@ -403,7 +389,6 @@ function eliminarViaje(viaje) {
 .filtro-date:focus,
 .filtro-select:focus { border-color: #9ca3af; }
 
-/* ── Tabla ── */
 .hist-tabla-wrap {
   background: #fff;
   border-radius: 14px;
@@ -475,7 +460,6 @@ tbody td {
   color: #111827;
 }
 
-/* ── Avatar ── */
 .conductor-cell {
   display: flex;
   align-items: center;
@@ -500,7 +484,6 @@ tbody td {
 .av-purple { background: #a855f7; }
 .av-teal   { background: #14b8a6; }
 
-/* ── Badges ── */
 .badge-dur {
   background: #f3f4f6;
   color: #4b5563;
@@ -522,7 +505,6 @@ tbody td {
 .estado-inactivo  { background: #f3f4f6; color: #4b5563; }
 .estado-bloqueado { background: #fee2e2; color: #991b1b; }
 
-/* ── Acciones ── */
 .acciones {
   display: flex;
   gap: 4px;
@@ -545,7 +527,6 @@ tbody td {
 .btn-icon:hover     { border-color: #9ca3af; }
 .btn-icon.del:hover { border-color: #fca5a5; }
 
-/* ── Paginación ── */
 .hist-paginacion {
   display: flex;
   align-items: center;
@@ -577,7 +558,6 @@ tbody td {
 .btn-pag:hover:not(:disabled) { background: #f3f4f6; }
 .btn-pag:disabled { opacity: 0.4; cursor: default; }
 
-/* ── Responsive ── */
 @media (max-width: 1024px) {
   .hist-stats { grid-template-columns: repeat(3, 1fr); }
 }

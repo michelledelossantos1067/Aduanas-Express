@@ -7,29 +7,25 @@ import {
     eliminarMantenimiento,
 } from '@/services/mantenimientoService.js'
 
-// ── Estado ────────────────────────────────────────────────
 const registros   = ref([])
 const loading     = ref(false)
 const guardando   = ref(false)
-const eliminando  = ref(null)   // id en proceso de eliminar
+const eliminando  = ref(null)
 const errorMsg    = ref('')
 const exitoMsg    = ref('')
 
-// ── Vista ─────────────────────────────────────────────────
-const vistaActiva = ref('lista')    // 'lista' | 'form'
-const modoForm    = ref('crear')    // 'crear' | 'editar'
+const vistaActiva = ref('lista')
+const modoForm    = ref('crear')
 
-// ── Búsqueda y filtros ────────────────────────────────────
 const busqueda       = ref('')
-const filtroEstado   = ref('')      // '' | 'Programado' | 'En proceso' | 'Completado' | 'Cancelado'
-const filtroTipo     = ref('')      // '' | 'Preventivo' | 'Correctivo' | 'Emergencia'
+const filtroEstado   = ref('')
+const filtroTipo     = ref('')
 
-// ── Formulario ────────────────────────────────────────────
 const formInicial = () => ({
     id:               null,
     vehiculoId:       '',
     vehiculoPlaca:    '',
-    tipo:             'Preventivo',         // Preventivo | Correctivo | Emergencia
+    tipo:             'Preventivo',
     descripcion:      '',
     fechaProgramada:  '',
     fechaRealizada:   '',
@@ -38,20 +34,17 @@ const formInicial = () => ({
     taller:           '',
     responsable:      '',
     observaciones:    '',
-    estado:           'Programado',         // Programado | En proceso | Completado | Cancelado
+    estado:           'Programado',
 })
 
 const form = ref(formInicial())
 
-// ── Modal confirmación eliminar ───────────────────────────
 const modalEliminar = ref(false)
 const registroAEliminar = ref(null)
 
-// ── Constantes ────────────────────────────────────────────
 const TIPOS   = ['Preventivo', 'Correctivo', 'Emergencia']
 const ESTADOS = ['Programado', 'En proceso', 'Completado', 'Cancelado']
 
-// ── Registros filtrados ───────────────────────────────────
 const registrosFiltrados = computed(() => {
     const q = busqueda.value.toLowerCase()
     return registros.value.filter(r => {
@@ -63,7 +56,6 @@ const registrosFiltrados = computed(() => {
     })
 })
 
-// ── Resumen ───────────────────────────────────────────────
 const resumen = computed(() => ({
     total:      registros.value.length,
     programados: registros.value.filter(r => r.estado === 'Programado').length,
@@ -72,7 +64,6 @@ const resumen = computed(() => ({
     costoTotal:  registros.value.reduce((s, r) => s + (parseFloat(r.costo) || 0), 0),
 }))
 
-// ── Helpers ───────────────────────────────────────────────
 function formatFecha(f) {
     if (!f) return '—'
     return new Date(f).toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -87,7 +78,6 @@ function formatNumero(id) {
     return `#${String(id).padStart(4, '0')}`
 }
 
-// ── Clases de badges ──────────────────────────────────────
 function estadoClase(estado) {
     return {
         'Programado': 'badge-programado',
@@ -105,7 +95,6 @@ function tipoClase(tipo) {
     }[tipo] ?? ''
 }
 
-// ── Carga ─────────────────────────────────────────────────
 async function cargar() {
     loading.value = true
     try {
@@ -120,7 +109,6 @@ async function cargar() {
     }
 }
 
-// ── Abrir formulario ──────────────────────────────────────
 function abrirCrear() {
     form.value   = formInicial()
     modoForm.value  = 'crear'
@@ -154,7 +142,6 @@ function cancelarForm() {
     form.value = formInicial()
 }
 
-// ── Guardar ───────────────────────────────────────────────
 async function guardar() {
     if (!form.value.vehiculoPlaca || !form.value.descripcion || !form.value.fechaProgramada) {
         errorMsg.value = 'Completa los campos obligatorios: placa, descripción y fecha programada.'
@@ -184,7 +171,6 @@ async function guardar() {
     }
 }
 
-// ── Eliminar ──────────────────────────────────────────────
 function pedirEliminar(r) {
     registroAEliminar.value = r
     modalEliminar.value     = true
@@ -219,7 +205,6 @@ onMounted(cargar)
 <template>
     <div class="mant-page">
 
-        <!-- ── Encabezado ── -->
         <div class="mant-header">
             <div>
                 <h1 class="mant-title">Mantenimiento de vehículos</h1>
@@ -242,16 +227,11 @@ onMounted(cargar)
             </div>
         </div>
 
-        <!-- ── Notificaciones ── -->
         <div v-if="exitoMsg" class="notif notif-exito">{{ exitoMsg }}</div>
         <div v-if="errorMsg && vistaActiva === 'lista'" class="notif notif-error">{{ errorMsg }}</div>
 
-        <!-- ══════════════════════════════
-             VISTA LISTA
-        ══════════════════════════════ -->
         <template v-if="vistaActiva === 'lista'">
 
-            <!-- Tarjetas de resumen -->
             <div class="resumen-row">
                 <div class="resumen-card">
                     <span class="res-icon res-icon-total">
@@ -314,7 +294,6 @@ onMounted(cargar)
                 </div>
             </div>
 
-            <!-- Barra de búsqueda y filtros -->
             <div class="toolbar">
                 <div class="search-wrap">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
@@ -332,7 +311,6 @@ onMounted(cargar)
                 </select>
             </div>
 
-            <!-- Tabla -->
             <div class="tabla-wrap">
                 <div v-if="loading" class="estado-carga">
                     <div class="spinner"></div>
@@ -412,13 +390,9 @@ onMounted(cargar)
             </div>
         </template>
 
-        <!-- ══════════════════════════════
-             VISTA FORMULARIO
-        ══════════════════════════════ -->
         <template v-else>
             <div class="form-wrap">
 
-                <!-- Cabecera del form -->
                 <div class="form-header">
                     <button class="btn-volver" @click="cancelarForm">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -435,7 +409,6 @@ onMounted(cargar)
 
                 <div class="form-grid">
 
-                    <!-- ── Sección: Vehículo ── -->
                     <div class="form-section">
                         <p class="form-section-title">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -458,7 +431,6 @@ onMounted(cargar)
                         </div>
                     </div>
 
-                    <!-- ── Sección: Mantenimiento ── -->
                     <div class="form-section">
                         <p class="form-section-title">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -486,7 +458,6 @@ onMounted(cargar)
                         </div>
                     </div>
 
-                    <!-- ── Sección: Fechas y kilometraje ── -->
                     <div class="form-section">
                         <p class="form-section-title">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -512,7 +483,6 @@ onMounted(cargar)
                         </div>
                     </div>
 
-                    <!-- ── Sección: Taller y costo ── -->
                     <div class="form-section">
                         <p class="form-section-title">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -537,7 +507,6 @@ onMounted(cargar)
                         </div>
                     </div>
 
-                    <!-- ── Observaciones ── -->
                     <div class="form-section">
                         <p class="form-section-title">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -554,7 +523,6 @@ onMounted(cargar)
 
                 </div>
 
-                <!-- Acciones del formulario -->
                 <div class="form-acciones">
                     <button class="btn-cancelar" @click="cancelarForm">Cancelar</button>
                     <button class="btn-guardar" :disabled="guardando" @click="guardar">
@@ -568,7 +536,6 @@ onMounted(cargar)
             </div>
         </template>
 
-        <!-- ══ Modal confirmar eliminar ══ -->
         <div v-if="modalEliminar" class="modal-overlay" @click.self="modalEliminar = false">
             <div class="modal-box">
                 <div class="modal-icon">
@@ -596,7 +563,7 @@ onMounted(cargar)
 </template>
 
 <style scoped>
-/* ── Base ── */
+
 .mant-page {
     padding: 28px 32px;
     background: #f3f4f6;
@@ -604,7 +571,6 @@ onMounted(cargar)
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ── Encabezado ── */
 .mant-header {
     display: flex;
     align-items: center;
@@ -666,7 +632,6 @@ onMounted(cargar)
     font-size: .82rem;
 }
 
-/* ── Notificaciones ── */
 .notif {
     padding: 12px 18px;
     border-radius: 10px;
@@ -677,7 +642,6 @@ onMounted(cargar)
 .notif-exito { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
 .notif-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
-/* ── Resumen ── */
 .resumen-row {
     display: flex;
     gap: 12px;
@@ -734,7 +698,6 @@ onMounted(cargar)
 .naranja { color: #d97706; }
 .verde   { color: #16a34a; }
 
-/* ── Toolbar ── */
 .toolbar {
     display: flex;
     gap: 10px;
@@ -780,7 +743,6 @@ onMounted(cargar)
 }
 .filtro-select:focus { border-color: #1a3a2a; }
 
-/* ── Tabla ── */
 .tabla-wrap {
     background: #fff;
     border-radius: 14px;
@@ -884,7 +846,6 @@ onMounted(cargar)
 .btn-eliminar:hover:not(:disabled) { background: #fee2e2; }
 .btn-eliminar:disabled { opacity: .5; cursor: default; }
 
-/* ── Badges ── */
 .badge {
     display: inline-block;
     padding: 3px 9px;
@@ -903,7 +864,6 @@ onMounted(cargar)
 .badge-correctivo  { background: #fef3c7; color: #92400e; }
 .badge-emergencia  { background: #fee2e2; color: #991b1b; }
 
-/* ── Estado carga / vacío ── */
 .estado-carga {
     display: flex;
     flex-direction: column;
@@ -924,7 +884,6 @@ onMounted(cargar)
     text-align: center;
 }
 
-/* ── Formulario ── */
 .form-wrap {
     background: #fff;
     border-radius: 14px;
@@ -1041,7 +1000,6 @@ onMounted(cargar)
 
 .form-textarea { resize: vertical; min-height: 72px; }
 
-/* Acciones del form */
 .form-acciones {
     display: flex;
     justify-content: flex-end;
@@ -1081,7 +1039,6 @@ onMounted(cargar)
 .btn-guardar:hover:not(:disabled) { background: #14532d; }
 .btn-guardar:disabled { opacity: .5; cursor: default; }
 
-/* ── Modal eliminar ── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1154,7 +1111,6 @@ onMounted(cargar)
 }
 .btn-eliminar-confirmar:hover { background: #b91c1c; }
 
-/* ── Spinners ── */
 .spinner {
     width: 32px; height: 32px;
     border: 3px solid #e5e7eb;
@@ -1181,7 +1137,6 @@ onMounted(cargar)
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Responsive ── */
 @media (max-width: 1000px) {
     .form-row-3 { grid-template-columns: 1fr 1fr; }
     .resumen-row { gap: 10px; }

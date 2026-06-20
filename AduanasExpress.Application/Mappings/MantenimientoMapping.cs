@@ -10,7 +10,6 @@ namespace AduanasExpress.Application.Mappings
             return new MantenimientoResponseDTOs
             {
                 Id = mantenimiento.Id,
-                Fecha = mantenimiento.Fecha,
                 TipoMantenimiento = mantenimiento.TipoMantenimiento,
                 Descripcion = mantenimiento.Descripcion,
                 Costo = mantenimiento.Costo,

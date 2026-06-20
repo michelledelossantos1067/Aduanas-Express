@@ -86,7 +86,6 @@ namespace AduanasExpress.Tests.Services
             _repositoryMock.Setup(r => r.ObtenerPorId(1)).ReturnsAsync(conductor);
             _repositoryMock.Setup(r => r.Eliminar(1)).Returns(Task.CompletedTask);
 
-           
             await _service.Eliminar(1);
 
             _repositoryMock.Verify(r => r.Eliminar(1), Times.Once);

@@ -1,43 +1,37 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj": {}
+    "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/AduanasExpress.API.csproj": {}
   },
   "projects": {
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj": {
+    "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/AduanasExpress.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj",
+        "projectUniqueName": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/AduanasExpress.API.csproj",
         "projectName": "AduanasExpress.API",
-        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\AduanasExpress.API.csproj",
-        "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
-        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.API\\obj\\",
+        "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/AduanasExpress.API.csproj",
+        "packagesPath": "/Users/dianny/.nuget/packages/",
+        "outputPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.API/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Carlos Reynoso\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/dianny/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj": {
-                "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj"
+              "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj": {
+                "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj"
               },
-              "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj": {
-                "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj"
+              "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj": {
+                "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj"
               }
             }
           }
@@ -52,11 +46,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "FluentValidation.AspNetCore": {
@@ -97,24 +90,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -123,41 +98,35 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/sdk/9.0.115/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj": {
+    "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj",
+        "projectUniqueName": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj",
         "projectName": "AduanasExpress.Application",
-        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj",
-        "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
-        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\obj\\",
+        "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj",
+        "packagesPath": "/Users/dianny/.nuget/packages/",
+        "outputPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Carlos Reynoso\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/dianny/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj": {
-                "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj"
+              "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj": {
+                "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj"
               }
             }
           }
@@ -172,11 +141,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "FluentValidation": {
@@ -195,56 +163,36 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/sdk/9.0.115/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj": {
+    "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj",
+        "projectUniqueName": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj",
         "projectName": "AduanasExpress.Domain",
-        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj",
-        "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
-        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\obj\\",
+        "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj",
+        "packagesPath": "/Users/dianny/.nuget/packages/",
+        "outputPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Carlos Reynoso\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/dianny/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -259,11 +207,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -276,63 +223,43 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/sdk/9.0.115/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj": {
+    "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj",
+        "projectUniqueName": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj",
         "projectName": "AduanasExpress.Infrastructure",
-        "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\AduanasExpress.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\",
-        "outputPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Infrastructure\\obj\\",
+        "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/AduanasExpress.Infrastructure.csproj",
+        "packagesPath": "/Users/dianny/.nuget/packages/",
+        "outputPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Infrastructure/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "D:\\Archivo de programas\\Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Carlos Reynoso\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/dianny/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
-            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj": {
-                "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Application\\AduanasExpress.Application.csproj"
+              "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj": {
+                "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Application/AduanasExpress.Application.csproj"
               },
-              "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj": {
-                "projectPath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj"
+              "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj": {
+                "projectPath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj"
               }
             }
           }
@@ -347,11 +274,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
-          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -378,26 +304,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[9.0.16, 9.0.16]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@9/9.0.115/libexec/sdk/9.0.115/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

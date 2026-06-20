@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "apOg3crTdIA=",
+  "dgSpecHash": "SeAXtjdrswY=",
   "success": true,
-  "projectFilePath": "D:\\Archivo de programas\\Visual Studio\\Poyectos\\Aduanas-Express\\AduanasExpress.Domain\\AduanasExpress.Domain.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.16\\microsoft.netcore.app.ref.9.0.16.nupkg.sha512",
-    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.16\\microsoft.windowsdesktop.app.ref.9.0.16.nupkg.sha512",
-    "C:\\Users\\Carlos Reynoso\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.16\\microsoft.aspnetcore.app.ref.9.0.16.nupkg.sha512"
-  ],
+  "projectFilePath": "/Users/dianny/Desktop/Aduanas-Express/AduanasExpress.Domain/AduanasExpress.Domain.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

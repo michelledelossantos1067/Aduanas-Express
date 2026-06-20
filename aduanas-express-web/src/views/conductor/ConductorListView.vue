@@ -389,10 +389,11 @@ onMounted(cargarConductores)
 /* ── Resumen ── */
 .cond-resumen {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
+
 
 .resumen-card {
     background: #fff;
@@ -808,6 +809,18 @@ onMounted(cargarConductores)
         flex-direction: column;
         align-items: flex-start;
         gap: 14px;
+    }
+    
+}
+@media (max-width: 1024px) {
+    .cond-resumen {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .cond-resumen {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 </style>

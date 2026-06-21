@@ -1,5 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { verSolicitud } from '@/services/solicitudService'
+import { verVehiculos } from '@/services/vehiculoService'
+import { verConductores } from '@/services/conductorService'
 
 const vistaActiva = ref('mes')
 const hoy = new Date()
@@ -11,18 +14,82 @@ function toggleFiltro(key) {
     filtros.value[key] = !filtros.value[key]
 }
 
-const viajes = ref([
-    { id: 1,  titulo: 'Reunión MICI',         fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 2),  horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'programado',  tipo: 'normal'  },
-    { id: 2,  titulo: 'Aeropuerto',            fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 6),  horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'en_viaje',   tipo: 'normal'  },
-    { id: 3,  titulo: 'Norte',                 fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 6),  horaInicio: '14:00', horaFin: '15:30', vehiculo: 'Kia Sorento',  placa: 'B456DE', conductor: 'Pedro R.',  estado: 'programado',  tipo: 'normal'  },
-    { id: 4,  titulo: 'Puerto',                fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 14), horaInicio: '07:00', horaFin: '09:00', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'en_viaje',   tipo: 'normal'  },
-    { id: 5,  titulo: 'Zona Franca Este',      fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 14), horaInicio: '13:50', horaFin: '15:00', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'programado',  tipo: 'normal'  },
-    { id: 6,  titulo: 'Urgente',               fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 15), horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Kia Sorento',  placa: 'B456DE', conductor: 'Pedro R.',  estado: 'pendiente',   tipo: 'urgente' },
-    { id: 7,  titulo: 'Congreso Nacional',     fecha: new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()), horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'en_viaje',   tipo: 'normal'  },
-    { id: 8,  titulo: 'Zona Franca Este',      fecha: new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()), horaInicio: '08:00', horaFin: '09:30', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'programado',  tipo: 'normal'  },
-    { id: 9,  titulo: 'Urgente - Presidencia', fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 19), horaInicio: '08:30', horaFin: '10:00', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'espera',      tipo: 'urgente' },
-    { id: 10, titulo: 'Urgente - Presidencia', fecha: new Date(hoy.getFullYear(), hoy.getMonth(), 20), horaInicio: '07:30', horaFin: '09:00', vehiculo: 'Toyota Hiace', placa: 'A123BC', conductor: 'Carlos M.', estado: 'cancelado',   tipo: 'urgente' },
-])
+const viajes = ref([])
+const cargando = ref(true)
+const errorCarga = ref(null)
+
+const MAP_ESTADO = {
+    Pendiente: 'pendiente',
+    Aprobada: 'programado',
+    Rechazada: 'cancelado',
+    Cancelada: 'cancelado',
+    Finalizada: 'programado',
+    EnViaje: 'en_viaje',
+    Espera: 'espera',
+}
+
+function mapearEstado(estadoApi) {
+    return MAP_ESTADO[estadoApi] ?? 'programado'
+}
+
+async function cargarDatos() {
+    cargando.value = true
+    errorCarga.value = null
+    try {
+        const [resSolicitudes, resVehiculos, resConductores] = await Promise.all([
+            verSolicitud(),
+            verVehiculos(),
+            verConductores(),
+        ])
+       
+        const vehiculosPorId = new Map(resVehiculos.data.map(v => [String(v.id || v.vehiculoId), v]))
+        const conductoresPorId = new Map(resConductores.data.map(c => [String(c.id || c.conductorId), c]))
+
+        viajes.value = resSolicitudes.data.map(s => {
+            // Manejamos posibles diferencias de mayúsculas desde el DTO del backend
+            const vId = s.vehiculoId || s.vehiculoID || s.VehiculoId;
+            const cId = s.conductorId || s.conductorID || s.ConductorId;
+
+            const vehiculo = vId ? vehiculosPorId.get(String(vId)) : null;
+            const conductor = cId ? conductoresPorId.get(String(cId)) : null;
+
+            const [h, m] = (s.horaSalida ?? '00:00:00').split(':')
+            const horaInicio = `${h}:${m}`
+            const horaFin = `${String((Number(h) + 1) % 24).padStart(2, '0')}:${m}`
+
+            return {
+                id: s.id,
+                titulo: s.motivoViaje || s.destino,
+                fecha: new Date(s.fechaViaje),
+                horaInicio,
+                horaFin,
+                
+                // Si encontramos el vehículo en el Map, lo usamos. 
+                // Si no, verificamos si el backend envió el objeto Vehículo directamente. Si no, 'Sin asignar'.
+                vehiculo: vehiculo 
+                    ? `${vehiculo.marca} ${vehiculo.modelo}` 
+                    : (s.vehiculo ? `${s.vehiculo.marca} ${s.vehiculo.modelo}` : 'Sin asignar'),
+                
+                placa: vehiculo 
+                    ? vehiculo.matricula 
+                    : (s.vehiculo ? s.vehiculo.matricula : '—'),
+                
+                conductor: conductor 
+                    ? `${conductor.nombre} ${conductor.apellido?.charAt(0) ?? ''}.` 
+                    : (s.conductor ? `${s.conductor.nombre} ${s.conductor.apellido?.charAt(0) ?? ''}.` : 'Sin asignar'),
+                
+                estado: mapearEstado(s.estado),
+                tipo: s.estado === 'Pendiente' ? 'urgente' : 'normal',
+            }
+        })
+    } catch (err) {
+        errorCarga.value = 'No se pudieron cargar los datos del calendario.'
+        console.error("Error al cargar datos:", err)
+    } finally {
+        cargando.value = false
+    }
+}
+onMounted(cargarDatos)
 
 function mesAnterior() {
     fechaActual.value = new Date(fechaActual.value.getFullYear(), fechaActual.value.getMonth() - 1, 1)
@@ -35,7 +102,6 @@ function irAHoy() {
     mostrarPicker.value = false
 }
 
-// ── Mini calendario picker ────────────────────────────────
 const mostrarPicker = ref(false)
 const vistaPickerAño = ref(false)
 const pickerAño = ref(fechaActual.value.getFullYear())
@@ -175,7 +241,10 @@ function badgeEstado(estado) {
             </div>
         </div>
 
-        <div class="agenda-layout">
+        <div v-if="cargando" class="estado-carga">Cargando agenda...</div>
+        <div v-else-if="errorCarga" class="estado-error">{{ errorCarga }}</div>
+
+        <div v-else class="agenda-layout">
             <div class="cal-panel">
 
                 <div class="cal-nav">
@@ -183,17 +252,14 @@ function badgeEstado(estado) {
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
 
-                    <!-- Título clickeable que abre el picker -->
                     <div class="picker-wrapper">
                         <button class="cal-mes-label-btn" @click.stop="mostrarPicker = !mostrarPicker; pickerAño = fechaActual.getFullYear(); vistaPickerAño = false">
                             {{ nombreMes(fechaActual) }}
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
 
-                        <!-- Mini calendario picker -->
                         <div v-if="mostrarPicker" class="picker-dropdown" @click.stop>
 
-                            <!-- Vista de meses -->
                             <template v-if="!vistaPickerAño">
                                 <div class="picker-nav">
                                     <button class="picker-nav-btn" @click="añoAnteriorPicker">
@@ -218,7 +284,6 @@ function badgeEstado(estado) {
                                 </div>
                             </template>
 
-                            <!-- Vista de años -->
                             <template v-else>
                                 <div class="picker-nav">
                                     <button class="picker-nav-btn" @click="pickerAño -= 12">
@@ -260,9 +325,6 @@ function badgeEstado(estado) {
                 </div>
 
                 <div class="cal-grid">
-
-                    <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
-
                     <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
                     <div
                         v-for="(fecha, i) in celdasMes"
@@ -354,6 +416,16 @@ function badgeEstado(estado) {
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
+.estado-carga, .estado-error {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: .95rem;
+    color: #6b7280;
+    background: #fff;
+    border-radius: 14px;
+}
+.estado-error { color: #dc2626; }
+
 .agenda-header {
     display: flex;
     align-items: center;
@@ -433,7 +505,6 @@ function badgeEstado(estado) {
 }
 .nav-btn:hover { background: #f3f4f6; }
 
-/* Título clickeable */
 .picker-wrapper {
     position: relative;
     flex: 1;
@@ -455,7 +526,6 @@ function badgeEstado(estado) {
 }
 .cal-mes-label-btn:hover { background: #f3f4f6; }
 
-/* Dropdown picker */
 .picker-dropdown {
     position: absolute;
     top: 38px;

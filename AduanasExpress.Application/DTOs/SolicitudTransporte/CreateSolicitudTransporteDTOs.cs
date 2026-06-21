@@ -11,7 +11,4 @@ public class CreateSolicitudTransporteDTOs{
     public TipoViaje TipoViaje {get;set;}
     public string MotivoViaje {get;set;}
     public EstadosSolicitudes Estado {get;set;}
-    public int? VehiculoId {get;set;}
-    public int? ConductorId { get; set; }
-    public int UsuarioSolicitaId { get; set; }
 }

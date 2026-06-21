@@ -13,4 +13,6 @@ public class ConductorReponseDTOs{
     public string Direccion { get; set; }
     public int SupervisorId { get; set; }
     public EstadosConductor Estado { get; set; }
+    public bool IsActive { get; set; }
+    public bool PuedeEliminarse { get; set; }
 }

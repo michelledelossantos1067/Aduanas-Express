@@ -12,5 +12,6 @@ public class Conductor{
     public int SupervisorId { get; set; }
     public Usuario Supervisor { get; set; }
     public EstadosConductor Estado { get; set; }
+    public bool IsActive {get;set;} = true;
 
 }

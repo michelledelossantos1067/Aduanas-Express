@@ -50,18 +50,31 @@ public class VehiculoController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
-    [HttpDelete("{Id}")]
-    public async Task<IActionResult> Eliminar(int Id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Eliminar(int id)
     {
         try
         {
-            await _vehiculoService.Eliminar(Id);
+            await _vehiculoService.Eliminar(id);
             return NoContent();
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return Conflict(new { mensaje = ex.Message });
         }
     }
 
+    [HttpPatch("{id}/desactivar")]
+    public async Task<IActionResult> Desactivar(int id)
+    {
+        await _vehiculoService.Desactivar(id);
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/activar")]
+    public async Task<IActionResult> Activar(int id)
+    {
+        await _vehiculoService.Activar(id);
+        return NoContent();
+    }
 }

@@ -9,11 +9,18 @@ namespace AduanasExpress.Infrastructure.Services;
 public class ConductorServices : IConductorService
 {
     private readonly IConductorRepositories _conductorRepositories;
+    private readonly IAsignacionRepository _asignacionRepo;   // 👈 nuevo
 
-    public ConductorServices(IConductorRepositories conductorRepositories)
+    public ConductorServices(
+        IConductorRepositories conductorRepositories,
+        IAsignacionRepository asignacionRepo)
     {
         _conductorRepositories = conductorRepositories;
+        _asignacionRepo = asignacionRepo;
     }
+
+    private async Task<bool> TieneHistorialAsync(int conductorId)
+        => await _asignacionRepo.ExisteParaConductor(conductorId);
 
     public async Task<List<ConductorReponseDTOs?>> ObtenerTodos()
     {
@@ -21,7 +28,12 @@ public class ConductorServices : IConductorService
         if (conductor == null)
             throw new Exception("Error al obtener los conductores.");
 
-        return conductor.Select(c => c.ToResponse()).ToList();
+        var responses = conductor.Select(c => c.ToResponse()).ToList();
+        foreach (var r in responses)
+            if (r != null)
+                r.PuedeEliminarse = !await TieneHistorialAsync(r.Id);
+
+        return responses;
     }
 
     public async Task<ConductorReponseDTOs?> ObtenerPorId(int Id)
@@ -30,7 +42,9 @@ public class ConductorServices : IConductorService
         if (conductor == null)
             throw new Exception("Error al buscar el conductor.");
 
-        return conductor.ToResponse();
+        var response = conductor.ToResponse();
+        response.PuedeEliminarse = !await TieneHistorialAsync(Id);
+        return response;
     }
 
     public async Task Crear(CreateConductorDTOs createConductorDTOs)
@@ -75,7 +89,30 @@ public class ConductorServices : IConductorService
         if (conductor == null)
             throw new Exception("Error al eliminar el conductor.");
 
+        if (await TieneHistorialAsync(Id))
+            throw new Exception("Este conductor tiene viajes/asignaciones registradas. No se puede eliminar; desactívalo en su lugar.");
+
         await _conductorRepositories.Eliminar(Id);
+    }
+
+    public async Task Desactivar(int Id)
+    {
+        var conductor = await _conductorRepositories.ObtenerPorId(Id);
+        if (conductor == null)
+            throw new Exception("Error al desactivar el conductor.");
+
+        conductor.IsActive = false;
+        await _conductorRepositories.Actualizar(Id, conductor);
+    }
+
+    public async Task Activar(int Id)
+    {
+        var conductor = await _conductorRepositories.ObtenerPorId(Id);
+        if (conductor == null)
+            throw new Exception("Error al activar el conductor.");
+
+        conductor.IsActive = true;
+        await _conductorRepositories.Actualizar(Id, conductor);
     }
 
     public async Task<List<ConductorReponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha)

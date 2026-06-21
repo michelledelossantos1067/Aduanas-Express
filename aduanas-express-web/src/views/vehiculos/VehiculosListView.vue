@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import { verVehiculos, eliminarVehiculo } from '../../services/vehiculoService'
+import { verVehiculos, eliminarVehiculo, desactivarVehiculo, activarVehiculo } from '../../services/vehiculoService'
 import { generarReporteVehiculosPdf } from '@/utils/vehiculoReportePdf'
 import VehiculoVerModal from './VehiculoVerModal.vue'
 import VehiculoEliminarModal from './VehiculoEliminarModal.vue'
@@ -69,7 +69,24 @@ const vehiculosFiltrados = computed(() => {
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
+const vehiculoAToggle = ref(null)
+const cambiandoEstado = ref(false)
 
+async function toggleActivo(vehiculo) {
+    cambiandoEstado.value = true
+    try {
+        if (vehiculo.isActive) {
+            await desactivarVehiculo(vehiculo.id)
+        } else {
+            await activarVehiculo(vehiculo.id)
+        }
+        vehiculo.isActive = !vehiculo.isActive
+    } catch (e) {
+        error.value = 'No se pudo cambiar el estado del vehículo.'
+    } finally {
+        cambiandoEstado.value = false
+    }
+}
 async function cargarVehiculos() {
     loading.value = true
     error.value = ''
@@ -120,15 +137,15 @@ onMounted(cargarVehiculos)
             <h1 class="veh-title">Vehículos</h1>
             <div class="veh-header-actions">
                 <button class="btn-exportar" @click="exportarPdf">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
-    </svg>
-    Exportar PDF
-</button>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    Exportar PDF
+                </button>
                 <button class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
@@ -237,7 +254,10 @@ onMounted(cargarVehiculos)
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verVehiculo(v.id)">Ver</button>
                     <button class="btn-accion btn-editar" @click="editarVehiculo(v.id)">Editar</button>
-                    <button class="btn-accion btn-eliminar" @click="confirmarEliminar(v)">Eliminar</button>
+                    <button v-if="v.puedeEliminarse" class="btn-accion btn-eliminar"
+                        @click="confirmarEliminar(v)">Eliminar</button>
+                    <button v-else class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
+                        @click="toggleActivo(v)">{{ v.isActive ? 'Desactivar' : 'Activar' }}</button>
                 </div>
             </div>
         </div>
@@ -252,21 +272,14 @@ onMounted(cargarVehiculos)
             <p>No se encontraron vehículos</p>
             <span>Prueba ajustando los filtros o agrega un nuevo vehículo.</span>
         </div>
-        <VehiculoVerModal
-            v-model="mostrarVer"
-            :vehiculo-id="vehiculoVerId"
-        />
-        <VehiculoEliminarModal
-            v-model="mostrarConfirmacion"
-            :vehiculo="vehiculoAEliminar"
-            @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)"
-        />
+        <VehiculoVerModal v-model="mostrarVer" :vehiculo-id="vehiculoVerId" />
+        <VehiculoEliminarModal v-model="mostrarConfirmacion" :vehiculo="vehiculoAEliminar"
+            @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)" />
 
     </div>
 </template>
 
 <style scoped>
-
 .veh-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -331,6 +344,10 @@ onMounted(cargarVehiculos)
 
 .btn-nuevo:hover {
     background: #14532d;
+}
+.btn-desactivar {
+    background: #e5e7eb;
+    color: #374151;
 }
 
 .veh-resumen {

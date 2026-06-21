@@ -29,6 +29,8 @@ public class ConductorRepositories : IConductorRepositories
         _context.AddAsync(conductor);
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> ExisteConSupervisor(int usuarioId)
+    => await _context.Conductores.AnyAsync(c => c.SupervisorId == usuarioId);
 
     public async Task Actualizar(int Id, Conductor conductor)
     {

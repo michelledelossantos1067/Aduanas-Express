@@ -18,7 +18,8 @@ namespace AduanasExpress.Application.Mappings
                 Telefono = conductor.Telefono,
                 Direccion = conductor.Direccion,
                 SupervisorId = conductor.SupervisorId,
-                Estado = conductor.Estado
+                Estado = conductor.Estado,
+                IsActive = conductor.IsActive
             };
         }
 

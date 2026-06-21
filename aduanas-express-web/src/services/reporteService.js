@@ -1,11 +1,11 @@
 import api from '../utils/axiosConfig'
 
 export const getReporteViajes = (mes, año) => {
-    return api.get(`/Reportes/viajes/${mes}/${año}`)
+    return api.get('/Reportes/viajes', { params: { mes, anio: año } })
 }
 
 export const getReporteConsumo = (mes, año) => {
-    return api.get(`/Reportes/consumo/${mes}/${año}`)
+    return api.get('/Reportes/consumo', { params: { mes, anio: año } })
 }
 
 export const getReporteSolicitudes = () => {

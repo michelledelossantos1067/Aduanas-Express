@@ -1,29 +1,60 @@
 using AduanasExpress.Application.DTOs.Vehiculo;
 using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.interfaces.Services;
+using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Mappings;
 using AduanasExpress.Domain.Entitis;
 namespace AduanasExpress.Infrastructure.Services;
+
 public class VehiculoServices : IVehiculoService
 {
     private readonly IVehiculoRepositories _vehiculoRepositories;
-    public VehiculoServices(IVehiculoRepositories vehiculoRepositories)
+    private readonly IAsignacionRepository _asignacionRepo;          // 👈 nuevo
+    private readonly IConsumoCombustibleRepositories _consumoRepo;   // 👈 nuevo
+    private readonly IMantenimientoRepositories _mantenimientoRepo; // 👈 nuevo
+
+    public VehiculoServices(
+        IVehiculoRepositories vehiculoRepositories,
+        IAsignacionRepository asignacionRepo,
+        IConsumoCombustibleRepositories consumoRepo,
+        IMantenimientoRepositories mantenimientoRepo)
     {
         _vehiculoRepositories = vehiculoRepositories;
+        _asignacionRepo = asignacionRepo;
+        _consumoRepo = consumoRepo;
+        _mantenimientoRepo = mantenimientoRepo;
     }
+
+    private async Task<bool> TieneHistorialAsync(int vehiculoId)
+    {
+        return await _asignacionRepo.ExisteParaVehiculo(vehiculoId)
+            || await _consumoRepo.ExisteParaVehiculo(vehiculoId)
+            || await _mantenimientoRepo.ExisteParaVehiculo(vehiculoId);
+    }
+
     public async Task<List<VehiculoResponseDTOs?>> ObtenerTodos()
     {
         var vehiculo = await _vehiculoRepositories.ObtenerTodos();
         if (vehiculo == null)
             throw new Exception("Error al obtener los vehiculos.");
-        return vehiculo.Select(c => c.ToResponse()).ToList();
+
+        var responses = vehiculo.Select(c => c.ToResponse()).ToList();
+        foreach (var r in responses)
+            if (r != null)
+                r.PuedeEliminarse = !await TieneHistorialAsync(r.Id);
+
+        return responses;
     }
+
     public async Task<VehiculoResponseDTOs?> ObtenerPorId(int Id)
     {
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if (vehiculo == null)
             throw new Exception("Error al buscar el vehiculo.");
-        return vehiculo.ToResponse();
+
+        var response = vehiculo.ToResponse();
+        response.PuedeEliminarse = !await TieneHistorialAsync(Id);
+        return response;
     }
     public async Task Crear(CreateVehiculoDTOs createVehiculoDTOs)
     {
@@ -73,7 +104,31 @@ public class VehiculoServices : IVehiculoService
         var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
         if (vehiculo == null)
             throw new Exception("Error al eliminar el vehiculo.");
+
+        if (await TieneHistorialAsync(Id))
+            throw new Exception("Este vehículo tiene historial registrado (viajes, mantenimientos o consumo). No se puede eliminar; desactívalo en su lugar.");
+
         await _vehiculoRepositories.Eliminar(Id);
+    }
+
+    public async Task Desactivar(int Id)
+    {
+        var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
+        if (vehiculo == null)
+            throw new Exception("Error al desactivar el vehiculo.");
+
+        vehiculo.IsActive = false;
+        await _vehiculoRepositories.Actualizar(Id, vehiculo);
+    }
+
+    public async Task Activar(int Id)
+    {
+        var vehiculo = await _vehiculoRepositories.ObtenerPorId(Id);
+        if (vehiculo == null)
+            throw new Exception("Error al activar el vehiculo.");
+
+        vehiculo.IsActive = true;
+        await _vehiculoRepositories.Actualizar(Id, vehiculo);
     }
     public async Task<List<VehiculoResponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha)
     {

@@ -8,4 +8,6 @@ public interface IConductorRepositories{
     public Task Actualizar(int Id,Conductor conductor);
     public Task Eliminar(int Id);
     Task<List<Conductor>> ObtenerDisponiblesEnFecha(DateTime fecha);
+    Task<bool> ExisteConSupervisor(int usuarioId);
+    
 }

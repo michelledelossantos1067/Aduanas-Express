@@ -103,10 +103,13 @@
                             </td>
                             <td>
                                 <div class="acciones">
-                                    <button @click="verUsuario(u)" class="btn-icon" title="Ver">👁</button>
-                                    <button @click="editarUsuario(u.id)" class="btn-icon" title="Editar">✏️</button>
-                                    <button @click="confirmarEliminar(u)" class="btn-icon del"
+                                    <button @click="verUsuario(u)" class="btn-icon" title="Ver"></button>
+                                    <button @click="editarUsuario(u.id)" class="btn-icon" title="Editar">✏</button>
+                                    <button v-if="u.puedeEliminarse" @click="confirmarEliminar(u)" class="btn-icon del"
                                         title="Eliminar">🗑</button>
+                                    <button v-else @click="toggleActivo(u)" class="btn-icon"
+                                        :title="u.isActive ? 'Desactivar' : 'Activar'" :disabled="cambiandoEstado">{{
+                                        u.isActive ? '🔒' : '🔓' }}</button>
                                 </div>
                             </td>
                         </tr>
@@ -187,7 +190,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { obtenerUsuario, eliminarUsuario } from '../../services/usuarioService'
+import { obtenerUsuario, eliminarUsuario, desactivarUsuario, activarUsuario } from '../../services/usuarioService'
 
 const router = useRouter()
 
@@ -285,7 +288,19 @@ const paginasVisibles = computed(() => {
     }
     return pages
 })
-
+const cambiandoEstado = ref(false)
+async function toggleActivo(u) {
+    cambiandoEstado.value = true
+    try {
+        if (u.isActive) await desactivarUsuario(u.id)
+        else await activarUsuario(u.id)
+        u.isActive = !u.isActive
+    } catch {
+        alert('No se pudo cambiar el estado del usuario.')
+    } finally {
+        cambiandoEstado.value = false
+    }
+}
 watch([busqueda, filtroRol], () => { pagina.value = 1 })
 
 async function cargarUsuarios() {
@@ -342,7 +357,6 @@ onMounted(cargarUsuarios)
 </script>
 
 <style scoped>
-
 .usr-page {
     padding: 32px 40px;
     background: #f3f4f6;

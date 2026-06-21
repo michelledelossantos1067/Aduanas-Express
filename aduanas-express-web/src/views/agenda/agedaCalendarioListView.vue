@@ -1,8 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { verSolicitud } from '@/services/solicitudService'
-import { verVehiculos } from '@/services/vehiculoService'
-import { verConductores } from '@/services/conductorService'
+import { verAsignaciones } from '@/services/asignacionService'
 
 const vistaActiva = ref('mes')
 const hoy = new Date()
@@ -18,41 +17,35 @@ const viajes = ref([])
 const cargando = ref(true)
 const errorCarga = ref(null)
 
-const MAP_ESTADO = {
-    Pendiente: 'pendiente',
-    Aprobada: 'programado',
-    Rechazada: 'cancelado',
-    Cancelada: 'cancelado',
-    Finalizada: 'programado',
-    EnViaje: 'en_viaje',
-    Espera: 'espera',
+const MAP_ESTADO_SOLICITUD = {
+    0: 'pendiente',
+    1: 'programado',
+    2: 'cancelado',
+    3: 'cancelado',
+    4: 'programado',
 }
 
-function mapearEstado(estadoApi) {
-    return MAP_ESTADO[estadoApi] ?? 'programado'
+function mapearEstadoSolicitud(estado) {
+    return MAP_ESTADO_SOLICITUD[estado] ?? 'programado'
 }
 
 async function cargarDatos() {
     cargando.value = true
     errorCarga.value = null
     try {
-        const [resSolicitudes, resVehiculos, resConductores] = await Promise.all([
+        const [resSolicitudes, resAsignaciones] = await Promise.all([
             verSolicitud(),
-            verVehiculos(),
-            verConductores(),
+            verAsignaciones(),
         ])
-       
-        const vehiculosPorId = new Map(resVehiculos.data.map(v => [String(v.id || v.vehiculoId), v]))
-        const conductoresPorId = new Map(resConductores.data.map(c => [String(c.id || c.conductorId), c]))
+
+        const asignacionPorSolicitudId = new Map(
+            resAsignaciones.data.map(a => [a.solicitudId, a])
+        )
 
         viajes.value = resSolicitudes.data.map(s => {
-            // Manejamos posibles diferencias de mayúsculas desde el DTO del backend
-            const vId = s.vehiculoId || s.vehiculoID || s.VehiculoId;
-            const cId = s.conductorId || s.conductorID || s.ConductorId;
-
-            const vehiculo = vId ? vehiculosPorId.get(String(vId)) : null;
-            const conductor = cId ? conductoresPorId.get(String(cId)) : null;
-
+            const asignacion = asignacionPorSolicitudId.get(s.id)
+            const vehiculo = asignacion?.vehiculo
+            const conductor = asignacion?.conductor
             const [h, m] = (s.horaSalida ?? '00:00:00').split(':')
             const horaInicio = `${h}:${m}`
             const horaFin = `${String((Number(h) + 1) % 24).padStart(2, '0')}:${m}`
@@ -63,23 +56,11 @@ async function cargarDatos() {
                 fecha: new Date(s.fechaViaje),
                 horaInicio,
                 horaFin,
-                
-                // Si encontramos el vehículo en el Map, lo usamos. 
-                // Si no, verificamos si el backend envió el objeto Vehículo directamente. Si no, 'Sin asignar'.
-                vehiculo: vehiculo 
-                    ? `${vehiculo.marca} ${vehiculo.modelo}` 
-                    : (s.vehiculo ? `${s.vehiculo.marca} ${s.vehiculo.modelo}` : 'Sin asignar'),
-                
-                placa: vehiculo 
-                    ? vehiculo.matricula 
-                    : (s.vehiculo ? s.vehiculo.matricula : '—'),
-                
-                conductor: conductor 
-                    ? `${conductor.nombre} ${conductor.apellido?.charAt(0) ?? ''}.` 
-                    : (s.conductor ? `${s.conductor.nombre} ${s.conductor.apellido?.charAt(0) ?? ''}.` : 'Sin asignar'),
-                
-                estado: mapearEstado(s.estado),
-                tipo: s.estado === 'Pendiente' ? 'urgente' : 'normal',
+                vehiculo: vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : 'Sin asignar',
+                placa: vehiculo ? vehiculo.matricula : '—',
+                conductor: conductor ? `${conductor.nombre} ${conductor.apellido?.charAt(0) ?? ''}.` : 'Sin asignar',
+                estado: mapearEstadoSolicitud(s.estado),
+                tipo: s.estado === 0 ? 'urgente' : 'normal',
             }
         })
     } catch (err) {
@@ -89,6 +70,7 @@ async function cargarDatos() {
         cargando.value = false
     }
 }
+
 onMounted(cargarDatos)
 
 function mesAnterior() {

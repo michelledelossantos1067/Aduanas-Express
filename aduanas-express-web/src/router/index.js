@@ -85,7 +85,18 @@ const router = createRouter({
     },
     {
       path: '/mantenimiento',
-      component: () => import('@/views/mantenimiento/mantenimientoListView.vue')
+      name: 'mantenimiento',
+      component: () => import('@/views/mantenimiento/MantenimientoListView.vue')
+    },
+    {
+      path: '/mantenimiento/nuevo',
+      name: 'mantenimientoNuevo',
+      component: () => import('@/views/mantenimiento/MantenimientoFormView.vue')
+    },
+    {
+      path: '/mantenimiento/:id/editar',
+      name: 'editarMantenimiento',
+      component: () => import('../views/mantenimiento/MantenimientoFormView.vue')
     },
     {
       path: '/reportes',

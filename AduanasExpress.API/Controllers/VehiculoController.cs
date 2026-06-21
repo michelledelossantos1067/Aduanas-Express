@@ -27,14 +27,28 @@ public class VehiculoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Crear(CreateVehiculoDTOs createVehiculoDTOs)
     {
-        await _vehiculoService.Crear(createVehiculoDTOs);
-        return Created();
+        try
+        {
+            await _vehiculoService.Crear(createVehiculoDTOs);
+            return Created();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
     [HttpPut("{Id}")]
     public async Task<IActionResult> Actualizar(int Id, UpdateVehiculoDTOs updateVehiculoDTOs)
     {
-        await _vehiculoService.Actualizar(Id, updateVehiculoDTOs);
-        return Ok();
+        try
+        {
+            await _vehiculoService.Actualizar(Id, updateVehiculoDTOs);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
     [HttpDelete("{Id}")]
     public async Task<IActionResult> Eliminar(int Id)

@@ -19,7 +19,8 @@ namespace AduanasExpress.Application.Mappings
                 Capacidad = vehiculo.Capacidad,
                 Estado = vehiculo.Estado,
                 Kilometraje = vehiculo.Kilometraje,
-                FechaUltimoMant = vehiculo.FechaUltimoMant
+                FechaUltimoMant = vehiculo.FechaUltimoMant,
+                IsActive = vehiculo.IsActive
 
             };
         }

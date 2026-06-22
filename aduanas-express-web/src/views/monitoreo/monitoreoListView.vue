@@ -3,11 +3,44 @@ import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { verVehiculos } from '@/services/vehiculoService.js'
-import { verSolicitud } from '@/services/solicitudService.js'
-import { verMantenimiento } from '@/services/mantenimientoService.js'
+import { verAsignaciones } from '@/services/asignacionService.js'
 
-const ESTADOS_SOLICITUD_ACTIVA = [1, 2, 3, 'Aprobada', 'Asignada', 'EnCurso', 'En curso', 'En progreso']
 const CIUDAD_REFERENCIA = 'Santo Domingo, República Dominicana'
+
+const VEHICULO_ESTADO_POR_INDICE = ['libre', 'en_viaje', 'taller', 'fuera_servicio']
+const VEHICULO_ESTADO_POR_NOMBRE = {
+  disponible:      'libre',
+  enviaje:         'en_viaje',
+  enmantenimiento: 'taller',
+  fueradeservicio: 'fuera_servicio',
+}
+
+function normalizarEstadoVehiculo(valor) {
+  if (typeof valor === 'number') return VEHICULO_ESTADO_POR_INDICE[valor] ?? 'libre'
+  if (typeof valor === 'string') {
+    const clave = valor.trim().toLowerCase().replace(/[\s_]/g, '')
+    return VEHICULO_ESTADO_POR_NOMBRE[clave] ?? 'libre'
+  }
+  return 'libre'
+}
+
+const ASIGNACION_INDICES_TERMINALES = [1, 2]
+const ASIGNACION_ESTADOS_TERMINALES = ['finalizada', 'cancelada']
+
+function asignacionEstaActiva(valor) {
+  if (typeof valor === 'number') return !ASIGNACION_INDICES_TERMINALES.includes(valor)
+  if (typeof valor === 'string') return !ASIGNACION_ESTADOS_TERMINALES.includes(valor.trim().toLowerCase())
+  return false
+}
+
+function indexarAsignacionesActivas(asignaciones) {
+  const mapa = new Map()
+  for (const a of asignaciones) {
+    if (!asignacionEstaActiva(a.estado)) continue
+    mapa.set(a.vehiculoId, a)
+  }
+  return mapa
+}
 
 const filtroActivo        = ref('todos')
 const busqueda            = ref('')
@@ -15,8 +48,7 @@ const vehiculoSelId       = ref(null)
 const tipoMapa            = ref('mapa')
 
 const vehiculos           = ref([])
-const solicitudesRaw      = ref([])
-const mantenimientosRaw   = ref([])
+const asignacionesRaw     = ref([])
 const loading             = ref(false)
 const error               = ref('')
 const ultimaActualizacion = ref(null)
@@ -33,19 +65,20 @@ const vehiculosFiltrados = computed(() => {
 const vehiculoSel = computed(() => vehiculos.value.find(v => v.id === vehiculoSelId.value) ?? null)
 
 const resumen = computed(() => ({
-  en_viaje: vehiculos.value.filter(v => v.estado === 'en_viaje').length,
-  libres:   vehiculos.value.filter(v => v.estado === 'libre').length,
-  taller:   vehiculos.value.filter(v => v.estado === 'taller').length,
+  en_viaje:       vehiculos.value.filter(v => v.estado === 'en_viaje').length,
+  libres:         vehiculos.value.filter(v => v.estado === 'libre').length,
+  taller:         vehiculos.value.filter(v => v.estado === 'taller').length,
+  fuera_servicio: vehiculos.value.filter(v => v.estado === 'fuera_servicio').length,
 }))
 
 function estadoLabel(e) {
-  return { en_viaje: 'En viaje', libre: 'Disponible', taller: 'Taller' }[e] ?? e
+  return { en_viaje: 'En viaje', libre: 'Disponible', taller: 'Taller', fuera_servicio: 'Fuera de servicio' }[e] ?? e
 }
 function estadoClase(e) {
-  return { en_viaje: 'badge-en-viaje', libre: 'badge-libre', taller: 'badge-taller' }[e] ?? ''
+  return { en_viaje: 'badge-en-viaje', libre: 'badge-libre', taller: 'badge-taller', fuera_servicio: 'badge-fuera' }[e] ?? ''
 }
 function dotClase(e) {
-  return { en_viaje: 'dot-azul', libre: 'dot-verde', taller: 'dot-naranja' }[e] ?? 'dot-gris'
+  return { en_viaje: 'dot-azul', libre: 'dot-verde', taller: 'dot-naranja', fuera_servicio: 'dot-rojo' }[e] ?? 'dot-gris'
 }
 function seleccionar(id) {
   vehiculoSelId.value = vehiculoSelId.value === id ? null : id
@@ -62,7 +95,6 @@ function formatFecha(f) {
 
 const geocodeCache = new Map()
 
-// Convierte una dirección en coordenadas mediante Nominatim y almacena el resultado en caché
 async function geocodificar(direccion) {
   if (!direccion) return null
   const clave = direccion.trim().toLowerCase()
@@ -83,7 +115,6 @@ async function geocodificar(direccion) {
   return null
 }
 
-// Obtiene la ruta de conducción entre dos puntos usando el servicio OSRM
 async function obtenerRuta(origen, destino) {
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`
@@ -109,7 +140,6 @@ async function obtenerRuta(origen, destino) {
 
 const SEDE = { lat: 18.4861, lng: -69.9312 }
 
-// Estima la ubicación actual del vehículo en la ruta según el tiempo transcurrido desde la salida
 function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
   if (!coords?.length || !fechaViaje || !horaSalida || !duracionMin) return null
   try {
@@ -123,25 +153,9 @@ function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
     return { lat: coords[idx][0], lng: coords[idx][1] }
   } catch { return null }
 }
+async function procesarVehiculo(v, asignacionPorVehiculo) {
+  const estado = normalizarEstadoVehiculo(v.estado)
 
-// Combina datos de mantenimiento y solicitudes activas para determinar el estado y posición de cada vehículo
-async function procesarVehiculo(v) {
-
-  const hoy = new Date()
-  const enTaller = mantenimientosRaw.value.some(m => {
-    if (m.vehiculoId !== v.id) return false
-    if (m.proximoMantenimiento) {
-
-      return new Date(m.proximoMantenimiento) > hoy
-    }
-    return false
-  })
-
-  const solicitudActiva = solicitudesRaw.value.find(s =>
-    s.vehiculoId === v.id && ESTADOS_SOLICITUD_ACTIVA.includes(s.estado)
-  )
-
-  let estado      = 'libre'
   let destino     = null
   let conductor   = null
   let ruta        = []
@@ -152,17 +166,17 @@ async function procesarVehiculo(v) {
   let fechaViaje  = null
   let horaSalida  = null
 
-  if (enTaller) {
-    estado = 'taller'
-  } else if (solicitudActiva) {
-    estado     = 'en_viaje'
-    destino    = solicitudActiva.destino ?? null
-    fechaViaje = solicitudActiva.fechaViaje ?? null
-    horaSalida = solicitudActiva.horaSalida ?? null
+  if (estado === 'en_viaje') {
+    const asignacion = asignacionPorVehiculo.get(v.id) ?? null
+    const solicitud   = asignacion?.solicitud ?? null
+    const cond        = asignacion?.conductor ?? null
 
-    const cond = solicitudActiva.conductor
+    destino    = solicitud?.destino ?? null
+    fechaViaje = solicitud?.fechaViaje ?? null
+    horaSalida = solicitud?.horaSalida ?? null
+
     if (cond) {
-      conductor = [cond.nombre, cond.apellido].filter(Boolean).join(' ') || cond.nombreCompleto || null
+      conductor = [cond.nombre, cond.apellido].filter(Boolean).join(' ') || null
     }
 
     const coordDestino = await geocodificar(destino)
@@ -201,14 +215,16 @@ async function cargarDatos() {
   loading.value = true
   error.value   = ''
   try {
-    const [resVeh, resSol, resMant] = await Promise.all([
+    const [resVeh, resAsig] = await Promise.all([
       verVehiculos(),
-      verSolicitud(),
-      verMantenimiento(),
+      verAsignaciones(),
     ])
-    solicitudesRaw.value    = resSol.data    ?? []
-    mantenimientosRaw.value = resMant.data   ?? []
-    vehiculos.value = await Promise.all((resVeh.data ?? []).map(procesarVehiculo))
+    asignacionesRaw.value = resAsig.data ?? []
+    const activasPorVehiculo = indexarAsignacionesActivas(asignacionesRaw.value)
+
+    vehiculos.value = await Promise.all(
+      (resVeh.data ?? []).map(v => procesarVehiculo(v, activasPorVehiculo))
+    )
     ultimaActualizacion.value = new Date()
     await nextTick()
     pintarEnMapa()
@@ -268,7 +284,7 @@ function cambiarTipoMapa(tipo) {
 }
 
 function colorEstado(estado) {
-  return { en_viaje: '#2563eb', libre: '#16a34a', taller: '#d97706' }[estado] ?? '#6b7280'
+  return { en_viaje: '#2563eb', libre: '#16a34a', taller: '#d97706', fuera_servicio: '#dc2626' }[estado] ?? '#6b7280'
 }
 
 function pintarEnMapa() {
@@ -375,6 +391,7 @@ onUnmounted(() => {
         <button class="filtro-btn filtro-vj"  :class="{ activo: filtroActivo === 'en_viaje' }" @click="filtroActivo = 'en_viaje'">En viaje</button>
         <button class="filtro-btn filtro-lb"  :class="{ activo: filtroActivo === 'libre' }"    @click="filtroActivo = 'libre'">Libre</button>
         <button class="filtro-btn filtro-tl"  :class="{ activo: filtroActivo === 'taller' }"   @click="filtroActivo = 'taller'">Taller</button>
+        <button class="filtro-btn filtro-fs"  :class="{ activo: filtroActivo === 'fuera_servicio' }" @click="filtroActivo = 'fuera_servicio'">Fuera de servicio</button>
       </div>
 
       <p class="flota-label">
@@ -457,6 +474,11 @@ onUnmounted(() => {
           <span class="res-num naranja">{{ resumen.taller }}</span>
           <span class="res-lbl">Taller</span>
         </div>
+        <div class="res-sep"></div>
+        <div class="res-item">
+          <span class="res-num rojo">{{ resumen.fuera_servicio }}</span>
+          <span class="res-lbl">Fuera</span>
+        </div>
       </div>
     </div>
 
@@ -472,6 +494,7 @@ onUnmounted(() => {
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#2563eb"></span>En viaje</div>
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#16a34a"></span>Libre</div>
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#d97706"></span>Taller</div>
+          <div class="leyenda-item"><span class="dot-leyenda" style="background:#dc2626"></span>Fuera de servicio</div>
           <div class="leyenda-item"><span class="dot-leyenda" style="background:#111827"></span>Sede</div>
         </div>
       </div>
@@ -707,6 +730,7 @@ onUnmounted(() => {
 .filtro-vj.activo { background: #1e40af; border-color: #1e40af; }
 .filtro-lb.activo { background: #15803d; border-color: #15803d; }
 .filtro-tl.activo { background: #b45309; border-color: #b45309; }
+.filtro-fs.activo { background: #b91c1c; border-color: #b91c1c; }
 
 .flota-label {
   font-size: .7rem;
@@ -841,6 +865,7 @@ onUnmounted(() => {
 .badge-en-viaje { background: #dbeafe; color: #1e40af; }
 .badge-libre    { background: #d1fae5; color: #065f46; }
 .badge-taller   { background: #fef3c7; color: #92400e; }
+.badge-fuera    { background: #fee2e2; color: #991b1b; }
 
 .resumen-pie {
   display: flex;
@@ -873,6 +898,7 @@ onUnmounted(() => {
 .azul    { color: #2563eb; }
 .verde   { color: #16a34a; }
 .naranja { color: #d97706; }
+.rojo    { color: #dc2626; }
 
 .res-sep {
   width: 1px;
@@ -1012,6 +1038,7 @@ onUnmounted(() => {
 .dot-azul    { background: #2563eb; }
 .dot-verde   { background: #16a34a; }
 .dot-naranja { background: #d97706; }
+.dot-rojo    { background: #dc2626; }
 .dot-gris    { background: #9ca3af; }
 
 .popup-modelo {

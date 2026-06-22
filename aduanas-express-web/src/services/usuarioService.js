@@ -15,3 +15,5 @@ export const obtenerUsuario = () => {
 export const obtenerUsuarios = (Id) => {
     return api.get(`/usuario/${Id}`)
 }
+export const desactivarUsuario = (id) => api.patch(`/usuario/${id}/desactivar`)
+export const activarUsuario = (id) => api.patch(`/usuario/${id}/activar`)

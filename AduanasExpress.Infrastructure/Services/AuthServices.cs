@@ -43,7 +43,7 @@ public class AuthServices : IAuthService {
             new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
             new Claim(ClaimTypes.Email, usuario.Email),
             new Claim(ClaimTypes.Name, usuario.Nombre),
-            new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
+            new Claim(ClaimTypes.Role, usuario.Rol.Nombre),
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -60,7 +60,7 @@ public class AuthServices : IAuthService {
         {
             Id = usuario.Id,
             Token = tokenString,
-            Rol = usuario.Rol.ToString(),
+            Rol = usuario.Rol.Nombre,
             Nombre = usuario.Nombre
         };
     }
@@ -68,30 +68,6 @@ public class AuthServices : IAuthService {
     {
         await Task.CompletedTask;
     }
-    public async Task Register(RegisterDTO registerDTO)
-    {
-        var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(registerDTO.Email);
-        if (usuarioExistente != null)
-        {
-            throw new Exception("El email ya está registrado.");
-        }
-        if (registerDTO.Email == null)
-        {
-            throw new Exception("El email existe.");
-        }
-        ;
-        var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
-        var usuario = new Usuario
-        {
-            Nombre = registerDTO.Nombre,
-            Apellido = registerDTO.Apellido,
-            Email = registerDTO.Email,
-            Password = hashPassword,
-            Rol = registerDTO.Rol
-        };
-        await _usuarioRepositories.Crear(usuario);
-    }
-    // Genera una contraseña temporal y la devuelve para que el usuario pueda acceder y cambiarla
     public async Task<string> ResetPassword(ResetPasswordDTO resetPasswordDTO)
     {
         var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(resetPasswordDTO.Email);
@@ -122,5 +98,23 @@ public class AuthServices : IAuthService {
         usuarioExistente.Password = hashPassword;
         await _usuarioRepositories.Actualizar(usuarioExistente.Id, usuarioExistente);
     }
+public async Task Register(RegisterDTO registerDTO)
+{
+    var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(registerDTO.Email);
+    if (usuarioExistente != null)
+        throw new Exception("El email ya está registrado.");
+    if (registerDTO.Email == null)
+        throw new Exception("El email existe.");
 
+    var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
+    var usuario = new Usuario
+    {
+        Nombre = registerDTO.Nombre,
+        Apellido = registerDTO.Apellido,
+        Email = registerDTO.Email,
+        Password = hashPassword,
+        RolId = registerDTO.RolId
+    };
+    await _usuarioRepositories.Crear(usuario);
+}
 }

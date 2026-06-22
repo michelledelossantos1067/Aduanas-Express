@@ -7,4 +7,6 @@ public interface IUsuarioService{
     public Task Crear(CreateUsuario createUsuario);
     public Task Actualizar(int Id,UpdateUsuario updateUsuario);
     public Task Eliminar(int Id);
+    Task Desactivar(int id);
+    Task Activar(int id);
 }

@@ -2,15 +2,15 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import {
-    verConductores,
-    eliminarConductor
-} from '../../services/conductorService'
+import { usePermisos } from '../../composables/usePermisos'
+import { verConductores, eliminarConductor, desactivarConductor, activarConductor } from '../../services/conductorService'
 import ConductorVerModal from './ConductorVerModal.vue'
 import ConductorEliminarModal from './ConductorEliminarModal.vue'
+import ModalSinPermiso from '@/components/ModalSinPermiso.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const { puede } = usePermisos()
 const mostrarVer = ref(false)
 const conductorVerId = ref(null)
 const conductores = ref([])
@@ -44,41 +44,68 @@ const tiposUnicos = computed(() => [
 ])
 
 const resumen = computed(() => {
-    const total = conductores.value.length
-    const disponibles = conductores.value.filter(v => v.estado === 0).length
-    const enViaje = conductores.value.filter(v => v.estado === 1).length
-    const suspendido = conductores.value.filter(v => v.estado === 2).length
-    const inactivo = conductores.value.filter(v => v.estado === 3).length
-    return {
-        total,
-        disponibles,
-        enViaje,
-        suspendido,
-        inactivo
-    }
-
+    const activos = conductores.value.filter(v => v.isActive)
+    const total = activos.length
+    const disponibles = activos.filter(v => v.estado === 0).length
+    const enViaje = activos.filter(v => v.estado === 1).length
+    const suspendido = activos.filter(v => v.estado === 2).length
+    const inactivo = activos.filter(v => v.estado === 3).length
+    return { total, disponibles, enViaje, suspendido, inactivo }
 })
-
 const conductoresFiltrados = computed(() => {
     return conductores.value.filter((v) => {
+        if (!v.isActive) return false
         const q = busqueda.value.toLowerCase()
         const coincideBusqueda =
             !q ||
             v.matricula?.toLowerCase().includes(q) ||
             v.numeroLicencia?.toLowerCase().includes(q) ||
             v.nombre?.toLowerCase().includes(q)
-
         const coincideEstado =
             filtroEstado.value === '' ||
             String(v.estado) === filtroEstado.value
-
         const coincideTipo =
             filtroTipo.value === '' || v.tipo === filtroTipo.value
-
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
+const cambiandoEstado = ref(false)
+const mostrarModalSinPermiso = ref(false)
+const accionSinPermiso = ref('')
 
+function intentarDesactivar(conductor) {
+    if (!puede.eliminarConductores.value) {
+        accionSinPermiso.value = 'desactivar conductores'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    toggleActivo(conductor)
+}
+
+function intentarEliminar(conductor) {
+    if (!puede.eliminarConductores.value) {
+        accionSinPermiso.value = 'eliminar conductores'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    confirmarEliminar(conductor)
+}
+async function toggleActivo(conductor) {
+    cambiandoEstado.value = true
+    try {
+        if (conductor.isActive) {
+            await desactivarConductor(conductor.id)
+            conductores.value = conductores.value.filter(c => c.id !== conductor.id)
+        } else {
+            await activarConductor(conductor.id)
+            conductor.isActive = true
+        }
+    } catch (e) {
+        error.value = 'No se pudo cambiar el estado del conductor.'
+    } finally {
+        cambiandoEstado.value = false
+    }
+}
 async function cargarConductores() {
     loading.value = true
     error.value = ''
@@ -169,7 +196,8 @@ onMounted(cargarConductores)
                     </svg>
                     Exportar
                 </button>
-                <button class="btn-nuevo" @click="irANuevo">
+                <!-- Solo Admin y Supervisor pueden crear conductores -->
+                <button v-if="puede.crearConductores.value" class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -285,8 +313,13 @@ onMounted(cargarConductores)
 
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verConductor(v.id)">Ver</button>
-                    <button class="btn-accion btn-editar" @click="editarConductor(v.id)">Editar</button>
-                    <button class="btn-accion btn-eliminar" @click="confirmarEliminar(v)">Eliminar</button>
+                    <button v-if="puede.editarConductores.value" class="btn-accion btn-editar"
+                        @click="editarConductor(v.id)">Editar</button>
+                    <button v-if="v.puedeEliminarse" class="btn-accion btn-eliminar"
+                        @click="intentarEliminar(v)">Eliminar</button>
+                    <button v-if="!v.puedeEliminarse" class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
+                        @click="intentarDesactivar(v)">{{ v.isActive ? 'Desactivar' : 'Activar' }}</button>
+
                 </div>
             </div>
         </div>
@@ -306,12 +339,11 @@ onMounted(cargarConductores)
 
         <ConductorEliminarModal v-model="mostrarConfirmacion" :conductor="conductoresAEliminar"
             @eliminado="(id) => conductores = conductores.filter(c => c.id !== id)" />
-
+<ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
     </div>
 </template>
 
 <style scoped>
-
 .cond-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -794,6 +826,7 @@ onMounted(cargarConductores)
     }
 
 }
+
 @media (max-width: 1024px) {
     .cond-resumen {
         grid-template-columns: repeat(3, 1fr);

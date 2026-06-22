@@ -20,7 +20,7 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(u => u.Password)
                 .NotEmpty().WithMessage("La contraseña es requerida.")
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
-            RuleFor(u => u.Rol)
+            RuleFor(u => u.RolId)
                .IsInEnum().WithMessage("El rol no es válido.");
         }
 
@@ -40,7 +40,7 @@ namespace AduanasExpress.Application.Validaciones
                 .EmailAddress().WithMessage("El email no es válido.");
             RuleFor(u => u.Password)
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
-            RuleFor(u => u.Rol)
+            RuleFor(u => u.RolId)
                .IsInEnum().WithMessage("El rol no es válido.");
         }
     }

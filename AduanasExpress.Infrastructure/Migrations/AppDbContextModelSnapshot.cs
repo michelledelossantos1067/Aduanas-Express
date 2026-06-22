@@ -90,6 +90,9 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<DateTime>("FechaVencLicencia")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -204,6 +207,645 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.ToTable("Mantenimientos");
                 });
 
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.Rol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EsSistema")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Icono")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Descripcion = "Acceso total al sistema",
+                            EsSistema = true,
+                            IsActive = true,
+                            Nombre = "Administrador"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Descripcion = "Acceso parcial",
+                            EsSistema = true,
+                            IsActive = true,
+                            Nombre = "Supervisor"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Descripcion = "Registrar solicitudes y visualizar todo",
+                            EsSistema = true,
+                            IsActive = true,
+                            Nombre = "Operador"
+                        });
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.RolPermiso", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Modulo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Permitido")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RolId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RolId", "Modulo", "Accion")
+                        .IsUnique();
+
+                    b.ToTable("RolPermisos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Accion = "ver",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Accion = "crear",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Accion = "editar",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Accion = "cancelar",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Accion = "ver",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Accion = "crear",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Accion = "editar",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Accion = "cancelar",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Accion = "ver",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Accion = "crear",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Accion = "editar",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Accion = "cancelar",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Accion = "ver",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Accion = "asignar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Accion = "editar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Accion = "cancelar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Accion = "ver",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Accion = "exportar",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Accion = "estadisticas",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Accion = "ver",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Accion = "crear",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Accion = "editar",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Accion = "cancelar",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Accion = "ver",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Accion = "crear",
+                            Modulo = "vehiculos",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Accion = "editar",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Accion = "cancelar",
+                            Modulo = "vehiculos",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Accion = "ver",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Accion = "crear",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Accion = "editar",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Accion = "cancelar",
+                            Modulo = "conductores",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Accion = "ver",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Accion = "crear",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Accion = "editar",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Accion = "cancelar",
+                            Modulo = "solicitudes",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Accion = "ver",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Accion = "asignar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Accion = "editar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Accion = "cancelar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Accion = "ver",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Accion = "exportar",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Accion = "estadisticas",
+                            Modulo = "reportes",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Accion = "ver",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Accion = "crear",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Accion = "editar",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Accion = "cancelar",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Accion = "ver",
+                            Modulo = "vehiculos",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Accion = "crear",
+                            Modulo = "vehiculos",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Accion = "editar",
+                            Modulo = "vehiculos",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Accion = "cancelar",
+                            Modulo = "vehiculos",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Accion = "ver",
+                            Modulo = "conductores",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Accion = "crear",
+                            Modulo = "conductores",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Accion = "editar",
+                            Modulo = "conductores",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Accion = "cancelar",
+                            Modulo = "conductores",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Accion = "ver",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Accion = "crear",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Accion = "editar",
+                            Modulo = "solicitudes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Accion = "cancelar",
+                            Modulo = "solicitudes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Accion = "ver",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Accion = "asignar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Accion = "editar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Accion = "cancelar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Accion = "ver",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Accion = "exportar",
+                            Modulo = "reportes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Accion = "estadisticas",
+                            Modulo = "reportes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Accion = "ver",
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Accion = "crear",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Accion = "editar",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Accion = "cancelar",
+                            Modulo = "usuarios",
+                            Permitido = false,
+                            RolId = 3
+                        });
+                });
+
             modelBuilder.Entity("AduanasExpress.Domain.Entitis.SolicitudTransporte", b =>
                 {
                     b.Property<int>("Id")
@@ -272,6 +914,9 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -280,10 +925,13 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rol")
-                        .HasColumnType("int");
+                    b.Property<int>("RolId")
+                        .HasColumnType("int")
+                        .HasColumnName("Rol");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RolId");
 
                     b.ToTable("Usuarios");
                 });
@@ -311,6 +959,9 @@ namespace AduanasExpress.Infrastructure.Migrations
 
                     b.Property<DateTime?>("FechaUltimoMant")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Kilometraje")
                         .HasColumnType("decimal(18,2)");
@@ -410,6 +1061,17 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Navigation("Vehiculo");
                 });
 
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.RolPermiso", b =>
+                {
+                    b.HasOne("AduanasExpress.Domain.Entitis.Rol", "Rol")
+                        .WithMany("Permisos")
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rol");
+                });
+
             modelBuilder.Entity("AduanasExpress.Domain.Entitis.SolicitudTransporte", b =>
                 {
                     b.HasOne("AduanasExpress.Domain.Entitis.Usuario", "UsuarioSolicita")
@@ -419,6 +1081,22 @@ namespace AduanasExpress.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("UsuarioSolicita");
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.Usuario", b =>
+                {
+                    b.HasOne("AduanasExpress.Domain.Entitis.Rol", "Rol")
+                        .WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("AduanasExpress.Domain.Entitis.Rol", b =>
+                {
+                    b.Navigation("Permisos");
                 });
 #pragma warning restore 612, 618
         }

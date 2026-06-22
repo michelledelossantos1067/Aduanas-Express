@@ -1,40 +1,53 @@
 using AduanasExpress.Application.DTOs.Usuario;
-using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.interfaces.Services;
+using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Mappings;
+using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Infrastructure.Services;
 
 public class UsuarioServices : IUsuarioService
 {
     private readonly IUsuarioRepositories _usuarioRepositories;
+    private readonly IConductorRepositories _conductorRepositories;
 
-    public UsuarioServices(IUsuarioRepositories usuarioRepositories)
+    public UsuarioServices(
+        IUsuarioRepositories usuarioRepositories,
+        IConductorRepositories conductorRepositories)
     {
         _usuarioRepositories = usuarioRepositories;
+        _conductorRepositories = conductorRepositories;
     }
+
+    private async Task<bool> TieneHistorialAsync(int usuarioId)
+        => await _conductorRepositories.ExisteConSupervisor(usuarioId);
+    // TODO: si Usuario también se referencia en otra tabla (ej. creador de solicitudes),
+    // agrega esa comprobación aquí también.
 
     public async Task<List<UsuarioResponse?>> ObtenerTodos()
     {
         var usuario = await _usuarioRepositories.ObtenerTodos();
         if (usuario == null)
-        {
             throw new Exception("Error al obtener los usuario.");
-        }
-        ;
-        return usuario.Select(c => c.ToResponse()).ToList();
+
+        var responses = usuario.Select(c => c.ToResponse()).ToList();
+        foreach (var r in responses)
+            if (r != null)
+                r.PuedeEliminarse = !await TieneHistorialAsync(r.Id);
+
+        return responses;
     }
 
     public async Task<UsuarioResponse?> ObtenerPorId(int Id)
     {
         var usuario = await _usuarioRepositories.ObtenerPorId(Id);
         if (usuario == null)
-        {
             throw new Exception("Error al buscar el usuario.");
-        }
-        ;
-        return usuario.ToResponse();
+
+        var response = usuario.ToResponse();
+        response.PuedeEliminarse = !await TieneHistorialAsync(Id);
+        return response;
     }
 
     public async Task Crear(CreateUsuario createUsuario)
@@ -45,7 +58,7 @@ public class UsuarioServices : IUsuarioService
             Apellido = createUsuario.Apellido,
             Email = createUsuario.Email,
             Password = createUsuario.Password,
-            Rol = createUsuario.Rol
+            RolId = createUsuario.RolId
         };
         if (usuarios.Password != null)
         {
@@ -67,7 +80,7 @@ public class UsuarioServices : IUsuarioService
         usuario.Apellido = updateUsuario.Apellido;
         usuario.Email = updateUsuario.Email;
         usuario.Password = updateUsuario.Password;
-        usuario.Rol = updateUsuario.Rol;
+        usuario.RolId = updateUsuario.RolId;
         if (!string.IsNullOrWhiteSpace(updateUsuario.Password))
         {
             usuario.Password = BCrypt.Net.BCrypt.HashPassword(updateUsuario.Password);
@@ -79,10 +92,31 @@ public class UsuarioServices : IUsuarioService
     {
         var usuario = await _usuarioRepositories.ObtenerPorId(Id);
         if (usuario == null)
-        {
             throw new Exception("Error al eliminar el usuario.");
-        }
-        ;
+
+        if (await TieneHistorialAsync(Id))
+            throw new Exception("Este usuario es supervisor de uno o más conductores. No se puede eliminar; desactívalo en su lugar.");
+
         await _usuarioRepositories.Eliminar(Id);
+    }
+
+    public async Task Desactivar(int Id)
+    {
+        var usuario = await _usuarioRepositories.ObtenerPorId(Id);
+        if (usuario == null)
+            throw new Exception("Error al desactivar el usuario.");
+
+        usuario.IsActive = false;
+        await _usuarioRepositories.Actualizar(Id, usuario);
+    }
+
+    public async Task Activar(int Id)
+    {
+        var usuario = await _usuarioRepositories.ObtenerPorId(Id);
+        if (usuario == null)
+            throw new Exception("Error al activar el usuario.");
+
+        usuario.IsActive = true;
+        await _usuarioRepositories.Actualizar(Id, usuario);
     }
 }

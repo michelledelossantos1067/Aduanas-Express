@@ -1,24 +1,25 @@
-using Microsoft.AspNetCore.Mvc;
-
 using AduanasExpress.Application.DTOs.Mantenimiento;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class MantenimientoController : ControllerBase{
     private readonly IMantenimientoService _mantenimientoService;
 
     public MantenimientoController(IMantenimientoService mantenimientoService){
         _mantenimientoService = mantenimientoService;
     }
-
+    [Authorize(Roles = "Administrador,Supervisor,Operador")]
     [HttpGet]
     public async Task<IActionResult> ObtenerTodos(){
         var mantenimientos = await _mantenimientoService.ObtenerTodos();
         return Ok(mantenimientos);
     }
-
+    [Authorize(Roles = "Administrador,Supervisor,Operador")]
     [HttpGet("{Id}")]
     public async Task<IActionResult> ObtenerPorId(int Id){
         try{
@@ -28,7 +29,7 @@ public class MantenimientoController : ControllerBase{
             return NotFound(new { message = ex.Message });
         }
     }
-
+    [Authorize(Roles = "Administrador,Supervisor")]
     [HttpPost]
     public async Task<IActionResult> Crear(CreateMantenimientoDTOs createMantenimientoDTOs){
         try{
@@ -38,7 +39,7 @@ public class MantenimientoController : ControllerBase{
             return BadRequest(new { message = ex.Message });
         }
     }
-
+    [Authorize(Roles = "Administrador,Supervisor")]
     [HttpPut("{Id}")]
     public async Task<IActionResult> Actualizar(int Id,UpdateMantenimientoDTOs updateMantenimientoDTOs){
         try{
@@ -48,7 +49,7 @@ public class MantenimientoController : ControllerBase{
             return BadRequest(new { message = ex.Message });
         }
     }
-
+    [Authorize(Roles = "Administrador,Supervisor")]
     [HttpDelete("{Id}")]
     public async Task<IActionResult> Eliminar(int Id){
         try{

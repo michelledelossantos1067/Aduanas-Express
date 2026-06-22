@@ -26,17 +26,17 @@ export function useMantenimientos() {
             const matchQ = !q || [r.vehiculoPlaca, r.tipo, r.taller, r.descripcion, r.responsable]
                 .some(v => v?.toLowerCase().includes(q))
             const matchE = !filtroEstado.value || r.estado === filtroEstado.value
-            const matchT = !filtroTipo.value   || r.tipo   === filtroTipo.value
+            const matchT = !filtroTipo.value || r.tipo === filtroTipo.value
             return matchQ && matchE && matchT
         })
     })
 
     const resumen = computed(() => ({
-        total:       registros.value.length,
+        total: registros.value.length,
         programados: registros.value.filter(r => r.estado === 'Programado').length,
-        enProceso:   registros.value.filter(r => r.estado === 'En proceso').length,
+        enProceso: registros.value.filter(r => r.estado === 'En proceso').length,
         completados: registros.value.filter(r => r.estado === 'Completado').length,
-        costoTotal:  registros.value.reduce((s, r) => s + (parseFloat(r.costo) || 0), 0),
+        costoTotal: registros.value.reduce((s, r) => s + (parseFloat(r.costo) || 0), 0),
     }))
 
     function avisar(msg, tipo = 'exito') {
@@ -58,7 +58,6 @@ export function useMantenimientos() {
         }
     }
 
-    // modo: 'crear' | 'editar'. Lanza el error para que el formulario lo muestre inline.
     async function guardar(modo, payload, id = null) {
         if (modo === 'crear') {
             await crearMantenimiento(payload)

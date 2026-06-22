@@ -33,6 +33,15 @@ public class AsignacionRepository : IAsignacionRepository
         _context.AddAsync(asignacion);
         await _context.SaveChangesAsync();
     }
+    public async Task<bool> ExisteParaVehiculo(int vehiculoId)
+    {
+        return await _context.Asignaciones
+        .AnyAsync(c => c.VehiculoId == vehiculoId);
+    }public async Task<bool> ExisteParaConductor(int conductorId)
+    {
+        return await _context.Asignaciones
+        .AnyAsync(c => c.ConductorId == conductorId);
+    }
     public async Task Actualizar(int id, Asignacion asignacion)
     {
         _context.Asignaciones.Update(asignacion);

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { verSolicitudPorId, crearSolicitud, actualizarSolicitud } from '../../services/solicitudService'
 

@@ -7,4 +7,6 @@ public interface IConsumoCombustibleRepositories{
     public Task Crear(ConsumoCombustible consumoCombustible);
     public Task Actualizar(int Id,ConsumoCombustible consumoCombustible);
     public Task Eliminar(int Id);
+    Task<bool> ExisteParaVehiculo(int vehiculoId);
+
 }

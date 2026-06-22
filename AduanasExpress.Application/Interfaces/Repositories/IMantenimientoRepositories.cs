@@ -7,4 +7,6 @@ public interface IMantenimientoRepositories{
     public Task Crear(Mantenimiento mantenimiento);
     public Task Actualizar(int Id,Mantenimiento mantenimiento);
     public Task Eliminar(int Id);
+    Task<bool> ExisteParaVehiculo(int vehiculoId);
+
 }

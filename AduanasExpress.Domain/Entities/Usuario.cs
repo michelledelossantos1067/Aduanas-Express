@@ -6,5 +6,6 @@ public class Usuario{
     public string Email {get;set;}
     public string Password {get;set;}
     public Roles Rol { get; set; } = (Roles)2;
+    public bool IsActive {get;set;} = true;
 
 }

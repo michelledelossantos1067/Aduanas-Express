@@ -11,5 +11,7 @@ public class VehiculoResponseDTOs{
     public int Capacidad {get;set;}
     public EstadosVehiculo Estado {get;set;}
     public decimal Kilometraje {get;set;}
-    public DateTime? FechaUltimoMant {get;set;}
+    public DateTime? FechaUltimoMant { get; set; }
+    public bool IsActive { get; set; }
+    public bool PuedeEliminarse { get; set; }
 }

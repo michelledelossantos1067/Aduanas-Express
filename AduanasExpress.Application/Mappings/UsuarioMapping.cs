@@ -13,7 +13,8 @@ namespace AduanasExpress.Application.Mappings
                 Nombre = usuario.Nombre,
                 Apellido = usuario.Apellido,
                 Email = usuario.Email,
-                Rol = usuario.Rol
+                Rol = usuario.Rol,
+                IsActive = usuario.IsActive
             };
         }
     }

@@ -2,10 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import {
-    verConductores,
-    eliminarConductor
-} from '../../services/conductorService'
+import { verConductores, eliminarConductor, desactivarConductor, activarConductor } from '../../services/conductorService'
 import ConductorVerModal from './ConductorVerModal.vue'
 import ConductorEliminarModal from './ConductorEliminarModal.vue'
 
@@ -78,7 +75,22 @@ const conductoresFiltrados = computed(() => {
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
-
+const cambiandoEstado = ref(false)
+async function toggleActivo(conductor) {
+    cambiandoEstado.value = true
+    try {
+        if (conductor.isActive) {
+            await desactivarConductor(conductor.id)
+        } else {
+            await activarConductor(conductor.id)
+        }
+        conductor.isActive = !conductor.isActive
+    } catch (e) {
+        error.value = 'No se pudo cambiar el estado del conductor.'
+    } finally {
+        cambiandoEstado.value = false
+    }
+}
 async function cargarConductores() {
     loading.value = true
     error.value = ''
@@ -286,7 +298,12 @@ onMounted(cargarConductores)
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verConductor(v.id)">Ver</button>
                     <button class="btn-accion btn-editar" @click="editarConductor(v.id)">Editar</button>
-                    <button class="btn-accion btn-eliminar" @click="confirmarEliminar(v)">Eliminar</button>
+                    <button v-if="v.puedeEliminarse" class="btn-accion btn-eliminar"
+                        @click="confirmarEliminar(v)">Eliminar</button>
+                    <button v-else class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
+                        @click="toggleActivo(v)">
+                        {{ v.isActive ? 'Desactivar' : 'Activar' }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -311,7 +328,6 @@ onMounted(cargarConductores)
 </template>
 
 <style scoped>
-
 .cond-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -794,6 +810,7 @@ onMounted(cargarConductores)
     }
 
 }
+
 @media (max-width: 1024px) {
     .cond-resumen {
         grid-template-columns: repeat(3, 1fr);

@@ -6,4 +6,6 @@ public interface IAsignacionRepository{
     public Task<Asignacion?> ObtenerPorId(int Id);
     public Task Crear(Asignacion asignacion);
     public Task Actualizar(int id, Asignacion asignacion);
+    Task<bool> ExisteParaVehiculo(int vehiculoId);
+    Task<bool> ExisteParaConductor(int conductorId);
 }

@@ -2,11 +2,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMantenimientos, TIPOS, ESTADOS } from './composables/useMantenimientos'
+import { usePermisos } from '@/composables/usePermisos'
 import MantenimientoEliminarModal from './MantenimientoEliminarModal.vue'
 import MantenimientoFinalizarModal from './MantenimientoFinalizarModal.vue'
 import MantenimientoHistorialModal from './MantenimientoHistorialModal.vue'
 
 const router = useRouter()
+const { puede } = usePermisos()
 
 const {
     registros, loading, eliminando, errorMsg, exitoMsg,
@@ -149,7 +151,7 @@ onMounted(cargar)
                     </svg>
                     Actualizar
                 </button>
-                <button class="btn-nuevo" @click="nuevo">
+                <button v-if="puede.gestionarMantenimiento" class="btn-nuevo" @click="nuevo">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
@@ -252,7 +254,7 @@ onMounted(cargar)
                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                         </svg>
                         <p>No se encontraron registros de mantenimiento.</p>
-                        <button class="btn-nuevo btn-nuevo-sm" @click="nuevo">Registrar mantenimiento</button>
+                        <button v-if="puede.gestionarMantenimiento" class="btn-nuevo btn-nuevo-sm" @click="nuevo">Registrar mantenimiento</button>
                     </div>
 
                     <div v-else class="tabla-scroll">
@@ -268,7 +270,7 @@ onMounted(cargar)
                                 <th>Taller / Responsable</th>
                                 <th>Costo</th>
                                 <th>Estado</th>
-                                <th class="th-acciones"></th>
+                                <th v-if="puede.gestionarMantenimiento" class="th-acciones"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -293,7 +295,7 @@ onMounted(cargar)
                                 <td data-label="Estado">
                                     <span class="badge" :class="estadoClase(r.estado)">{{ r.estado }}</span>
                                 </td>
-                                <td class="td-acciones">
+                                <td v-if="puede.gestionarMantenimiento" class="td-acciones">
                                     <button
                                         v-if="r.estado === 'Programado' || r.estado === 'En proceso'"
                                         class="btn-accion btn-finalizar"

@@ -2,12 +2,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
+import { usePermisos } from '../../composables/usePermisos'
 import { verConductores, eliminarConductor, desactivarConductor, activarConductor } from '../../services/conductorService'
 import ConductorVerModal from './ConductorVerModal.vue'
 import ConductorEliminarModal from './ConductorEliminarModal.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const { puede } = usePermisos()
 const mostrarVer = ref(false)
 const conductorVerId = ref(null)
 const conductores = ref([])
@@ -181,7 +183,8 @@ onMounted(cargarConductores)
                     </svg>
                     Exportar
                 </button>
-                <button class="btn-nuevo" @click="irANuevo">
+                <!-- Solo Admin y Supervisor pueden crear conductores -->
+                <button v-if="puede.crearConductores.value" class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -297,10 +300,13 @@ onMounted(cargarConductores)
 
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verConductor(v.id)">Ver</button>
-                    <button class="btn-accion btn-editar" @click="editarConductor(v.id)">Editar</button>
-                    <button v-if="v.puedeEliminarse" class="btn-accion btn-eliminar"
+                    <!-- Solo Admin y Supervisor pueden editar conductores -->
+                    <button v-if="puede.editarConductores.value" class="btn-accion btn-editar" @click="editarConductor(v.id)">Editar</button>
+                    <!-- Solo Admin puede eliminar conductores -->
+                    <button v-if="v.puedeEliminarse && puede.eliminarConductores.value" class="btn-accion btn-eliminar"
                         @click="confirmarEliminar(v)">Eliminar</button>
-                    <button v-else class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
+                    <!-- Desactivar/Activar solo para Admin -->
+                    <button v-if="!v.puedeEliminarse && puede.eliminarConductores.value" class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
                         @click="toggleActivo(v)">
                         {{ v.isActive ? 'Desactivar' : 'Activar' }}
                     </button>

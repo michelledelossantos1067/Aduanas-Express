@@ -26,6 +26,8 @@ public class ConductorRepositories : IConductorRepositories
 
     public async Task Crear(Conductor conductor)
     {
+        if (conductor == null || !conductor.IsActive)
+            throw new Exception("Conductor no encontrado o está desactivado.");
         _context.AddAsync(conductor);
         await _context.SaveChangesAsync();
     }
@@ -58,14 +60,20 @@ public class ConductorRepositories : IConductorRepositories
         await _context.SaveChangesAsync();
     }
 
-    // Excluye conductores que ya tienen una asignación en la fecha indicada
     public async Task<List<Conductor>> ObtenerDisponiblesEnFecha(DateTime fecha)
     {
+        var conductoresOcupados = await _context.Asignaciones
+            .Where(a => a.FechaAsignacion.HasValue
+                     && a.FechaAsignacion.Value.Date == fecha.Date
+                     && a.Estado != EstadoAsignacion.Cancelada
+                     && a.Estado != EstadoAsignacion.Finalizada)
+            .Select(a => a.ConductorId)
+            .ToListAsync();
+
         return await _context.Conductores
-            .Where(c => !_context.Asignaciones
-                .Any(a => a.ConductorId == c.Id &&
-                          a.Solicitud.FechaViaje.HasValue &&
-                          a.Solicitud.FechaViaje.Value.Date == fecha.Date))
+            .Where(c => c.Estado == EstadosConductor.Disponible
+                     && c.IsActive == true
+                     && !conductoresOcupados.Contains(c.Id))
             .ToListAsync();
     }
 }

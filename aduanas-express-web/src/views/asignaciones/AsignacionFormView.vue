@@ -146,11 +146,16 @@ async function guardarAsignacion() {
     if (!puedeAsignar.value) return
     guardando.value = true
 
+    const ahora = new Date()
+    const fechaAsignacionLocal =
+        `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}` +
+        `T${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}:${String(ahora.getSeconds()).padStart(2, '0')}`
+
     const payload = {
         solicitudId: solicitudSeleccionada.value.id,
         vehiculoId: vehiculoSeleccionado.value.id,
         conductorId: conductorSeleccionado.value.id,
-        fechaAsignacion: new Date().toISOString().split('T')[0],
+        fechaAsignacion: fechaAsignacionLocal,
         asignadoPorId: authStore.usuario.id,
     }
 
@@ -167,7 +172,6 @@ async function guardarAsignacion() {
         guardando.value = false
     }
 }
-
 async function actualizar() {
     await cargarSolicitudes()
     if (solicitudSeleccionada.value) {

@@ -48,14 +48,20 @@ public class VehiculoRepositories : IVehiculoRepositories
         _context.Remove(vehiculo);
         await _context.SaveChangesAsync();
     }
-    // Excluye vehículos que ya tienen una asignación en la fecha indicada
     public async Task<List<Vehiculo>> ObtenerDisponiblesEnFecha(DateTime fecha)
     {
+        var vehiculosOcupados = await _context.Asignaciones
+            .Where(a => a.FechaAsignacion.HasValue
+                     && a.FechaAsignacion.Value.Date == fecha.Date
+                     && a.Estado != EstadoAsignacion.Cancelada
+                     && a.Estado != EstadoAsignacion.Finalizada)
+            .Select(a => a.VehiculoId)
+            .ToListAsync();
+
         return await _context.Vehiculos
-            .Where(v => !_context.Asignaciones
-                .Any(a => a.VehiculoId == v.Id &&
-                          a.Solicitud.FechaViaje.HasValue &&
-                          a.Solicitud.FechaViaje.Value.Date == fecha.Date))
+            .Where(v => v.Estado == EstadosVehiculo.Disponible
+                     && v.IsActive == true
+                     && !vehiculosOcupados.Contains(v.Id))
             .ToListAsync();
     }
 }

@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { verSolicitud } from '@/services/solicitudService'
 import { verAsignaciones } from '@/services/asignacionService'
+import { usePermisos } from '@/composables/usePermisos'
+const { puede } = usePermisos()
 
 const vistaActiva = ref('mes')
 const hoy = new Date()

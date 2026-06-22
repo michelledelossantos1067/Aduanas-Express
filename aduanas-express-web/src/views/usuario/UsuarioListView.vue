@@ -12,7 +12,8 @@
                     </svg>
                     Exportar
                 </button>
-                <button class="btn-nuevo" @click="irANuevo">
+                <!-- Solo Admin puede crear usuarios -->
+                <button v-if="puede.crearUsuarios.value" class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -103,13 +104,24 @@
                             </td>
                             <td>
                                 <div class="acciones">
-                                    <button @click="verUsuario(u)" class="btn-icon" title="Ver"></button>
-                                    <button @click="editarUsuario(u.id)" class="btn-icon" title="Editar">✏</button>
-                                    <button v-if="u.puedeEliminarse" @click="confirmarEliminar(u)" class="btn-icon del"
-                                        title="Eliminar">🗑</button>
-                                    <button v-else @click="toggleActivo(u)" class="btn-icon"
-                                        :title="u.isActive ? 'Desactivar' : 'Activar'" :disabled="cambiandoEstado">{{
-                                        u.isActive ? '🔒' : '🔓' }}</button>
+                                    <button @click="verUsuario(u)" class="btn-accion btn-ver">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        Ver
+                                    </button>
+                                    <button v-if="puede.editarUsuarios.value" @click="editarUsuario(u.id)" class="btn-accion btn-editar">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        Editar
+                                    </button>
+                                    <button v-if="u.puedeEliminarse && puede.eliminarUsuarios.value" @click="confirmarEliminar(u)" class="btn-accion btn-eliminar">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                        Eliminar
+                                    </button>
+                                    <button v-if="!u.puedeEliminarse && puede.eliminarUsuarios.value" @click="toggleActivo(u)" :disabled="cambiandoEstado"
+                                        :class="['btn-accion', u.isActive ? 'btn-desactivar' : 'btn-activar']">
+                                        <svg v-if="u.isActive" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                                        <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        {{ u.isActive ? 'Desactivar' : 'Activar' }}
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -162,7 +174,7 @@
                 </div>
                 <div class="modal-acciones">
                     <button class="btn-cancelar-modal" @click="mostrarVer = false">Cerrar</button>
-                    <button class="btn-editar-modal" @click="editarUsuario(usuarioSeleccionado.id)">Editar</button>
+                    <button v-if="puede.editarUsuarios.value" class="btn-editar-modal" @click="editarUsuario(usuarioSeleccionado.id)">Editar</button>
                 </div>
             </div>
         </div>
@@ -190,9 +202,11 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePermisos } from '../../composables/usePermisos'
 import { obtenerUsuario, eliminarUsuario, desactivarUsuario, activarUsuario } from '../../services/usuarioService'
 
 const router = useRouter()
+const { puede } = usePermisos()
 
 const ROLES = [
     { label: 'Administrador', value: 0 },
@@ -221,6 +235,7 @@ const usuarioSeleccionado = ref(null)
 const mostrarEliminar = ref(false)
 const usuarioAEliminar = ref(null)
 const eliminando = ref(false)
+const cambiandoEstado = ref(false)
 
 function getInitials(nombre = '', apellido = '') {
     return `${nombre[0] ?? ''}${apellido[0] ?? ''}`.toUpperCase()
@@ -275,33 +290,23 @@ const hasta = computed(() =>
 
 const paginasVisibles = computed(() => {
     const total = totalPaginas.value
-    const cur = pagina.value
+    const actual = pagina.value
     const pages = []
+
     if (total <= 5) {
         for (let i = 1; i <= total; i++) pages.push(i)
     } else {
         pages.push(1)
-        if (cur > 3) pages.push('...')
-        for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) pages.push(i)
-        if (cur < total - 2) pages.push('...')
+        if (actual > 3) pages.push('...')
+        for (let i = Math.max(2, actual - 1); i <= Math.min(total - 1, actual + 1); i++) {
+            pages.push(i)
+        }
+        if (actual < total - 2) pages.push('...')
         pages.push(total)
     }
+
     return pages
 })
-const cambiandoEstado = ref(false)
-async function toggleActivo(u) {
-    cambiandoEstado.value = true
-    try {
-        if (u.isActive) await desactivarUsuario(u.id)
-        else await activarUsuario(u.id)
-        u.isActive = !u.isActive
-    } catch {
-        alert('No se pudo cambiar el estado del usuario.')
-    } finally {
-        cambiandoEstado.value = false
-    }
-}
-watch([busqueda, filtroRol], () => { pagina.value = 1 })
 
 async function cargarUsuarios() {
     loading.value = true
@@ -309,7 +314,7 @@ async function cargarUsuarios() {
     try {
         const res = await obtenerUsuario()
         usuarios.value = res.data
-    } catch {
+    } catch (e) {
         error.value = 'No se pudieron cargar los usuarios.'
     } finally {
         loading.value = false
@@ -326,8 +331,7 @@ function verUsuario(u) {
 }
 
 function editarUsuario(id) {
-    mostrarVer.value = false
-    router.push(`/usuarios/${id}/editar`)
+    router.push(`/usuario/${id}/editar`)
 }
 
 function confirmarEliminar(u) {
@@ -341,41 +345,59 @@ async function ejecutarEliminar() {
         await eliminarUsuario(usuarioAEliminar.value.id)
         usuarios.value = usuarios.value.filter(u => u.id !== usuarioAEliminar.value.id)
         mostrarEliminar.value = false
-    } catch {
-        alert('Error al eliminar el usuario.')
+    } catch (e) {
+        error.value = 'Error al eliminar el usuario.'
     } finally {
         eliminando.value = false
     }
 }
 
-function exportarPdf() {
-
-    console.log('Exportar PDF', usuariosFiltrados.value)
+async function toggleActivo(usuario) {
+    cambiandoEstado.value = true
+    try {
+        if (usuario.isActive) {
+            await desactivarUsuario(usuario.id)
+        } else {
+            await activarUsuario(usuario.id)
+        }
+        usuario.isActive = !usuario.isActive
+    } catch (e) {
+        error.value = 'No se pudo cambiar el estado del usuario.'
+    } finally {
+        cambiandoEstado.value = false
+    }
 }
+
+function exportarPdf() {
+    // Lógica de exportación
+    console.log('Exportar PDF')
+}
+
+watch(pagina, () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+})
 
 onMounted(cargarUsuarios)
 </script>
 
 <style scoped>
 .usr-page {
-    padding: 32px 40px;
-    background: #f3f4f6;
-    min-height: 100vh;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .usr-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 28px;
 }
 
 .usr-title {
-    font-size: 1.75rem;
+    font-size: 1.875rem;
     font-weight: 700;
     color: #111827;
-    letter-spacing: -0.02em;
     margin: 0;
 }
 
@@ -384,71 +406,64 @@ onMounted(cargarUsuarios)
     gap: 12px;
 }
 
-.btn-exportar {
+.btn-exportar, .btn-nuevo {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 9px 20px;
-    background: #fff;
-    border: 1.5px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-exportar:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
-}
-
-.btn-nuevo {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 20px;
-    background: #1a3a2a;
+    padding: 9px 16px;
     border: none;
     border-radius: 8px;
     font-size: 0.875rem;
-    font-weight: 600;
-    color: #fff;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.13s;
+    font-family: inherit;
+}
+
+.btn-exportar {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-exportar:hover {
+    background: #e5e7eb;
+}
+
+.btn-nuevo {
+    background: #1a3a2a;
+    color: #fff;
 }
 
 .btn-nuevo:hover {
-    background: #14532d;
+    background: #0f2818;
 }
 
 .usr-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 .stat-card {
     background: #fff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    padding: 20px 16px;
+    text-align: center;
 }
 
 .stat-num {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #111827;
-    margin: 0;
-    line-height: 1;
+    margin: 0 0 4px;
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     color: #6b7280;
-    margin: 6px 0 0;
+    margin: 0;
 }
 
 .usr-filtros {
@@ -461,125 +476,104 @@ onMounted(cargarUsuarios)
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 0 12px;
     background: #fff;
     border: 1.5px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 0 14px;
-    transition: border-color 0.15s;
+    border-radius: 8px;
+    gap: 8px;
 }
 
-.filtro-search:focus-within {
-    border-color: #1a3a2a;
+.filtro-search svg {
+    flex-shrink: 0;
 }
 
 .filtro-input {
     flex: 1;
     border: none;
     outline: none;
+    padding: 8px 0;
     font-size: 0.875rem;
-    color: #111827;
-    padding: 11px 0;
-    background: transparent;
-}
-
-.filtro-input::placeholder {
-    color: #9ca3af;
+    font-family: inherit;
 }
 
 .filtro-select {
-    padding: 10px 14px;
-    background: #fff;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    color: #374151;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.15s;
     min-width: 160px;
+    padding: 8px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.875rem;
+    cursor: pointer;
+    font-family: inherit;
 }
 
-.filtro-select:focus {
-    border-color: #1a3a2a;
-}
-
-.usr-estado {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 60px 0;
-    color: #6b7280;
+.usr-estado, .usr-error {
+    text-align: center;
+    padding: 60px 20px;
 }
 
 .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid #e5e7eb;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f4f6;
     border-top-color: #1a3a2a;
     border-radius: 50%;
-    animation: spin 0.75s linear infinite;
+    animation: spin 0.6s linear infinite;
+    margin: 0 auto 12px;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
 .usr-error {
     background: #fef2f2;
     border: 1px solid #fecaca;
-    border-radius: 10px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    border-radius: 12px;
     color: #991b1b;
-    font-size: 0.9rem;
+}
+
+.usr-error p {
+    margin: 0 0 12px;
 }
 
 .btn-reintentar {
-    padding: 7px 16px;
-    background: #fff;
-    border: 1.5px solid #fca5a5;
-    border-radius: 8px;
-    color: #991b1b;
-    font-size: 0.8rem;
+    padding: 8px 16px;
+    background: #991b1b;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
 }
 
 .usr-tabla-wrap {
     background: #fff;
-    border-radius: 14px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    border-radius: 12px;
     overflow: hidden;
 }
 
 .tabla-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 16px 24px;
     border-bottom: 1px solid #f3f4f6;
 }
 
 .tabla-titulo {
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
     margin: 0;
 }
 
 .tabla-badge {
-    background: #1f2937;
-    color: #fff;
     font-size: 0.75rem;
-    font-weight: 600;
-    padding: 3px 12px;
-    border-radius: 20px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 10px;
+    border-radius: 6px;
 }
 
 .tabla-scroll {
@@ -589,46 +583,27 @@ onMounted(cargarUsuarios)
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
 }
 
-thead tr {
-    border-bottom: 1px solid #f3f4f6;
-}
-
-thead th {
-    padding: 12px 24px;
-    text-align: left;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #6b7280;
-    white-space: nowrap;
-}
-
-tbody tr {
-    border-bottom: 1px solid #f9fafb;
-    transition: background 0.15s;
-}
-
-tbody tr:hover {
+thead {
     background: #f9fafb;
 }
 
-tbody td {
-    padding: 14px 24px;
-    color: #4b5563;
-}
-
-.td-vacio {
-    text-align: center;
-    color: #9ca3af;
-    padding: 48px 0;
-    font-size: 0.9rem;
-}
-
-.td-email {
+th {
+    padding: 12px 24px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
     color: #6b7280;
-    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 14px 24px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.875rem;
+    color: #374151;
 }
 
 .usuario-cell {
@@ -644,92 +619,88 @@ tbody td {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 600;
     font-size: 0.75rem;
-    font-weight: 700;
     color: #fff;
     flex-shrink: 0;
 }
 
 .avatar-lg {
-    width: 52px;
-    height: 52px;
-    font-size: 1rem;
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
 }
 
-.av-purple {
-    background: #7c3aed;
-}
-
-.av-blue {
-    background: #2563eb;
-}
-
-.av-green {
-    background: #16a34a;
-}
-
-.av-orange {
-    background: #ea580c;
-}
-
-.av-teal {
-    background: #0d9488;
-}
+.av-purple { background: #8b5cf6; }
+.av-blue { background: #3b82f6; }
+.av-green { background: #10b981; }
+.av-orange { background: #f97316; }
+.av-teal { background: #14b8a6; }
 
 .usuario-nombre {
     font-weight: 500;
     color: #111827;
 }
 
+.td-email {
+    color: #6b7280;
+}
+
+.td-vacio {
+    text-align: center;
+    color: #9ca3af;
+}
+
 .badge-rol {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 4px 10px;
+    border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 600;
 }
 
-.rol-admin {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.rol-supervisor {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.rol-operador {
-    background: #d1fae5;
-    color: #065f46;
-}
+.rol-admin { background: #fef3c7; color: #92400e; }
+.rol-supervisor { background: #dbeafe; color: #1e40af; }
+.rol-operador { background: #d1fae5; color: #065f46; }
 
 .acciones {
     display: flex;
-    gap: 4px;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
-.btn-icon {
-    width: 28px;
-    height: 28px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 6px;
-    background: #fff;
-    font-size: 0.75rem;
-    cursor: pointer;
+.btn-accion {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    transition: border-color 0.15s;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 7px;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.13s, border-color 0.13s, color 0.13s;
+    white-space: nowrap;
+    font-family: inherit;
 }
 
-.btn-icon:hover {
-    border-color: #9ca3af;
-}
+.btn-ver { color: #374151; }
+.btn-ver:hover { background: #f3f4f6; border-color: #d1d5db; }
 
-.btn-icon.del:hover {
-    border-color: #fca5a5;
-}
+.btn-editar { color: #92400e; border-color: #fde68a; background: #fffbeb; }
+.btn-editar:hover { background: #fef3c7; border-color: #f59e0b; }
+
+.btn-eliminar { color: #991b1b; border-color: #fecaca; background: #fff5f5; }
+.btn-eliminar:hover { background: #fee2e2; border-color: #f87171; }
+
+.btn-desactivar { color: #6b7280; border-color: #e5e7eb; background: #f9fafb; }
+.btn-desactivar:hover { background: #f3f4f6; border-color: #9ca3af; }
+.btn-desactivar:disabled { opacity: 0.5; cursor: default; }
+
+.btn-activar { color: #065f46; border-color: #a7f3d0; background: #f0fdf4; }
+.btn-activar:hover { background: #d1fae5; border-color: #34d399; }
+.btn-activar:disabled { opacity: 0.5; cursor: default; }
 
 .usr-paginacion {
     display: flex;

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import { usePermisos } from '../../composables/usePermisos'
 import { verConductores, eliminarConductor, desactivarConductor, activarConductor } from '../../services/conductorService'
+import { verAsignaciones } from '../../services/asignacionService'
 import ConductorVerModal from './ConductorVerModal.vue'
 import ConductorEliminarModal from './ConductorEliminarModal.vue'
 import ModalSinPermiso from '@/components/ModalSinPermiso.vue'
@@ -14,6 +15,7 @@ const { puede } = usePermisos()
 const mostrarVer = ref(false)
 const conductorVerId = ref(null)
 const conductores = ref([])
+const asignaciones = ref([])
 const loading = ref(false)
 const error = ref('')
 const busqueda = ref('')
@@ -39,6 +41,28 @@ const estadoBadgeClase = {
 const estadoLabel = (valor) =>
     estadosConductor.find((e) => e.value === valor)?.label ?? valor
 
+function estadoReal(conductor) {
+    // Mantener estados especiales
+    if (conductor.estado === 2 || conductor.estado === 3) {
+        return conductor.estado
+    }
+
+    const ahora = new Date()
+
+    const tieneViajeActivo = asignaciones.value.some(a => {
+        if (a.conductorId !== conductor.id) return false
+
+        const estadoFinalizado = ['Finalizado', 'Cancelado', 'finalizado', 'cancelado']
+        if (estadoFinalizado.includes(a.estado)) return false
+
+        const salida = new Date(a.fechaHoraSalida)
+
+        return ahora >= salida
+    })
+
+    return tieneViajeActivo ? 1 : 0
+}
+
 const tiposUnicos = computed(() => [
     ...new Set(conductores.value.map((v) => v.tipo).filter(Boolean)),
 ])
@@ -46,12 +70,13 @@ const tiposUnicos = computed(() => [
 const resumen = computed(() => {
     const activos = conductores.value.filter(v => v.isActive)
     const total = activos.length
-    const disponibles = activos.filter(v => v.estado === 0).length
-    const enViaje = activos.filter(v => v.estado === 1).length
-    const suspendido = activos.filter(v => v.estado === 2).length
-    const inactivo = activos.filter(v => v.estado === 3).length
+    const disponibles = activos.filter(v => estadoReal(v) === 0).length
+    const enViaje = activos.filter(v => estadoReal(v) === 1).length
+    const suspendido = activos.filter(v => estadoReal(v) === 2).length
+    const inactivo = activos.filter(v => estadoReal(v) === 3).length
     return { total, disponibles, enViaje, suspendido, inactivo }
 })
+
 const conductoresFiltrados = computed(() => {
     return conductores.value.filter((v) => {
         if (!v.isActive) return false
@@ -61,14 +86,16 @@ const conductoresFiltrados = computed(() => {
             v.matricula?.toLowerCase().includes(q) ||
             v.numeroLicencia?.toLowerCase().includes(q) ||
             v.nombre?.toLowerCase().includes(q)
+        const estadoMostrado = estadoReal(v)
         const coincideEstado =
             filtroEstado.value === '' ||
-            String(v.estado) === filtroEstado.value
+            String(estadoMostrado) === filtroEstado.value
         const coincideTipo =
             filtroTipo.value === '' || v.tipo === filtroTipo.value
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
+
 const cambiandoEstado = ref(false)
 const mostrarModalSinPermiso = ref(false)
 const accionSinPermiso = ref('')
@@ -90,6 +117,7 @@ function intentarEliminar(conductor) {
     }
     confirmarEliminar(conductor)
 }
+
 async function toggleActivo(conductor) {
     cambiandoEstado.value = true
     try {
@@ -106,19 +134,21 @@ async function toggleActivo(conductor) {
         cambiandoEstado.value = false
     }
 }
+
 async function cargarConductores() {
     loading.value = true
     error.value = ''
-
     try {
-        const res = await verConductores()
-        conductores.value = res.data
+        const [resCond, resAsig] = await Promise.all([verConductores(), verAsignaciones()])
+        conductores.value = resCond.data
+        asignaciones.value = resAsig.data
     } catch (e) {
         error.value = 'No se pudieron cargar los conductores.'
     } finally {
         loading.value = false
     }
 }
+
 function irANuevo() {
     router.push('/conductores/nuevo')
 }
@@ -127,6 +157,7 @@ function verConductor(id) {
     conductorVerId.value = id
     mostrarVer.value = true
 }
+
 function editarConductor(id) {
     router.push(`/conductores/${id}/editar`)
 }
@@ -144,7 +175,7 @@ async function ejecutarEliminar() {
             (v) => v.id !== conductoresAEliminar.value.id
         )
     } catch {
-        error.value = 'Error al eliminar el conductores.'
+        error.value = 'Error al eliminar el conductor.'
     } finally {
         mostrarConfirmacion.value = false
         conductoresAEliminar.value = null
@@ -155,6 +186,7 @@ function cancelarEliminar() {
     mostrarConfirmacion.value = false
     conductoresAEliminar.value = null
 }
+
 function exportar() {
     const headers = ['Nombre', 'Apellido', 'Cedula', 'NumeroLicencia', 'TipoLicencia', 'FechaVencLicencia', 'Telefono', 'Direccion', 'Supervisor', 'Estado']
     const filas = conductores.value.map((v) => [
@@ -173,7 +205,6 @@ function exportar() {
 
 function formatFecha(fecha) {
     if (!fecha || fecha.startsWith('0001')) return '—'
-
     const parte = fecha.split('T')[0]
     const [anio, mes, dia] = parte.split('-')
     return `${dia}/${mes}/${anio}`
@@ -286,8 +317,8 @@ onMounted(cargarConductores)
                 <div class="card-top">
 
                     <span class="card-cedula">{{ v.nombre }}</span>
-                    <span class="badge" :class="estadoBadgeClase[v.estado]">
-                        {{ estadoLabel(v.estado) }}
+                    <span class="badge" :class="estadoBadgeClase[estadoReal(v)]">
+                        {{ estadoLabel(estadoReal(v)) }}
                     </span>
                 </div>
 
@@ -339,7 +370,7 @@ onMounted(cargarConductores)
 
         <ConductorEliminarModal v-model="mostrarConfirmacion" :conductor="conductoresAEliminar"
             @eliminado="(id) => conductores = conductores.filter(c => c.id !== id)" />
-<ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
+        <ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
     </div>
 </template>
 

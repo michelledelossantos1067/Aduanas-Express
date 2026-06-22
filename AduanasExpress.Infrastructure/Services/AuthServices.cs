@@ -10,7 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 namespace AduanasExpress.Infrastructure.Services;
 
-public class AuthServices : IAuthService {
+public class AuthServices : IAuthService
+{
 
     private readonly IUsuarioRepositories _usuarioRepositories;
     private readonly IConfiguration _configuration;
@@ -20,33 +21,46 @@ public class AuthServices : IAuthService {
         _usuarioRepositories = usuarioRepositories;
         _configuration = configuration;
     }
-
     public async Task<AuthResponseDTOs?> Login(AuthDTOs authDTOs)
     {
         if (authDTOs.Email == null)
         {
             return null;
         }
-        ;
+
         var usuario = await _usuarioRepositories.ObtenerPorEmail(authDTOs.Email);
+
         if (usuario == null)
         {
             return null;
         }
-        ;
+
+        if (!usuario.IsActive)
+        {
+            throw new Exception("Este usuario ha sido desactivado.");
+        }
+
         if (!BCrypt.Net.BCrypt.Verify(authDTOs.Password!, usuario.Password))
         {
             return null;
         }
-        ;
+
         var claims = new[]{
-            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-            new Claim(ClaimTypes.Email, usuario.Email),
-            new Claim(ClaimTypes.Name, usuario.Nombre),
-            new Claim(ClaimTypes.Role, usuario.Rol.Nombre),
-        };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+        new Claim(ClaimTypes.Email, usuario.Email),
+        new Claim(ClaimTypes.Name, usuario.Nombre),
+        new Claim(ClaimTypes.Role, usuario.Rol.Nombre),
+    };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
+        );
+
+        var creds = new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256
+        );
+
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
@@ -54,6 +68,7 @@ public class AuthServices : IAuthService {
             expires: DateTime.Now.AddHours(8),
             signingCredentials: creds
         );
+
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
         return new AuthResponseDTOs
@@ -98,23 +113,23 @@ public class AuthServices : IAuthService {
         usuarioExistente.Password = hashPassword;
         await _usuarioRepositories.Actualizar(usuarioExistente.Id, usuarioExistente);
     }
-public async Task Register(RegisterDTO registerDTO)
-{
-    var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(registerDTO.Email);
-    if (usuarioExistente != null)
-        throw new Exception("El email ya está registrado.");
-    if (registerDTO.Email == null)
-        throw new Exception("El email existe.");
-
-    var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
-    var usuario = new Usuario
+    public async Task Register(RegisterDTO registerDTO)
     {
-        Nombre = registerDTO.Nombre,
-        Apellido = registerDTO.Apellido,
-        Email = registerDTO.Email,
-        Password = hashPassword,
-        RolId = registerDTO.RolId
-    };
-    await _usuarioRepositories.Crear(usuario);
-}
+        var usuarioExistente = await _usuarioRepositories.ObtenerPorEmail(registerDTO.Email);
+        if (usuarioExistente != null)
+            throw new Exception("El email ya está registrado.");
+        if (registerDTO.Email == null)
+            throw new Exception("El email existe.");
+
+        var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
+        var usuario = new Usuario
+        {
+            Nombre = registerDTO.Nombre,
+            Apellido = registerDTO.Apellido,
+            Email = registerDTO.Email,
+            Password = hashPassword,
+            RolId = registerDTO.RolId
+        };
+        await _usuarioRepositories.Crear(usuario);
+    }
 }

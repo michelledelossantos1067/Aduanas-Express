@@ -328,8 +328,6 @@ onMounted(cargarSolicitudes)
                         <th>DESTINO</th>
                         <th>FECHA · HORA</th>
                         <th>COLABORADORES</th>
-                        <th>VEHÍCULO</th>
-                        <th>CONDUCTOR</th>
                         <th>ESTADO</th>
                         <th>ACCIONES</th>
                     </tr>
@@ -347,14 +345,6 @@ onMounted(cargarSolicitudes)
                             </span>
                         </td>
                         <td class="td-center">{{ s.cantidadColaboradores }}</td>
-                        <td>{{ s.vehiculo?.matricula ?? 'Sin asignar' }}</td>
-                        <td>
-                            {{
-                                s.conductor
-                                    ? `${s.conductor.nombre} ${s.conductor.apellido}`
-                                    : 'Sin asignar'
-                            }}
-                        </td>
                         <td>
                             <span class="badge" :class="estadoBadgeClase[s.estado]">
                                 {{ estadoLabel(s.estado) }}

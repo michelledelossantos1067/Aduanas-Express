@@ -67,21 +67,17 @@ function toggleSection(key) {
                     <span class="nav-chevron" :class="{ open: openSections.gestion }">▾</span>
                 </button>
                 <div class="nav-collapsible" v-show="openSections.gestion">
-                    <router-link to="/vehiculos" class="nav-item">
-                        <span class="nav-icon">🚌</span>
-                        <span>Vehiculos</span>
+                    <router-link v-if="puede.verVehiculos.value" to="/vehiculos" class="nav-item">
+                        <span class="nav-icon">🚌</span><span>Vehiculos</span>
                     </router-link>
-                    <router-link to="/conductores" class="nav-item">
-                        <span class="nav-icon">👤</span>
-                        <span>Conductores</span>
+                    <router-link v-if="puede.verConductores.value" to="/conductores" class="nav-item">
+                        <span class="nav-icon">👤</span><span>Conductores</span>
                     </router-link>
-                    <router-link to="/solicitudes" class="nav-item">
-                        <span class="nav-icon">📋</span>
-                        <span>Solicitudes</span>
+                    <router-link v-if="puede.verSolicitudes.value" to="/solicitudes" class="nav-item">
+                        <span class="nav-icon">📋</span><span>Solicitudes</span>
                     </router-link>
-                    <router-link to="/asignaciones" class="nav-item">
-                        <span class="nav-icon">📝</span>
-                        <span>Asignaciones</span>
+                    <router-link v-if="puede.verAsignaciones.value" to="/asignaciones" class="nav-item">
+                        <span class="nav-icon">📝</span><span>Asignaciones</span>
                     </router-link>
                 </div>
             </div>
@@ -145,22 +141,26 @@ function toggleSection(key) {
             <div class="footer-gear-wrap" ref="gearWrap">
                 <button class="btn-gear" @click="gearOpen = !gearOpen" title="Opciones">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>
                 </button>
                 <div v-if="gearOpen" class="gear-dropdown">
                     <router-link to="/archivados" class="gear-item" @click="gearOpen = false">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 8h14M5 8a2 2 0 1 0-4 0v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8m-14 0V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M5 8h14M5 8a2 2 0 1 0-4 0v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8m-14 0V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
                         Ver archivados
                     </router-link>
                     <button class="gear-item gear-item-danger" @click="authStore.logout(); gearOpen = false">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
                         </svg>
                         Cerrar sesión
                     </button>
@@ -345,9 +345,9 @@ function toggleSection(key) {
     width: 30px;
     height: 30px;
     border-radius: 7px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.65);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -356,7 +356,7 @@ function toggleSection(key) {
 }
 
 .btn-gear:hover {
-    background: rgba(255,255,255,0.14);
+    background: rgba(255, 255, 255, 0.14);
     color: #fff;
 }
 
@@ -366,7 +366,7 @@ function toggleSection(key) {
     right: 0;
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     min-width: 170px;
     overflow: hidden;
     z-index: 200;

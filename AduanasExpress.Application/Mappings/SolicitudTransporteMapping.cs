@@ -3,7 +3,7 @@ using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Application.Mappings
 {
-   public static class SolicitudTransporteMapping
+    public static class SolicitudTransporteMapping
     {
         public static SolicitudTransporteReponseDTOs ToResponse(this SolicitudTransporte solicitudTransporte)
         {
@@ -14,7 +14,9 @@ namespace AduanasExpress.Application.Mappings
                 CantidadColaboradores = solicitudTransporte.CantidadColaboradores,
                 FechaViaje = solicitudTransporte.FechaViaje,
                 HoraSalida = solicitudTransporte.HoraSalida,
+                PuntoOrigen = solicitudTransporte.PuntoOrigen,
                 Destino = solicitudTransporte.Destino,
+                TipoViaje = solicitudTransporte.TipoViaje,
                 MotivoViaje = solicitudTransporte.MotivoViaje,
                 Estado = solicitudTransporte.Estado,
                 UsuarioSolicitaId = solicitudTransporte.UsuarioSolicitaId,

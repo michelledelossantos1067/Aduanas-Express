@@ -1,75 +1,144 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { verSolicitudPorId, crearSolicitud, actualizarSolicitud } from '../../services/solicitudService'
 
 const router = useRouter()
-const route  = useRoute()
+const route = useRoute()
 
-const loading  = ref(false)
-const error    = ref('')
+const loading = ref(false)
+const error = ref('')
 
 const esEdicion = computed(() => !!route.params.id)
 
 const form = ref({
-    areaSolicitante:       '',
-    destino:               '',
-    puntoOrigen:           '',
-    tipoViaje:             0,
-    motivoViaje:           '',
-    fechaViaje:            '',
-    horaSalida:            '',
-    horaLlegada:           '',
+    areaSolicitante: '',
+    destino: '',
+    puntoOrigen: '',
+    tipoViaje: 0,
+    motivoViaje: '',
+    fechaViaje: '',
+    horaSalida: '',
     cantidadColaboradores: 1,
-    estado:                0,
+    estado: 0,
 })
 
+/* =========================
+   ESTADOS (deben coincidir con el enum EstadosSolicitudes del backend)
+========================= */
 const estadosSolicitud = [
-    { label: 'Pendiente',  value: 0 },
-    { label: 'Aprobada',   value: 1 },
-    { label: 'Rechazada',  value: 2 },
-    { label: 'Cancelada',  value: 3 },
-    { label: 'Finalizada', value: 4 },
+    { value: 0, label: 'Pendiente' },
+    { value: 1, label: 'Aprobada' },
+    { value: 2, label: 'Rechazada' },
+    { value: 3, label: 'Cancelada' },
+    { value: 4, label: 'Finalizada' },
 ]
 
-const tiposViaje = [
-    { label: 'Solo ida',    value: 0 },
-    { label: 'Ida y vuelta', value: 1 },
-]
+const estadoLabel = computed(() => {
+    const e = estadosSolicitud.find(e => e.value === form.value.estado)
+    return e ? e.label : 'Desconocido'
+})
 
-const estadoLabel = computed(() =>
-    estadosSolicitud.find(e => e.value === form.value.estado)?.label ?? '—'
-)
+const estadoBadgeClase = computed(() => {
+    const mapa = {
+        0: 'badge-pendiente',
+        1: 'badge-aprobada',
+        2: 'badge-rechazada',
+        3: 'badge-cancelada',
+        4: 'badge-finalizada',
+    }
+    return mapa[form.value.estado] ?? 'badge-pendiente'
+})
 
-const estadoBadgeClase = computed(() => ({
-    'badge-pendiente':  form.value.estado === 0,
-    'badge-aprobada':   form.value.estado === 1,
-    'badge-rechazada':  form.value.estado === 2,
-    'badge-cancelada':  form.value.estado === 3,
-    'badge-finalizada': form.value.estado === 4,
-}))
+/* =========================
+   AUTOCOMPLETE UBICACIONES
+========================= */
+
+const origenQuery = ref('')
+const destinoQuery = ref('')
+
+const origenes = ref([])
+const destinos = ref([])
+
+let timeoutOrigen = null
+let timeoutDestino = null
+
+async function buscarUbicaciones(query, target) {
+    if (!query || query.length < 3) return
+
+    try {
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1`,
+            {
+                headers: {
+                    'Accept-Language': 'es'
+                }
+            }
+        )
+
+        const data = await res.json()
+        target.value = data.map(d => d.display_name)
+
+    } catch (e) {
+        target.value = []
+    }
+}
+
+/* debounce origen */
+watch(origenQuery, (val) => {
+    clearTimeout(timeoutOrigen)
+    timeoutOrigen = setTimeout(() => {
+        buscarUbicaciones(val, origenes)
+    }, 400)
+})
+
+/* debounce destino */
+watch(destinoQuery, (val) => {
+    clearTimeout(timeoutDestino)
+    timeoutDestino = setTimeout(() => {
+        buscarUbicaciones(val, destinos)
+    }, 400)
+})
+
+/* =========================
+   RESTO TU LÓGICA
+========================= */
 
 async function cargarSolicitud() {
     loading.value = true
-    error.value   = ''
+    error.value = ''
     try {
         const res = await verSolicitudPorId(route.params.id)
-        const s   = res.data
-        await nextTick()
+        const s = res.data
+
         form.value = {
-            areaSolicitante:       s.areaSolicitante       ?? '',
-            destino:               s.destino               ?? '',
-            puntoOrigen:           s.puntoOrigen           ?? '',
-            tipoViaje:             s.tipoViaje             ?? 0,
-            motivoViaje:           s.motivoViaje           ?? '',
-            fechaViaje:            s.fechaViaje            ? s.fechaViaje.substring(0, 10) : '',
-            horaSalida:            s.horaSalida            ? s.horaSalida.substring(0, 5)  : '',
-            horaLlegada:           s.horaLlegada           ? s.horaLlegada.substring(0, 5) : '',
+            areaSolicitante: s.areaSolicitante ?? '',
+            destino: s.destino ?? '',
+            puntoOrigen: s.puntoOrigen ?? '',
+            tipoViaje: s.tipoViaje ?? 0,
+            motivoViaje: s.motivoViaje ?? '',
+            fechaViaje: s.fechaViaje ? s.fechaViaje.substring(0, 10) : '',
+            horaSalida: s.horaSalida ? s.horaSalida.substring(0, 5) : '',
             cantidadColaboradores: s.cantidadColaboradores ?? 1,
-            estado:                s.estado                ?? 0,
+            estado: s.estado ?? 0,
         }
+
+        // 👇 ESTO ES LO QUE FALTABA:
+        // El <select> de origen/destino solo muestra opciones que estén
+        // dentro de los arrays "origenes" / "destinos", los cuales solo
+        // se llenan cuando el usuario escribe en el buscador.
+        // Si el valor que viene del backend no está en esa lista,
+        // el <select> no tiene ninguna <option> que calce y se ve vacío.
+        // Por eso lo insertamos manualmente como opción disponible:
+        if (s.puntoOrigen) {
+            origenes.value = [s.puntoOrigen]
+        }
+        if (s.destino) {
+            destinos.value = [s.destino]
+        }
+
     } catch (e) {
-        error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar la solicitud.'
+        error.value = 'No se pudo cargar la solicitud.'
     } finally {
         loading.value = false
     }
@@ -78,27 +147,7 @@ async function cargarSolicitud() {
 async function guardar() {
     error.value = ''
 
-    if (!form.value.areaSolicitante) { error.value = 'El área solicitante es requerida.';  return }
-    if (!form.value.puntoOrigen)     { error.value = 'El punto de origen es requerido.';   return }
-    if (!form.value.destino)         { error.value = 'El destino es requerido.';            return }
-    if (!form.value.fechaViaje)      { error.value = 'La fecha de viaje es requerida.';     return }
-    if (!form.value.horaSalida)      { error.value = 'La hora de salida es requerida.';     return }
-
-    const horaSalidaFmt = form.value.horaSalida.length === 5
-        ? `${form.value.horaSalida}:00`
-        : form.value.horaSalida
-
-    const payload = {
-        areaSolicitante:       form.value.areaSolicitante,
-        cantidadColaboradores: form.value.cantidadColaboradores,
-        fechaViaje:            `${form.value.fechaViaje}T00:00:00`,
-        horaSalida:            horaSalidaFmt,
-        puntoOrigen:           form.value.puntoOrigen,
-        destino:               form.value.destino,
-        tipoViaje:             form.value.tipoViaje,
-        motivoViaje:           form.value.motivoViaje,
-        estado:                form.value.estado,
-    }
+    const payload = { ...form.value }
 
     loading.value = true
     try {
@@ -109,24 +158,24 @@ async function guardar() {
         }
         router.push('/solicitudes')
     } catch (e) {
-        error.value = e?.response?.data?.message || e?.message || 'Error al guardar la solicitud.'
+        error.value = 'Error al guardar'
     } finally {
         loading.value = false
     }
 }
 
-onMounted(async () => {
-    if (esEdicion.value) await cargarSolicitud()
+onMounted(() => {
+    if (esEdicion.value) cargarSolicitud()
 })
 </script>
-
 <template>
     <div class="sf-page">
 
         <div class="sf-header">
             <div class="sf-header-left">
                 <button class="btn-back" @click="router.push('/solicitudes')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
                         <polyline points="15 18 9 12 15 6" />
                     </svg>
                     Solicitudes
@@ -156,7 +205,7 @@ onMounted(async () => {
         <div v-if="error" class="sf-alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8"  x2="12"   y2="12" />
+                <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {{ error }}
@@ -211,17 +260,14 @@ onMounted(async () => {
                         <div class="form-grid">
                             <div class="field field-highlight form-full">
                                 <label>Área solicitante <span class="req">*</span></label>
-                                <input
-                                    v-model="form.areaSolicitante"
-                                    type="text"
-                                    placeholder="Ej. Recursos Humanos"
-                                    autocomplete="off"
-                                />
+                                <input v-model="form.areaSolicitante" type="text" placeholder="Ej. Recursos Humanos"
+                                    autocomplete="off" />
                             </div>
                             <div class="field">
                                 <label>Cantidad de colaboradores</label>
                                 <div class="input-suffix-wrap">
-                                    <input v-model.number="form.cantidadColaboradores" type="number" min="1" placeholder="1" />
+                                    <input v-model.number="form.cantidadColaboradores" type="number" min="1"
+                                        placeholder="1" />
                                     <span class="input-suffix">personas</span>
                                 </div>
                             </div>
@@ -238,47 +284,52 @@ onMounted(async () => {
                         <div class="form-grid">
                             <div class="field">
                                 <label>Punto de origen <span class="req">*</span></label>
-                                <input
-                                    v-model="form.puntoOrigen"
-                                    type="text"
-                                    placeholder="Ej. Sede central, Santo Domingo"
-                                />
+
+                                <input v-model="origenQuery" type="text" placeholder="Buscar origen..." />
+
+                                <select v-model="form.puntoOrigen">
+                                    <option value="" disabled>Seleccione un origen</option>
+                                    <option v-for="o in origenes" :key="o" :value="o">
+                                        {{ o }}
+                                    </option>
+                                </select>
                             </div>
+
                             <div class="field">
                                 <label>Destino <span class="req">*</span></label>
-                                <input
-                                    v-model="form.destino"
-                                    type="text"
-                                    placeholder="Ej. Santiago de los Caballeros"
-                                />
+
+                                <input v-model="destinoQuery" type="text" placeholder="Buscar destino..." />
+
+                                <select v-model="form.destino">
+                                    <option value="" disabled>Seleccione un destino</option>
+                                    <option v-for="d in destinos" :key="d" :value="d">
+                                        {{ d }}
+                                    </option>
+                                </select>
                             </div>
                             <div class="field form-full">
                                 <label>Tipo de viaje <span class="req">*</span></label>
                                 <div class="tipo-viaje-group">
-                                    <button
-                                        type="button"
-                                        class="tipo-btn"
+                                    <button type="button" class="tipo-btn"
                                         :class="{ 'tipo-btn-activo': form.tipoViaje === 0 }"
-                                        @click="form.tipoViaje = 0"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="5" y1="12" x2="19" y2="12"/>
-                                            <polyline points="12 5 19 12 12 19"/>
+                                        @click="form.tipoViaje = 0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12" />
+                                            <polyline points="12 5 19 12 12 19" />
                                         </svg>
                                         Solo ida
                                         <span class="tipo-hint">El vehículo queda en destino</span>
                                     </button>
-                                    <button
-                                        type="button"
-                                        class="tipo-btn"
+                                    <button type="button" class="tipo-btn"
                                         :class="{ 'tipo-btn-activo': form.tipoViaje === 1 }"
-                                        @click="form.tipoViaje = 1"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="17 1 21 5 17 9"/>
-                                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                                            <polyline points="7 23 3 19 7 15"/>
-                                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                                        @click="form.tipoViaje = 1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <polyline points="17 1 21 5 17 9" />
+                                            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                            <polyline points="7 23 3 19 7 15" />
+                                            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
                                         </svg>
                                         Ida y vuelta
                                         <span class="tipo-hint">El vehículo regresa al origen</span>
@@ -296,10 +347,6 @@ onMounted(async () => {
                                 <label>Hora de salida <span class="req">*</span></label>
                                 <input v-model="form.horaSalida" type="time" />
                             </div>
-                            <div class="field">
-                                <label>Hora de llegada estimada</label>
-                                <input v-model="form.horaLlegada" type="time" />
-                            </div>
                         </div>
                     </div>
 
@@ -313,11 +360,8 @@ onMounted(async () => {
                         <div class="form-grid">
                             <div class="field form-full">
                                 <label>Motivo del viaje</label>
-                                <textarea
-                                    v-model="form.motivoViaje"
-                                    rows="4"
-                                    placeholder="Describe el motivo del viaje..."
-                                ></textarea>
+                                <textarea v-model="form.motivoViaje" rows="4"
+                                    placeholder="Describe el motivo del viaje..."></textarea>
                             </div>
 
                             <div v-if="esEdicion" class="field">
@@ -339,7 +383,8 @@ onMounted(async () => {
                             </button>
                             <button class="btn-primary" @click="guardar" :disabled="loading">
                                 <span v-if="loading" class="btn-spinner"></span>
-                                <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
                                 {{ loading ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Crear solicitud' }}
@@ -354,7 +399,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
 .sf-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -389,7 +433,10 @@ onMounted(async () => {
     padding: 0;
     transition: color 0.15s;
 }
-.btn-back:hover { color: #1a3a2a; }
+
+.btn-back:hover {
+    color: #1a3a2a;
+}
 
 .sf-breadcrumb-sep {
     color: #d1d5db;
@@ -464,7 +511,9 @@ onMounted(async () => {
     top: 24px;
 }
 
-.aside-section { padding: 4px 0; }
+.aside-section {
+    padding: 4px 0;
+}
 
 .aside-label {
     font-size: 0.7rem;
@@ -508,11 +557,30 @@ onMounted(async () => {
     font-weight: 600;
 }
 
-.badge-pendiente  { background: #fef3c7; color: #92400e; }
-.badge-aprobada   { background: #d1fae5; color: #065f46; }
-.badge-rechazada  { background: #fee2e2; color: #991b1b; }
-.badge-cancelada  { background: #dbeafe; color: #1e40af; }
-.badge-finalizada { background: #ede9fe; color: #6d28d9; }
+.badge-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-aprobada {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-rechazada {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-cancelada {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-finalizada {
+    background: #ede9fe;
+    color: #6d28d9;
+}
 
 .sf-card {
     background: #fff;
@@ -536,9 +604,15 @@ onMounted(async () => {
     animation: spin .75s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
-.form-section { padding: 28px 32px; }
+.form-section {
+    padding: 28px 32px;
+}
 
 .section-header {
     display: flex;
@@ -603,7 +677,10 @@ onMounted(async () => {
     letter-spacing: 0.05em;
 }
 
-.req { color: #dc2626; margin-left: 2px; }
+.req {
+    color: #dc2626;
+    margin-left: 2px;
+}
 
 .field input,
 .field select,
@@ -622,7 +699,9 @@ onMounted(async () => {
 }
 
 .field input,
-.field select { height: 42px; }
+.field select {
+    height: 42px;
+}
 
 .field textarea {
     padding: 10px 12px;
@@ -640,7 +719,9 @@ onMounted(async () => {
 }
 
 .field input::placeholder,
-.field textarea::placeholder { color: #9ca3af; }
+.field textarea::placeholder {
+    color: #9ca3af;
+}
 
 .input-suffix-wrap {
     display: flex;
@@ -650,10 +731,12 @@ onMounted(async () => {
     overflow: hidden;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
+
 .input-suffix-wrap:focus-within {
     border-color: #1a3a2a;
     box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
 }
+
 .input-suffix-wrap input {
     border: none;
     border-radius: 0;
@@ -662,7 +745,11 @@ onMounted(async () => {
     padding: 0 12px;
     height: 42px;
 }
-.input-suffix-wrap input:focus { border: none; box-shadow: none; }
+
+.input-suffix-wrap input:focus {
+    border: none;
+    box-shadow: none;
+}
 
 .input-suffix {
     padding: 0 12px;
@@ -717,14 +804,20 @@ onMounted(async () => {
     background: #1a3a2a;
     color: #fff;
 }
-.btn-primary:hover:not(:disabled) { background: #14532d; }
+
+.btn-primary:hover:not(:disabled) {
+    background: #14532d;
+}
 
 .btn-secondary {
     background: #f3f4f6;
     color: #374151;
     border: 1.5px solid #e5e7eb;
 }
-.btn-secondary:hover:not(:disabled) { background: #e5e7eb; }
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
 
 .btn-spinner {
     width: 13px;
@@ -737,18 +830,46 @@ onMounted(async () => {
 }
 
 @media (max-width: 900px) {
-    .sf-layout { grid-template-columns: 1fr; }
-    .sf-aside  { position: static; }
+    .sf-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sf-aside {
+        position: static;
+    }
 }
 
 @media (max-width: 640px) {
-    .sf-page       { padding: 20px 16px; }
-    .form-section  { padding: 20px 16px; }
-    .section-divider { margin: 0 16px; }
-    .action-bar    { padding: 16px; flex-direction: column; gap: 12px; }
-    .action-bar-right { width: 100%; justify-content: flex-end; }
-    .form-grid     { grid-template-columns: 1fr; }
-    .tipo-viaje-group { flex-direction: column; }
+    .sf-page {
+        padding: 20px 16px;
+    }
+
+    .form-section {
+        padding: 20px 16px;
+    }
+
+    .section-divider {
+        margin: 0 16px;
+    }
+
+    .action-bar {
+        padding: 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-bar-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tipo-viaje-group {
+        flex-direction: column;
+    }
 }
 
 .tipo-viaje-group {

@@ -98,8 +98,8 @@
                             </td>
                             <td class="td-email">{{ u.email }}</td>
                             <td>
-                                <span class="badge-rol" :class="rolClase[u.rol]">
-                                    {{ rolLabel(u.rol) }}
+                                <span class="badge-rol" :class="rolClase[u.rolId]">
+                                    {{ rolLabel(u.rolId) }}
                                 </span>
                             </td>
                             <td>
@@ -182,8 +182,8 @@
                     <div>
                         <h3 class="modal-titulo">{{ usuarioSeleccionado.nombre }} {{ usuarioSeleccionado.apellido }}
                         </h3>
-                        <span class="badge-rol" :class="rolClase[usuarioSeleccionado.rol]">
-                            {{ rolLabel(usuarioSeleccionado.rol) }}
+                        <span class="badge-rol" :class="rolClase[usuarioSeleccionado.rolId]">
+                            {{ rolLabel(usuarioSeleccionado.rolId) }}
                         </span>
                     </div>
                 </div>
@@ -296,11 +296,15 @@ function intentarEliminar(usuario) {
     }
     confirmarEliminar(usuario)
 }
+const usuariosActivos = computed(() =>
+    usuarios.value.filter(u => u.isActive)
+)
+
 const resumen = computed(() => ({
-    total: usuarios.value.length,
-    administradores: usuarios.value.filter(u => u.rol === 0).length,
-    supervisores: usuarios.value.filter(u => u.rol === 1).length,
-    operadores: usuarios.value.filter(u => u.rol === 2).length,
+    total: usuariosActivos.value.length,
+    administradores: usuariosActivos.value.filter(u => u.rolId === 1).length,
+    supervisores: usuariosActivos.value.filter(u => u.rolId === 2).length,
+    operadores: usuariosActivos.value.filter(u => u.rolId === 3).length,
 }))
 
 const usuariosFiltrados = computed(() => {
@@ -313,7 +317,7 @@ const usuariosFiltrados = computed(() => {
             u.apellido?.toLowerCase().includes(q) ||
             u.email?.toLowerCase().includes(q)
         const coincideRol =
-            filtroRol.value === '' || u.rol === filtroRol.value
+            filtroRol.value === '' || u.rolId === filtroRol.value
         return coincideBusqueda && coincideRol
     })
 })
@@ -362,6 +366,7 @@ async function cargarUsuarios() {
     error.value = ''
     try {
         const res = await obtenerUsuario()
+        console.log(res.data)
         usuarios.value = res.data
     } catch (e) {
         error.value = 'No se pudieron cargar los usuarios.'

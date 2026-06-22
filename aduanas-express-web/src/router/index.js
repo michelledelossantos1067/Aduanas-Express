@@ -163,7 +163,7 @@ const router = createRouter({
       path: '/mantenimiento',
       name: 'mantenimiento',
       meta: { roles: ['Administrador', 'Supervisor', 'Operador'] },
-      component: () => import('@/views/mantenimiento/MantenimientoListView.vue'),
+      component: () => import('@/views/mantenimiento/mantenimientoListView.vue'),
     },
     {
       path: '/mantenimiento/nuevo',
@@ -234,17 +234,13 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.permiso && authStore.usuario) {
-    const rolUsuario = authStore.usuario.rol
-
-    if (rolUsuario !== 'Administrador') {
-      const [modulo, accion] = to.meta.permiso
-      if (Object.keys(authStore.permisos).length > 0) {
+    const [modulo, accion] = to.meta.permiso
+    if (Object.keys(authStore.permisos).length > 0) {
         if (!authStore.tienePermiso(modulo, accion)) {
-          return next({ name: 'dashboard' })
+            return next({ name: 'dashboard' })
         }
-      }
     }
-  }
+}
 
   next()
 })

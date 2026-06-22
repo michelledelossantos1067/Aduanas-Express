@@ -35,14 +35,14 @@ public class SolicitudTransporteRepositories : ISolicitudTransporteRepositories
     public async Task Actualizar(int Id, SolicitudTransporte solicitudTransporte)
     {
         var solicitudTrans = await _context.SolicitudesTransporte.FindAsync(Id);
-        solicitudTrans.AreaSolicitante = solicitudTransporte.AreaSolicitante;
-        solicitudTrans.CantidadColaboradores = solicitudTransporte.CantidadColaboradores;
-        solicitudTrans.FechaViaje = solicitudTransporte.FechaViaje;
-        solicitudTrans.HoraSalida = solicitudTransporte.HoraSalida;
-        solicitudTrans.Destino = solicitudTransporte.Destino;
-        solicitudTrans.MotivoViaje = solicitudTransporte.MotivoViaje;
-        solicitudTrans.Estado = solicitudTransporte.Estado;
-        solicitudTrans.FechaCreacion = solicitudTransporte.FechaCreacion;
+
+        if (solicitudTrans == null)
+            throw new Exception("No encontrado");
+
+        _context.Entry(solicitudTrans).CurrentValues.SetValues(solicitudTransporte);
+        Console.WriteLine(solicitudTrans.PuntoOrigen);
+
+Console.WriteLine(solicitudTrans.Destino);
         await _context.SaveChangesAsync();
     }
     public async Task Eliminar(int Id)

@@ -24,24 +24,18 @@ public class ReporteService : IReporteService
         _consumoRepo    = consumoRepo;
     }
 
-    // =========================================================
-    // CONSULTAS
-    // =========================================================
 
     public async Task<ReporteViajesDTO> GetReporteViajesAsync(int mes, int anio)
     {
-        // Obtenemos solicitudes y asignaciones por separado y las cruzamos
         var solicitudes  = await _solicitudRepo.ObtenerTodos();
         var asignaciones = await _asignacionRepo.ObtenerTodos();
 
-        // Filtrar por mes y año usando la fecha del viaje
         var filtradas = solicitudes
             .Where(s => s.FechaViaje.HasValue
                      && s.FechaViaje.Value.Month == mes
                      && s.FechaViaje.Value.Year  == anio)
             .ToList();
 
-        // Mapa rápido: solicitudId → asignacion
         var mapaAsig = asignaciones
             .GroupBy(a => a.SolicitudId)
             .ToDictionary(g => g.Key, g => g.First());
@@ -157,10 +151,6 @@ public class ReporteService : IReporteService
         };
     }
 
-    // =========================================================
-    // EXPORTAR — PDF
-    // =========================================================
-
     public async Task<byte[]> ExportarViajesPdfAsync(int mes, int anio, ReporteConfigDTO? cfg = null)
     {
         var dto = await GetReporteViajesAsync(mes, anio);
@@ -185,9 +175,6 @@ public class ReporteService : IReporteService
         return new ConductoresReporteDocumento(dto, cfg ?? new ReporteConfigDTO()).GeneratePdf();
     }
 
-    // =========================================================
-    // EXPORTAR — EXCEL
-    // =========================================================
 
     public async Task<byte[]> ExportarViajesExcelAsync(int mes, int anio, ReporteConfigDTO? cfg = null)
     {

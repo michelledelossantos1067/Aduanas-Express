@@ -9,8 +9,10 @@ import {
 import api from '@/utils/axiosConfig'
 import ReporteConfigModal from './ReporteConfigModal.vue'
 import { useReporteConfig } from './composables/useReporteConfig.js'
+import { usePermisos } from '@/composables/usePermisos'
 
 
+const { puede } = usePermisos()
 const tabActiva = ref('viajes')
 const loading = ref(false)
 const exportando = ref('')
@@ -282,7 +284,8 @@ const TABS = [
                     </svg>
                     Diseño
                 </button>
-                <button class="btn-exp btn-xlsx" :disabled="exportando !== ''" @click="descargar('excel')">
+                <!-- Solo Admin y Supervisor pueden exportar reportes -->
+                <button v-if="puede.exportarReportes.value" class="btn-exp btn-xlsx" :disabled="exportando !== ''" @click="descargar('excel')">
                     <span v-if="exportando === 'excel'" class="spin spin-ok"></span>
                     <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -293,7 +296,8 @@ const TABS = [
                     </svg>
                     Exportar Excel
                 </button>
-                <button class="btn-exp btn-pdf" :disabled="exportando !== ''" @click="descargar('pdf')">
+                <!-- Solo Admin y Supervisor pueden exportar reportes -->
+                <button v-if="puede.exportarReportes.value" class="btn-exp btn-pdf" :disabled="exportando !== ''" @click="descargar('pdf')">
                     <span v-if="exportando === 'pdf'" class="spin spin-pdf"></span>
                     <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">

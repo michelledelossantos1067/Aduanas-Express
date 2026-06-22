@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { usePermisos } from '../../composables/usePermisos'
 import AsignacionFormView from './AsignacionFormView.vue'
 import AsignacionHistorialView from './AsignacionHistorialView.vue'
+
+const { puede } = usePermisos()
 
 const vistaActiva = ref('asignar')
 const exitoMsg = ref('')

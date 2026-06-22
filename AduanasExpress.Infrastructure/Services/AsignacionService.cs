@@ -58,6 +58,8 @@ public class AsignacionService : IAsignacionService
             throw new Exception("Conductor no encontrado.");
         if (conductor.Estado != EstadosConductor.Disponible)
             throw new Exception($"El conductor no está disponible (estado actual: {conductor.Estado}).");
+        if (vehiculo == null || !vehiculo.IsActive)
+            throw new Exception("Vehículo no encontrado o está desactivado.");
 
         var asignacion = new Asignacion
         {
@@ -84,7 +86,6 @@ public class AsignacionService : IAsignacionService
         await _conductorRepository.Actualizar(conductor.Id, conductor);
     }
 
-    // Marca la asignación como finalizada y libera el vehículo y el conductor
     public async Task Finalizar(int id)
     {
         var asignacion = await _asignacionRepository.ObtenerPorId(id);

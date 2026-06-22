@@ -19,7 +19,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             {
                 col.Spacing(14);
 
-                // ── KPIs fila 1 ───────────────────────────────
                 col.Item().Row(row =>
                 {
                     row.Spacing(8);
@@ -33,7 +32,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                         c, "Rechazadas", _r.Rechazadas.ToString(), ReporteEstilo.RojoEstado));
                 });
 
-                // ── KPIs fila 2 ───────────────────────────────
                 col.Item().Row(row =>
                 {
                     row.Spacing(8);
@@ -41,15 +39,12 @@ namespace AduanasExpress.Infrastructure.Reportes
                         c, "Canceladas", _r.Canceladas.ToString(), ReporteEstilo.RojoEstado));
                     row.RelativeItem().Element(c => ReportePdfHelpers.TarjetaKpi(
                         c, "Finalizadas", _r.Finalizadas.ToString(), ReporteEstilo.VerdeEstado));
-                    // Espaciadores para mantener 4 columnas
                     row.RelativeItem();
                     row.RelativeItem();
                 });
 
-                // ── Título sección ────────────────────────────
                 col.Item().Element(c => ReportePdfHelpers.TituloSeccion(c, "Detalle de solicitudes"));
 
-                // ── Tabla con badge ───────────────────────────
                 if (_r.Detalles.Count == 0)
                 {
                     col.Item().Element(c => ReportePdfHelpers.SinDatos(

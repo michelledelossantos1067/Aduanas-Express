@@ -4,7 +4,6 @@ namespace AduanasExpress.Infrastructure.Reportes
 {
     public static class ReporteExcelBuilder
     {
-        // Colores institucionales
         private static readonly XLColor ColVerde = XLColor.FromHtml(ReporteEstilo.VerdeInstitucional);
         private static readonly XLColor ColBronce = XLColor.FromHtml(ReporteEstilo.Bronce);
         private static readonly XLColor ColBanda = XLColor.FromHtml(ReporteEstilo.GrisFondo);
@@ -20,7 +19,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
         };
 
-        // ── Colores de badge por estado ──────────────────────
         private static (XLColor fondo, XLColor texto) ColoresEstado(string estado)
         {
             var v = (estado ?? "").ToLower();
@@ -35,9 +33,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             return (XLColor.FromHtml(ReporteEstilo.GrisFondo), ColGris);
         }
 
-        // =============================================================
-        // VIAJES
-        // =============================================================
         public static byte[] GenerarViajes(ReporteViajesDTO r)
         {
             using var libro = new XLWorkbook();
@@ -73,11 +68,9 @@ namespace AduanasExpress.Infrastructure.Reportes
                     d.CantidadPasajeros,
                     d.Estado          ?? "—",
                 });
-                // Formato fecha
                 if (d.FechaViaje.HasValue)
                     ws.Cell(fila, 4).Style.DateFormat.Format = "dd/MM/yyyy";
 
-                // Badge de estado
                 var (bf, bt) = ColoresEstado(d.Estado);
                 ws.Cell(fila, 8).Style.Fill.BackgroundColor = bf;
                 ws.Cell(fila, 8).Style.Font.FontColor = bt;
@@ -93,9 +86,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             return Bytes(libro);
         }
 
-        // =============================================================
-        // CONSUMO
-        // =============================================================
         public static byte[] GenerarConsumo(ReporteConsumoDTO r)
         {
             using var libro = new XLWorkbook();
@@ -136,7 +126,6 @@ namespace AduanasExpress.Infrastructure.Reportes
 
             AplicarBandas(ws, inicio, fila - 1, cols.Length);
 
-            // Fila de totales
             ws.Range(fila, 1, fila, 2).Merge();
             ws.Cell(fila, 1).Value = "TOTAL";
             ws.Cell(fila, 1).Style.Font.Bold = true;
@@ -157,9 +146,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             return Bytes(libro);
         }
 
-        // =============================================================
-        // SOLICITUDES
-        // =============================================================
         public static byte[] GenerarSolicitudes(ReporteSolicitudesDTO r)
         {
             using var libro = new XLWorkbook();
@@ -209,10 +195,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             Finalizar(ws, fila + 1, cols.Length, "Reporte de solicitudes — uso interno");
             return Bytes(libro);
         }
-
-        // =============================================================
-        // CONDUCTORES
-        // =============================================================
         public static byte[] GenerarConductores(ReporteConductoresDTO r)
         {
             using var libro = new XLWorkbook();
@@ -254,18 +236,8 @@ namespace AduanasExpress.Infrastructure.Reportes
             Finalizar(ws, fila + 1, cols.Length, "Reporte de conductores — uso interno");
             return Bytes(libro);
         }
-
-        // =============================================================
-        // HELPERS COMPARTIDOS
-        // =============================================================
-
-        /// <summary>
-        /// Franja superior verde + línea bronce + nombre empresa + título + subtítulo.
-        /// Devuelve la próxima fila disponible.
-        /// </summary>
         private static int EscribirEncabezado(IXLWorksheet ws, string titulo, string sub, int numCols)
         {
-            // Fila 1 — nombre empresa (fondo verde)
             ws.Range(1, 1, 1, numCols).Merge().Style
               .Fill.SetBackgroundColor(ColVerde);
             ws.Cell(1, 1).Value = ReporteEstilo.Empresa;
@@ -277,7 +249,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             ws.Cell(1, 1).Style.Alignment.Indent = 1;
             ws.Row(1).Height = 30;
 
-            // Fila 2 — lema (fondo verde oscuro)
             ws.Range(2, 1, 2, numCols).Merge().Style
               .Fill.SetBackgroundColor(ColVerde);
             ws.Cell(2, 1).Value = ReporteEstilo.Lema;
@@ -286,15 +257,12 @@ namespace AduanasExpress.Infrastructure.Reportes
             ws.Cell(2, 1).Style.Alignment.Indent = 1;
             ws.Row(2).Height = 16;
 
-            // Fila 3 — línea bronce
             ws.Range(3, 1, 3, numCols).Merge().Style
               .Fill.SetBackgroundColor(ColBronce);
             ws.Row(3).Height = 3;
 
-            // Fila 4 — espaciador
             ws.Row(4).Height = 8;
 
-            // Fila 5 — título del reporte
             ws.Range(5, 1, 5, numCols).Merge();
             ws.Cell(5, 1).Value = titulo;
             ws.Cell(5, 1).Style.Font.Bold = true;
@@ -302,7 +270,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             ws.Cell(5, 1).Style.Font.FontColor = ColVerde;
             ws.Row(5).Height = 22;
 
-            // Fila 6 — subtítulo
             ws.Range(6, 1, 6, numCols).Merge();
             ws.Cell(6, 1).Value = sub;
             ws.Cell(6, 1).Style.Font.FontSize = 9;
@@ -310,20 +277,14 @@ namespace AduanasExpress.Infrastructure.Reportes
             ws.Cell(6, 1).Style.Font.Italic = true;
             ws.Row(6).Height = 16;
 
-            // Fila 7 — espaciador
             ws.Row(7).Height = 6;
 
             return 8;
         }
-
-        /// <summary>
-        /// Caja de KPIs: cada indicador en su propia celda, etiqueta arriba, valor abajo.
-        /// </summary>
         private static int EscribirKpis(
             IXLWorksheet ws, int fila, int numCols,
             (string Etiqueta, string Valor)[] kpis)
         {
-            // Distribuir los KPIs en columnas (máx numCols columnas)
             for (int i = 0; i < kpis.Length; i++)
             {
                 int col = i + 1;
@@ -353,7 +314,7 @@ namespace AduanasExpress.Infrastructure.Reportes
 
             ws.Row(fila).Height = 14;
             ws.Row(fila + 1).Height = 22;
-            ws.Row(fila + 2).Height = 8;  // espaciador
+            ws.Row(fila + 2).Height = 8;
 
             return fila + 3;
         }
@@ -385,7 +346,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 var c = ws.Cell(fila, i + 1);
                 var v = valores[i];
 
-                // Desenvuelve Nullable antes de evaluar
                 if (v == null)
                 {
                     c.Value = "—";
@@ -412,7 +372,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 }
                 else
                 {
-                    // Cubre DateTime? y cualquier otro tipo
                     var tipo = v.GetType();
                     if (tipo == typeof(DateTime?))
                     {
@@ -432,10 +391,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             ws.Row(fila).Height = 18;
         }
 
-        /// <summary>
-        /// Bandas alternadas en las filas de datos. Si estadoCol > 0, salta
-        /// esa columna (ya tiene su propio color de badge).
-        /// </summary>
         private static void AplicarBandas(
             IXLWorksheet ws, int inicio, int fin, int numCols, int estadoCol = 0)
         {
@@ -444,7 +399,7 @@ namespace AduanasExpress.Infrastructure.Reportes
                 bool esBanda = (f - inicio) % 2 == 1;
                 for (int c = 1; c <= numCols; c++)
                 {
-                    if (c == estadoCol) continue;  // no pisar el badge
+                    if (c == estadoCol) continue;
                     if (esBanda)
                         ws.Cell(f, c).Style.Fill.BackgroundColor = ColBanda;
                 }

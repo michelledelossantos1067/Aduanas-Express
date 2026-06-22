@@ -74,7 +74,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                        });
                    });
 
-                // Línea de acento con el color elegido por el usuario
                 col.Item()
                    .Height(3)
                    .Background(Cfg.ColorAccent);
@@ -115,35 +114,25 @@ namespace AduanasExpress.Infrastructure.Reportes
                 });
             });
         }
-
-        // ── Helpers de estilo disponibles para subclases ──────
-
-        /// <summary>Color de encabezado de tabla según el estilo elegido.</summary>
         protected string HeaderTablaColor => Cfg.Estilo == "minimal"
             ? ReporteEstilo.GrisFondo
             : Cfg.ColorPrimary;
 
-        /// <summary>Color de texto del encabezado de tabla.</summary>
         protected string HeaderTablaTexto => Cfg.Estilo == "minimal"
             ? ReporteEstilo.GrisSecund
             : ReporteEstilo.Blanco;
 
-        /// <summary>Color de fondo de los KPI según el estilo elegido.</summary>
         protected string KpiFondo => Cfg.Estilo == "bold"
             ? Cfg.ColorPrimary
             : ReporteEstilo.GrisFondo;
 
-        /// <summary>Color de texto del valor KPI.</summary>
         protected string KpiTextoValor => Cfg.Estilo == "bold"
             ? ReporteEstilo.Blanco
             : Cfg.ColorPrimary;
 
-        /// <summary>Color de etiqueta KPI.</summary>
         protected string KpiTextoLabel => Cfg.Estilo == "bold"
             ? "#A8C4B4"
             : ReporteEstilo.GrisClaro;
-
-        /// <summary>Borde izquierdo de acento en KPI (light/boxed/minimal).</summary>
         protected string KpiBordeColor => Cfg.ColorPrimary;
     }
 }

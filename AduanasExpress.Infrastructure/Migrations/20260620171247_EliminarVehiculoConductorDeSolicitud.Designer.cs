@@ -48,9 +48,6 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<DateTime?>("FechaFinalizacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("KilometrajeFin")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("SolicitudId")
                         .HasColumnType("int");
 

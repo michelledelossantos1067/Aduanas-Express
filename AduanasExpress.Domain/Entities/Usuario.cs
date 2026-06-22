@@ -5,7 +5,8 @@ public class Usuario{
     public string Apellido {get;set;}
     public string Email {get;set;}
     public string Password {get;set;}
-    public Roles Rol { get; set; } = (Roles)2;
+    public int RolId { get; set; } = 2;
+    public Rol Rol { get; set; } = null!;
     public bool IsActive {get;set;} = true;
 
 }

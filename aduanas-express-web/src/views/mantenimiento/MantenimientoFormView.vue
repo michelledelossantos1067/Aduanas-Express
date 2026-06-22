@@ -80,15 +80,8 @@ onMounted(inicializar)
             <button class="btn-volver-simple" @click="irALaLista">Volver a la lista</button>
         </div>
 
-        <MantenimientoForm
-            v-else
-            :form="form"
-            :modo="modoForm"
-            :guardando="guardando"
-            :error-msg="formError"
-            @guardar="guardarForm"
-            @cancelar="irALaLista"
-        />
+        <MantenimientoForm v-else :form="form" :modo="modoForm" :guardando="guardando" :error-msg="formError"
+            @guardar="guardarForm" @cancelar="irALaLista" />
 
     </div>
 </template>
@@ -132,19 +125,29 @@ onMounted(inicializar)
     cursor: pointer;
     transition: background .15s;
 }
-.btn-volver-simple:hover { background: #14532d; }
+
+.btn-volver-simple:hover {
+    background: #14532d;
+}
 
 .spinner {
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     border: 3px solid #e5e7eb;
     border-top-color: #1a3a2a;
     border-radius: 50%;
     animation: spin .75s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 @media (max-width: 700px) {
-    .mant-form-page { padding: 16px; }
+    .mant-form-page {
+        padding: 16px;
+    }
 }
 </style>

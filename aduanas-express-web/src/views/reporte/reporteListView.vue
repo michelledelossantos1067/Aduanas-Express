@@ -33,7 +33,6 @@ const AÑOS = Array.from({ length: 5 }, (_, i) => hoy.getFullYear() - i)
 const periodoLabel = computed(() => `${MESES[mesRef.value - 1]} ${añoRef.value}`)
 const conPeriodo = computed(() => ['viajes', 'consumo'].includes(tabActiva.value))
 
-// ── Datos por tab ──────────────────────────────────────────
 const datosViajes = ref(null)
 const datosConsumo = ref(null)
 const datosSolicitudes = ref(null)
@@ -46,7 +45,6 @@ const datos = computed(() => ({
     conductores: datosConductores.value,
 })[tabActiva.value])
 
-// ── Formatters ─────────────────────────────────────────────
 function fFecha(f) {
     if (!f) return '—'
     return new Date(f).toLocaleDateString('es-DO', {
@@ -60,7 +58,6 @@ function fDinero(n) {
 }
 function fNum(id) { return `#${String(id).padStart(4, '0')}` }
 
-// ── Carga de datos ─────────────────────────────────────────
 async function cargar() {
     loading.value = true
     errorMsg.value = ''
@@ -99,10 +96,8 @@ async function descargar(formato) {
         const año = añoRef.value
         const base = '/reportes'
 
-        // Params base de período
         const periodoParams = conPeriodo.value ? `mes=${mes}&anio=${año}` : ''
 
-        // Params de estilo (vienen del composable)
         const cfgP = queryParams()
         const extra = `estilo=${cfgP.estilo}&colorPrimary=${encodeURIComponent(cfgP.colorPrimary)}&colorAccent=${encodeURIComponent(cfgP.colorAccent)}`
 
@@ -137,7 +132,6 @@ async function descargar(formato) {
         exportando.value = ''
     }
 }
-// ── KPIs por tab ───────────────────────────────────────────
 const kpis = computed(() => {
     const d = datos.value
     if (!d) return []
@@ -176,7 +170,6 @@ const kpis = computed(() => {
     return []
 })
 
-// ── Configuración de tabla por tab ─────────────────────────
 const tablaConfig = computed(() => {
     if (tabActiva.value === 'viajes') return {
         cols: ['#', 'Área', 'Destino', 'Fecha', 'Conductor', 'Vehículo', 'Pas.', 'Estado'],
@@ -191,7 +184,7 @@ const tablaConfig = computed(() => {
             r.estado,
         ]),
         estadoIdx: 7,
-        monoIdx: [5],   // placa en mono
+        monoIdx: [5],
         numIdx: [0, 6],
     }
 

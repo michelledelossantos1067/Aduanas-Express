@@ -7,6 +7,7 @@ import { verVehiculos, eliminarVehiculo, desactivarVehiculo, activarVehiculo } f
 import { generarReporteVehiculosPdf } from '@/utils/vehiculoReportePdf'
 import VehiculoVerModal from './VehiculoVerModal.vue'
 import VehiculoEliminarModal from './VehiculoEliminarModal.vue'
+import ModalSinPermiso from '@/components/ModalSinPermiso.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -44,45 +45,63 @@ const tiposUnicos = computed(() => [
 ])
 
 const resumen = computed(() => {
-    const total = vehiculos.value.length
-    const disponibles = vehiculos.value.filter((v) => v.estado === 0).length
-    const enViaje = vehiculos.value.filter((v) => v.estado === 1).length
-    const mantenim = vehiculos.value.filter((v) => v.estado === 2).length
-    const fuera = vehiculos.value.filter((v) => v.estado === 3).length
+    const activos = vehiculos.value.filter(v => v.isActive)
+    const total = activos.length
+    const disponibles = activos.filter((v) => v.estado === 0).length
+    const enViaje = activos.filter((v) => v.estado === 1).length
+    const mantenim = activos.filter((v) => v.estado === 2).length
+    const fuera = activos.filter((v) => v.estado === 3).length
     return { total, disponibles, enViaje, mantenim, fuera }
 })
-
 const vehiculosFiltrados = computed(() => {
     return vehiculos.value.filter((v) => {
+        if (!v.isActive) return false
         const q = busqueda.value.toLowerCase()
         const coincideBusqueda =
             !q ||
             v.matricula?.toLowerCase().includes(q) ||
             v.marca?.toLowerCase().includes(q) ||
             v.modelo?.toLowerCase().includes(q)
-
         const coincideEstado =
             filtroEstado.value === '' ||
             String(v.estado) === filtroEstado.value
-
         const coincideTipo =
             filtroTipo.value === '' || v.tipo === filtroTipo.value
-
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
 const vehiculoAToggle = ref(null)
 const cambiandoEstado = ref(false)
+const mostrarModalSinPermiso = ref(false)
+const accionSinPermiso = ref('')
 
+function intentarDesactivar(vehiculo) {
+    if (!puede.eliminarVehiculos.value) {
+        accionSinPermiso.value = 'desactivar vehículos'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    toggleActivo(vehiculo)
+}
+
+function intentarEliminar(vehiculo) {
+    if (!puede.eliminarVehiculos.value) {
+        accionSinPermiso.value = 'eliminar vehículos'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    confirmarEliminar(vehiculo)
+}
 async function toggleActivo(vehiculo) {
     cambiandoEstado.value = true
     try {
         if (vehiculo.isActive) {
             await desactivarVehiculo(vehiculo.id)
+            vehiculos.value = vehiculos.value.filter(v => v.id !== vehiculo.id)
         } else {
             await activarVehiculo(vehiculo.id)
+            vehiculo.isActive = true
         }
-        vehiculo.isActive = !vehiculo.isActive
     } catch (e) {
         error.value = 'No se pudo cambiar el estado del vehículo.'
     } finally {
@@ -256,14 +275,12 @@ onMounted(cargarVehiculos)
 
                 <div class="card-acciones">
                     <button class="btn-accion btn-ver" @click="verVehiculo(v.id)">Ver</button>
-                    <!-- Solo Admin y Supervisor pueden editar vehículos -->
-                    <button v-if="puede.editarVehiculos.value" class="btn-accion btn-editar" @click="editarVehiculo(v.id)">Editar</button>
-                    <!-- Solo Admin puede eliminar vehículos -->
-                    <button v-if="v.puedeEliminarse && puede.eliminarVehiculos.value" class="btn-accion btn-eliminar"
-                        @click="confirmarEliminar(v)">Eliminar</button>
-                    <!-- Desactivar/Activar solo para Admin -->
-                    <button v-if="!v.puedeEliminarse && puede.eliminarVehiculos.value" class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
-                        @click="toggleActivo(v)">{{ v.isActive ? 'Desactivar' : 'Activar' }}</button>
+                    <button v-if="puede.editarVehiculos.value" class="btn-accion btn-editar"
+                        @click="editarVehiculo(v.id)">Editar</button>
+                    <button v-if="v.puedeEliminarse" class="btn-accion btn-eliminar"
+                        @click="intentarEliminar(v)">Eliminar</button>
+                    <button v-if="!v.puedeEliminarse" class="btn-accion btn-desactivar" :disabled="cambiandoEstado"
+                        @click="intentarDesactivar(v)">{{ v.isActive ? 'Desactivar' : 'Activar' }}</button>
                 </div>
             </div>
         </div>
@@ -281,6 +298,7 @@ onMounted(cargarVehiculos)
         <VehiculoVerModal v-model="mostrarVer" :vehiculo-id="vehiculoVerId" />
         <VehiculoEliminarModal v-model="mostrarConfirmacion" :vehiculo="vehiculoAEliminar"
             @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)" />
+<ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
 
     </div>
 </template>
@@ -351,6 +369,7 @@ onMounted(cargarVehiculos)
 .btn-nuevo:hover {
     background: #14532d;
 }
+
 .btn-desactivar {
     background: #e5e7eb;
     color: #374151;

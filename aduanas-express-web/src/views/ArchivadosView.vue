@@ -9,8 +9,8 @@ import { obtenerUsuario, activarUsuario } from '@/services/usuarioService'
 const authStore = useAuthStore()
 const router = useRouter()
 
-if (authStore.user?.rol !== 0 && authStore.usuario?.rol !== 0) {
-    router.replace('/')
+if (authStore.usuario?.rol !== 'Administrador') {
+    router.replace('/dashboard')
 }
 
 const vehiculos = ref([])
@@ -25,7 +25,6 @@ const busquedaVeh = ref('')
 const busquedaCond = ref('')
 const busquedaUsr = ref('')
 
-// ── Computed ──────────────────────────────────────────────
 const vehiculosArchivados = computed(() =>
     vehiculos.value.filter(v => {
         if (v.isActive) return false
@@ -73,7 +72,6 @@ function formatFecha(fecha) {
     return new Date(fecha).toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-// ── Carga ─────────────────────────────────────────────────
 async function cargarTodo() {
     loading.value = true
     error.value = ''
@@ -89,13 +87,12 @@ async function cargarTodo() {
     }
 }
 
-// ── Reactivar ─────────────────────────────────────────────
 async function reactivarVehiculo(v) {
     reactivando.value = `v-${v.id}`
     try {
         await activarVehiculo(v.id)
         v.isActive = true
-        showToast(`Vehículo ${v.matricula} desarchivado.`)
+        showToast(`Vehículo ${v.matricula} reactivado. Ya aparece en la lista de vehículos.`)
     } catch { error.value = 'No se pudo reactivar el vehículo.' }
     finally { reactivando.value = null }
 }
@@ -105,7 +102,7 @@ async function reactivarConductor(c) {
     try {
         await activarConductor(c.id)
         c.isActive = true
-        showToast(`Conductor ${c.nombre} ${c.apellido} desarchivado.`)
+        showToast(`Conductor ${c.nombre} ${c.apellido} reactivado. Ya aparece en la lista de conductores.`)
     } catch { error.value = 'No se pudo reactivar el conductor.' }
     finally { reactivando.value = null }
 }
@@ -115,7 +112,7 @@ async function reactivarUsuario(u) {
     try {
         await activarUsuario(u.id)
         u.isActive = true
-        showToast(`Usuario ${u.nombre} ${u.apellido} desarchivado.`)
+        showToast(`Usuario ${u.nombre} ${u.apellido} reactivado. Ya aparece en la lista de usuarios.`)
     } catch { error.value = 'No se pudo reactivar el usuario.' }
     finally { reactivando.value = null }
 }

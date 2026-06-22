@@ -4,15 +4,8 @@
     <div class="hist-header">
       <h1 class="hist-title">Historial de Viajes</h1>
       <div class="hist-header-actions">
-        <button @click="handleExportarPdf" class="btn-pdf">
-          <span class="dot-red"></span>
-          PDF
-        </button>
-        <button @click="handleExportarExcel" class="btn-excel">
-          EXCEL
-        </button>
-        <button class="btn-filtros">
-          Filtros Avanzados
+        <button @click="cargarDatos" class="btn-filtros" :disabled="cargando">
+          {{ cargando ? 'Cargando...' : 'Actualizar' }}
         </button>
       </div>
     </div>
@@ -32,19 +25,18 @@
         class="filtro-input"
       />
       <input v-model="fechaDesde" type="date" class="filtro-date" />
-      <input v-model="fechaHasta" type="date" class="filtro-date" />
-      <select v-model="rol" class="filtro-select">
-        <option v-for="r in ROLES" :key="r">{{ r }}</option>
-      </select>
-      <select v-model="estadoFiltro" class="filtro-select">
-        <option v-for="e in ESTADOS" :key="e">{{ e }}</option>
-      </select>
-      <select v-model="area" class="filtro-select">
-        <option v-for="a in AREAS" :key="a">{{ a }}</option>
-      </select>
     </div>
 
-    <div class="hist-tabla-wrap">
+    <!-- Error banner -->
+    <div v-if="error" class="error-banner">⚠️ {{ error }}</div>
+
+    <!-- Loading state -->
+    <div v-if="cargando" class="cargando-wrap">
+      <span class="spinner"></span>
+      <span>Cargando historial...</span>
+    </div>
+
+    <div v-else class="hist-tabla-wrap">
       <div class="tabla-header">
         <h2 class="tabla-titulo">Registro de viajes</h2>
         <span class="tabla-badge">{{ viajesFiltrados.length.toLocaleString() }} Viajes</span>
@@ -58,6 +50,9 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="viajesFiltrados.length === 0">
+              <td :colspan="columnas.length" class="td-empty">No hay viajes que coincidan con los filtros.</td>
+            </tr>
             <tr v-for="(v, i) in viajesPagina" :key="i">
               <td class="td-id">#{{ v.id }}</td>
               <td>{{ v.ruta }}</td>
@@ -66,25 +61,19 @@
                   <div class="avatar" :class="v.avatarClass">
                     {{ getInitials(v.conductor) }}
                   </div>
-                  <span>{{ v.conductor }}</span>
+                  <div>
+                    <div>{{ v.conductor }}</div>
+                    <div class="vehiculo-sub">{{ v.vehiculo }}</div>
+                  </div>
                 </div>
               </td>
               <td>{{ v.fecha }}</td>
-              <td>{{ v.horario }}</td>
-              <td><span class="badge-dur">{{ v.duracion }}</span></td>
-              <td>{{ v.combustible }} gal</td>
               <td>
                 <span class="badge-estado" :class="estadoClasses[v.estado]">
                   {{ v.estado }}
                 </span>
               </td>
-              <td>
-                <div class="acciones">
-                  <button @click="verDetalle(v)" class="btn-icon" title="Ver">👁</button>
-                  <button @click="editarViaje(v)" class="btn-icon" title="Editar">✏️</button>
-                  <button @click="eliminarViaje(v)" class="btn-icon del" title="Eliminar">🗑</button>
-                </div>
-              </td>
+
             </tr>
           </tbody>
         </table>
@@ -113,121 +102,126 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue'
-import { exportarPdf, exportarExcel } from '../../services/reporteService'
 
-const ESTADOS = ['Todos los estados', 'Activo', 'Inactivo', 'Bloqueado']
-const ROLES   = ['Todos los roles', 'Conductor', 'Admin']
-const AREAS   = ['Área - Todos', 'Sede Central', 'Sucursal Norte', 'Sucursal Sur']
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { getReporteViajes } from '../../services/reporteService'
+
 const ITEMS_POR_PAGINA = 9
 
-const columnas = ['#Viaje', 'Ruta', 'Conductor/Vehículo', 'Fecha', 'Horario', 'Duración', 'Combustible', 'Estado', 'Acciones']
+const columnas = ['#Viaje', 'Ruta', 'Conductor/Vehículo', 'Fecha', 'Estado']
 
 const avatarClasses = ['av-orange', 'av-blue', 'av-green', 'av-purple', 'av-teal']
 
 const estadoClasses = {
-  Activo:    'estado-activo',
-  Inactivo:  'estado-inactivo',
-  Bloqueado: 'estado-bloqueado',
+  Pendiente:  'estado-pendiente',
+  Aprobada:   'estado-activo',
+  Finalizada: 'estado-finalizada',
+  Rechazada:  'estado-bloqueado',
+  Cancelada:  'estado-inactivo',
 }
 
-const filtro       = ref('')
-const estadoFiltro = ref('Todos los estados')
-const rol          = ref('Todos los roles')
-const area         = ref('Área - Todos')
-const fechaDesde   = ref('2026-01-01')
-const fechaHasta   = ref('2026-01-30')
-const pagina       = ref(1)
+const filtro     = ref('')
+const fechaDesde = ref('')
+const pagina     = ref(1)
+const cargando     = ref(false)
+const error        = ref('')
 
-const datosMock = Array.from({ length: 48 }, (_, i) => ({
-  id:          `V-${1248 + i}`,
-  ruta:        'Sede Central',
-  conductor:   'Juan Ramírez',
-  fecha:       '29/05/2026',
-  horario:     '07:00 - 09:15',
-  duracion:    '2h 45m',
-  combustible: [8.2, 5.8, 14.5, 4.1, 4.1, 9.0, 9.0, 9.0][i % 8],
-  estado:      ['Activo', 'Inactivo', 'Activo', 'Inactivo', 'Bloqueado', 'Bloqueado', 'Bloqueado', 'Activo'][i % 8],
-  avatarClass: avatarClasses[i % avatarClasses.length],
-}))
+const viajesDatos = ref([])
 
-const stats = [
-  { label: 'Viajes totales', value: '1,240', colorClass: 'blue' },
-  { label: 'Completas',      value: '1,190', colorClass: 'green' },
-  { label: 'Cancelados',     value: '42',    colorClass: 'red' },
-  { label: 'Galones usados', value: '9,840', colorClass: 'yellow' },
-  { label: 'KM Recorridos',  value: '43,320',colorClass: 'gray' },
-]
+// Stats calculadas dinámicamente
+const stats = computed(() => {
+  const data = viajesDatos.value
+  const total      = data.length
+  const finalizadas = data.filter(v => v.estado === 'Finalizada').length
+  const canceladas  = data.filter(v => v.estado === 'Cancelada').length
+  const rechazadas  = data.filter(v => v.estado === 'Rechazada').length
+  const pendientes  = data.filter(v => v.estado === 'Pendiente').length
+  return [
+    { label: 'Viajes totales',  value: total.toLocaleString(),      colorClass: 'blue' },
+    { label: 'Finalizadas',     value: finalizadas.toLocaleString(), colorClass: 'green' },
+    { label: 'Cancelados',      value: canceladas.toLocaleString(),  colorClass: 'red' },
+    { label: 'Rechazadas',      value: rechazadas.toLocaleString(),  colorClass: 'yellow' },
+    { label: 'Pendientes',      value: pendientes.toLocaleString(),  colorClass: 'gray' },
+  ]
+})
+
+// Mapea los datos recibidos desde la API a la estructura usada por la vista
+function mapReporteToVista(item) {
+  const rawFecha = item.fechaViaje ?? item.FechaViaje ?? null
+  return {
+    id:          item.id ?? item.Id,
+    ruta:        item.areaSolicitante && item.destino
+                   ? `${item.areaSolicitante} → ${item.destino}`
+                   : (item.areaSolicitante ?? item.destino ?? '—'),
+    conductor:   item.nombreConductor ?? item.NombreConductor ?? 'Sin asignar',
+    vehiculo:    item.vehiculoPlaca   ?? item.VehiculoPlaca   ?? '—',
+    fecha:       rawFecha ? formatDate(rawFecha) : '-',
+    fechaRaw:    rawFecha,
+    estado:      item.estado ?? item.Estado ?? 'Desconocido',
+    avatarClass: avatarClasses[
+      ((item.nombreConductor ?? item.NombreConductor ?? 'X').length) % avatarClasses.length
+    ],
+  }
+}
+
+function formatDate(d) {
+  if (!d) return '-'
+  const date = new Date(d)
+  if (isNaN(date)) return String(d)
+  return date.toLocaleDateString()
+}
+
+async function cargarDatos() {
+  cargando.value = true
+  error.value = ''
+  try {
+    // Usamos mes=0 y año=0 como parámetros genéricos ya que el backend actualmente ignora el filtro
+    const res = await getReporteViajes(0, 0)
+    viajesDatos.value = (res.data ?? []).map(mapReporteToVista)
+  } catch (err) {
+    console.error('Error cargando historial:', err)
+    error.value = 'No se pudo cargar el historial. Verifica la conexión con el servidor.'
+  } finally {
+    cargando.value = false
+  }
+}
+
+onMounted(() => {
+  cargarDatos()
+})
+
 
 const viajesFiltrados = computed(() =>
-  datosMock.filter((v) => {
+  viajesDatos.value.filter((v) => {
+    const q = (filtro.value || '').toString().toLowerCase()
     const matchFiltro =
-      !filtro.value ||
-      v.ruta.toLowerCase().includes(filtro.value.toLowerCase()) ||
-      v.conductor.toLowerCase().includes(filtro.value.toLowerCase()) ||
-      v.id.toLowerCase().includes(filtro.value.toLowerCase())
-    const matchEstado = estadoFiltro.value === 'Todos los estados' || v.estado === estadoFiltro.value
-    const matchArea   = area.value === 'Área - Todos' || v.ruta === area.value
-    return matchFiltro && matchEstado && matchArea
+      !q ||
+      (v.ruta || '').toString().toLowerCase().includes(q) ||
+      (v.conductor || '').toString().toLowerCase().includes(q) ||
+      (v.id || '').toString().toLowerCase().includes(q)
+
+    const matchFecha = !fechaDesde.value || !v.fechaRaw
+      ? true
+      : new Date(v.fechaRaw).toISOString().slice(0, 10) === fechaDesde.value
+
+    return matchFiltro && matchFecha
   })
 )
 
-const totalPaginas = computed(() =>
-  Math.ceil(viajesFiltrados.value.length / ITEMS_POR_PAGINA)
-)
+const totalPaginas = computed(() => Math.max(1, Math.ceil(viajesFiltrados.value.length / ITEMS_POR_PAGINA)))
 
-const viajesPagina = computed(() =>
-  viajesFiltrados.value.slice(
-    (pagina.value - 1) * ITEMS_POR_PAGINA,
-    pagina.value * ITEMS_POR_PAGINA
-  )
-)
+const viajesPagina = computed(() => viajesFiltrados.value.slice((pagina.value - 1) * ITEMS_POR_PAGINA, pagina.value * ITEMS_POR_PAGINA))
 
-watch([filtro, estadoFiltro, area], () => { pagina.value = 1 })
+watch([filtro, fechaDesde], () => { pagina.value = 1 })
 
 function getInitials(name = '') {
-  return name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+  return (name || '').split(' ').map((n) => n[0] || '').slice(0, 2).join('').toUpperCase()
 }
 
-async function handleExportarPdf() {
-  try {
-    const res = await exportarPdf(1, 2026)
-    const url = window.URL.createObjectURL(new Blob([res.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'historial_1_2026.pdf')
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch (err) {
-    console.error('Error exportando PDF', err)
-  }
-}
 
-async function handleExportarExcel() {
-  try {
-    const res = await exportarExcel(1, 2026)
-    const url = window.URL.createObjectURL(new Blob([res.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'historial_1_2026.xlsx')
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch (err) {
-    console.error('Error exportando Excel', err)
-  }
-}
-
-function verDetalle(viaje)  { console.log('Ver detalle:', viaje) }
-function editarViaje(viaje) { console.log('Editar:', viaje) }
-function eliminarViaje(viaje) {
-  if (confirm(`¿Eliminar el viaje #${viaje.id}?`)) {
-    console.log('Eliminar:', viaje)
-  }
-}
 </script>
+
 
 <style scoped>
 
@@ -501,9 +495,64 @@ tbody td {
   font-weight: 600;
   white-space: nowrap;
 }
-.estado-activo    { background: #d1fae5; color: #065f46; }
-.estado-inactivo  { background: #f3f4f6; color: #4b5563; }
-.estado-bloqueado { background: #fee2e2; color: #991b1b; }
+/* Estados reales del backend */
+.estado-activo    { background: #d1fae5; color: #065f46; } /* Aprobada */
+.estado-finalizada{ background: #dbeafe; color: #1e40af; }
+.estado-pendiente { background: #fef3c7; color: #92400e; }
+.estado-bloqueado { background: #fee2e2; color: #991b1b; } /* Rechazada */
+.estado-inactivo  { background: #f3f4f6; color: #4b5563; } /* Cancelada */
+
+/* Sub-label placa del vehículo */
+.vehiculo-sub {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 1px;
+}
+
+/* Fila vacía */
+.td-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Banner de error */
+.error-banner {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}
+
+/* Loading spinner */
+.cargando-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 20px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #374151;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 .acciones {
   display: flex;

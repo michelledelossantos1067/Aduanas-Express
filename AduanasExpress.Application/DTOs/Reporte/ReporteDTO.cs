@@ -1,6 +1,7 @@
 namespace AduanasExpress.Application.DTOs.Reporte;
 public class ReporteViajeDTO
 {
+    public int Id { get; set; }
     public string AreaSolicitante { get; set; }
     public string Destino { get; set; }
     public DateTime? FechaViaje { get; set; }

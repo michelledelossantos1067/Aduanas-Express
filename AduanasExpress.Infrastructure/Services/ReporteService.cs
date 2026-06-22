@@ -23,9 +23,23 @@ public class ReporteService : IReporteService
     }
     public async Task<List<ReporteViajeDTO>> GetReporteViajesAsync(int mes, int año)
     {
-        var solicitudes = await _solicitudRepository.ObtenerTodos();
+        var solicitudes  = await _solicitudRepository.ObtenerTodos();
+        var asignaciones = await _asignacionRepository.ObtenerTodos();
 
-        return solicitudes.Select(c => c.ToReporteViajeDTO()).ToList();
+        // Crear un diccionario: SolicitudId -> Asignacion (toma la más reciente si hay varias)
+        var asignacionPorSolicitud = asignaciones
+            .GroupBy(a => a.SolicitudId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.FechaAsignacion).First());
+
+        return solicitudes.Select(s =>
+        {
+            asignacionPorSolicitud.TryGetValue(s.Id, out var asig);
+            var nombreConductor = asig?.Conductor != null
+                ? $"{asig.Conductor.Nombre} {asig.Conductor.Apellido}"
+                : null;
+            var vehiculoPlaca = asig?.Vehiculo?.Matricula;
+            return s.ToReporteViajeDTO(nombreConductor, vehiculoPlaca);
+        }).ToList();
     }
 
     public async Task<List<ReporteConsumoDTO>> GetReporteConsumoAsync(int mes, int año)

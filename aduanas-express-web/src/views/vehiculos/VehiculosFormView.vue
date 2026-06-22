@@ -261,9 +261,14 @@ onMounted(async () => {
                             <select v-model="form.estado">
                                 <option :value="0">Disponible</option>
                                 <option :value="1">En Viaje</option>
-                                <option :value="2">En Mantenimiento</option>
+                                <option :value="2" disabled>En Mantenimiento</option>
                                 <option :value="3">Fuera de Servicio</option>
                             </select>
+                            <p v-if="form.estado === 2" class="field-hint">
+                                Este estado lo controla automáticamente el módulo de Mantenimiento y no puede
+                                cambiarse aquí manualmente. Para liberar el vehículo, completa o cancela su
+                                mantenimiento activo.
+                            </p>
                         </div>
                         <div class="field">
                             <label>Kilometraje</label>
@@ -274,9 +279,23 @@ onMounted(async () => {
                         </div>
                         <div class="field">
                             <label>Último mantenimiento</label>
-                            <input type="date" v-model="form.fechaUltimoMant" />
+                            <input type="date" v-model="form.fechaUltimoMant" readonly />
                         </div>
                     </div>
+                    <button
+                        v-if="esEdicion"
+                        type="button"
+                        class="btn-mantenimiento-link"
+                        @click="router.push({ path: '/mantenimiento', query: { vehiculoId: route.params.id } })"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13" rx="2"/>
+                            <path d="M16 8h4l3 3v5h-7V8z"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                        Registrar mantenimiento para este vehículo
+                    </button>
                 </div>
 
                 <div class="action-bar">
@@ -601,6 +620,37 @@ onMounted(async () => {
 }
 
 .field input::placeholder { color: #9ca3af; }
+
+.field select option:disabled { color: #9ca3af; }
+
+.field-hint {
+    margin: 6px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 7px;
+    padding: 8px 10px;
+}
+
+.btn-mantenimiento-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    padding: 9px 16px;
+    background: #fff;
+    border: 1.5px solid #1a3a2a;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1a3a2a;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+}
+.btn-mantenimiento-link:hover { background: #f0fdf4; }
 
 .input-suffix-wrap {
     display: flex;

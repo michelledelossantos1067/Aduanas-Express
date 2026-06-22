@@ -108,9 +108,6 @@ async function handleLogin() {
                         {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
                     </button>
 
-                    <p>¿No tienes cuenta? <span class="suport" @click="router.push('/register')">Regístrate aquí</span>
-                    </p>
-                    <p>¿Se te olvido la contraseña? <span class="suport" @click="router.push('/reset-password')">Recuperar contraseña</span></p>
 
                     <p class="mobile-footer">Aduanas Express — Uso institucional exclusivo © 2026</p>
                 </div>

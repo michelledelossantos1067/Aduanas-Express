@@ -12,9 +12,8 @@
                     </svg>
                     Exportar
                 </button>
-                <button class="btn-nuevo" @click="irANuevo">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
+                <button class="btn-nuevo" @click="mostrarNuevo = true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
@@ -105,8 +104,7 @@
                                 <div class="acciones">
                                     <button @click="verUsuario(u)" class="btn-icon" title="Ver">👁</button>
                                     <button @click="editarUsuario(u.id)" class="btn-icon" title="Editar">✏️</button>
-                                    <button @click="confirmarEliminar(u)" class="btn-icon del"
-                                        title="Eliminar">🗑</button>
+                                    <button @click="confirmarEliminar(u)" class="btn-icon del" title="Eliminar">🗑</button>
                                 </div>
                             </td>
                         </tr>
@@ -119,20 +117,19 @@
                     Mostrando {{ desde }}–{{ hasta }} de {{ usuariosFiltrados.length }} usuarios
                 </span>
                 <div class="pag-btns">
-                    <button @click="pagina = Math.max(1, pagina - 1)" :disabled="pagina === 1"
-                        class="btn-pag">&lt;</button>
+                    <button @click="pagina = Math.max(1, pagina - 1)" :disabled="pagina === 1" class="btn-pag">&lt;</button>
                     <template v-for="p in paginasVisibles">
                         <span v-if="p === '...'" :key="`ellipsis-${p}`" class="pag-ellipsis">…</span>
                         <button v-else :key="p" @click="pagina = p" class="btn-pag" :class="{ activo: pagina === p }">
                             {{ p }}
                         </button>
                     </template>
-                    <button @click="pagina = Math.min(totalPaginas, pagina + 1)" :disabled="pagina === totalPaginas"
-                        class="btn-pag">&gt;</button>
+                    <button @click="pagina = Math.min(totalPaginas, pagina + 1)" :disabled="pagina === totalPaginas" class="btn-pag">&gt;</button>
                 </div>
             </div>
         </div>
 
+        <!-- Modal Ver usuario -->
         <div v-if="mostrarVer && usuarioSeleccionado" class="modal-overlay" @click.self="mostrarVer = false">
             <div class="modal">
                 <div class="modal-top">
@@ -140,8 +137,7 @@
                         {{ getInitials(usuarioSeleccionado.nombre, usuarioSeleccionado.apellido) }}
                     </div>
                     <div>
-                        <h3 class="modal-titulo">{{ usuarioSeleccionado.nombre }} {{ usuarioSeleccionado.apellido }}
-                        </h3>
+                        <h3 class="modal-titulo">{{ usuarioSeleccionado.nombre }} {{ usuarioSeleccionado.apellido }}</h3>
                         <span class="badge-rol" :class="rolClase[usuarioSeleccionado.rol]">
                             {{ rolLabel(usuarioSeleccionado.rol) }}
                         </span>
@@ -164,6 +160,7 @@
             </div>
         </div>
 
+        <!-- Modal Eliminar usuario -->
         <div v-if="mostrarEliminar && usuarioAEliminar" class="modal-overlay" @click.self="mostrarEliminar = false">
             <div class="modal">
                 <h3 class="modal-titulo">Eliminar usuario</h3>
@@ -181,6 +178,49 @@
             </div>
         </div>
 
+        <!-- Modal Nuevo usuario -->
+        <div v-if="mostrarNuevo" class="modal-overlay" @click.self="cerrarNuevo">
+            <div class="modal modal-nuevo">
+                <h3 class="modal-titulo">Nuevo Usuario</h3>
+                <p class="modal-desc">Completa los datos para registrar un nuevo usuario en el sistema.</p>
+
+                <div class="nuevo-form">
+                    <div class="nuevo-row">
+                        <div class="campo">
+                            <label class="campo-label">Nombre</label>
+                            <input v-model="formNuevo.nombre" type="text" class="campo-input" placeholder="Nombre" />
+                        </div>
+                        <div class="campo">
+                            <label class="campo-label">Apellido</label>
+                            <input v-model="formNuevo.apellido" type="text" class="campo-input" placeholder="Apellido" />
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <label class="campo-label">Correo electrónico</label>
+                        <input v-model="formNuevo.email" type="email" class="campo-input" placeholder="correo@ejemplo.com" />
+                    </div>
+                    <div class="campo">
+                        <label class="campo-label">Contraseña</label>
+                        <input v-model="formNuevo.password" type="password" class="campo-input" placeholder="Mínimo 6 caracteres" />
+                    </div>
+                    <div class="campo">
+                        <label class="campo-label">Rol</label>
+                        <select v-model="formNuevo.rol" class="campo-input">
+                            <option v-for="r in ROLES" :key="r.value" :value="r.value">{{ r.label }}</option>
+                        </select>
+                    </div>
+                    <p v-if="errorNuevo" class="error-msg">{{ errorNuevo }}</p>
+                </div>
+
+                <div class="modal-acciones">
+                    <button class="btn-cancelar-modal" @click="cerrarNuevo">Cancelar</button>
+                    <button class="btn-editar-modal" @click="ejecutarNuevo" :disabled="loadingNuevo">
+                        {{ loadingNuevo ? 'Registrando…' : 'Crear usuario' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -188,6 +228,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { obtenerUsuario, eliminarUsuario } from '../../services/usuarioService'
+import { register } from '../../services/authService'
 
 const router = useRouter()
 
@@ -218,6 +259,39 @@ const usuarioSeleccionado = ref(null)
 const mostrarEliminar = ref(false)
 const usuarioAEliminar = ref(null)
 const eliminando = ref(false)
+
+const mostrarNuevo = ref(false)
+const loadingNuevo = ref(false)
+const errorNuevo = ref('')
+const formNuevo = ref({ nombre: '', apellido: '', email: '', password: '', rol: 0 })
+
+function cerrarNuevo() {
+    mostrarNuevo.value = false
+    errorNuevo.value = ''
+    formNuevo.value = { nombre: '', apellido: '', email: '', password: '', rol: 0 }
+}
+
+async function ejecutarNuevo() {
+    if (!formNuevo.value.nombre || !formNuevo.value.apellido || !formNuevo.value.email || !formNuevo.value.password) {
+        errorNuevo.value = 'Por favor completa todos los campos.'
+        return
+    }
+    if (formNuevo.value.password.length < 6) {
+        errorNuevo.value = 'La contraseña debe tener al menos 6 caracteres.'
+        return
+    }
+    loadingNuevo.value = true
+    errorNuevo.value = ''
+    try {
+        await register(formNuevo.value)
+        await cargarUsuarios()
+        cerrarNuevo()
+    } catch (e) {
+        errorNuevo.value = e.response?.data?.message || 'Error al crear el usuario.'
+    } finally {
+        loadingNuevo.value = false
+    }
+}
 
 function getInitials(nombre = '', apellido = '') {
     return `${nombre[0] ?? ''}${apellido[0] ?? ''}`.toUpperCase()
@@ -301,10 +375,6 @@ async function cargarUsuarios() {
     }
 }
 
-function irANuevo() {
-    router.push('/usuarios/nuevo')
-}
-
 function verUsuario(u) {
     usuarioSeleccionado.value = u
     mostrarVer.value = true
@@ -334,7 +404,6 @@ async function ejecutarEliminar() {
 }
 
 function exportarPdf() {
-
     console.log('Exportar PDF', usuariosFiltrados.value)
 }
 
@@ -342,7 +411,6 @@ onMounted(cargarUsuarios)
 </script>
 
 <style scoped>
-
 .usr-page {
     padding: 32px 40px;
     background: #f3f4f6;
@@ -405,9 +473,7 @@ onMounted(cargarUsuarios)
     transition: background 0.15s;
 }
 
-.btn-nuevo:hover {
-    background: #14532d;
-}
+.btn-nuevo:hover { background: #14532d; }
 
 .usr-stats {
     display: grid;
@@ -455,9 +521,7 @@ onMounted(cargarUsuarios)
     transition: border-color 0.15s;
 }
 
-.filtro-search:focus-within {
-    border-color: #1a3a2a;
-}
+.filtro-search:focus-within { border-color: #1a3a2a; }
 
 .filtro-input {
     flex: 1;
@@ -469,9 +533,7 @@ onMounted(cargarUsuarios)
     background: transparent;
 }
 
-.filtro-input::placeholder {
-    color: #9ca3af;
-}
+.filtro-input::placeholder { color: #9ca3af; }
 
 .filtro-select {
     padding: 10px 14px;
@@ -486,9 +548,7 @@ onMounted(cargarUsuarios)
     min-width: 160px;
 }
 
-.filtro-select:focus {
-    border-color: #1a3a2a;
-}
+.filtro-select:focus { border-color: #1a3a2a; }
 
 .usr-estado {
     display: flex;
@@ -508,11 +568,7 @@ onMounted(cargarUsuarios)
     animation: spin 0.75s linear infinite;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .usr-error {
     background: #fef2f2;
@@ -568,9 +624,7 @@ onMounted(cargarUsuarios)
     border-radius: 20px;
 }
 
-.tabla-scroll {
-    overflow-x: auto;
-}
+.tabla-scroll { overflow-x: auto; }
 
 table {
     width: 100%;
@@ -578,9 +632,7 @@ table {
     font-size: 0.875rem;
 }
 
-thead tr {
-    border-bottom: 1px solid #f3f4f6;
-}
+thead tr { border-bottom: 1px solid #f3f4f6; }
 
 thead th {
     padding: 12px 24px;
@@ -596,9 +648,7 @@ tbody tr {
     transition: background 0.15s;
 }
 
-tbody tr:hover {
-    background: #f9fafb;
-}
+tbody tr:hover { background: #f9fafb; }
 
 tbody td {
     padding: 14px 24px;
@@ -642,25 +692,11 @@ tbody td {
     font-size: 1rem;
 }
 
-.av-purple {
-    background: #7c3aed;
-}
-
-.av-blue {
-    background: #2563eb;
-}
-
-.av-green {
-    background: #16a34a;
-}
-
-.av-orange {
-    background: #ea580c;
-}
-
-.av-teal {
-    background: #0d9488;
-}
+.av-purple { background: #7c3aed; }
+.av-blue   { background: #2563eb; }
+.av-green  { background: #16a34a; }
+.av-orange { background: #ea580c; }
+.av-teal   { background: #0d9488; }
 
 .usuario-nombre {
     font-weight: 500;
@@ -675,25 +711,11 @@ tbody td {
     font-weight: 600;
 }
 
-.rol-admin {
-    background: #fee2e2;
-    color: #991b1b;
-}
+.rol-admin      { background: #fee2e2; color: #991b1b; }
+.rol-supervisor { background: #dbeafe; color: #1e40af; }
+.rol-operador   { background: #d1fae5; color: #065f46; }
 
-.rol-supervisor {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.rol-operador {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.acciones {
-    display: flex;
-    gap: 4px;
-}
+.acciones { display: flex; gap: 4px; }
 
 .btn-icon {
     width: 28px;
@@ -709,13 +731,8 @@ tbody td {
     transition: border-color 0.15s;
 }
 
-.btn-icon:hover {
-    border-color: #9ca3af;
-}
-
-.btn-icon.del:hover {
-    border-color: #fca5a5;
-}
+.btn-icon:hover { border-color: #9ca3af; }
+.btn-icon.del:hover { border-color: #fca5a5; }
 
 .usr-paginacion {
     display: flex;
@@ -749,20 +766,9 @@ tbody td {
     transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.btn-pag:hover:not(:disabled) {
-    background: #f3f4f6;
-}
-
-.btn-pag:disabled {
-    opacity: 0.4;
-    cursor: default;
-}
-
-.btn-pag.activo {
-    background: #1f2937;
-    color: #fff;
-    border-color: #1f2937;
-}
+.btn-pag:hover:not(:disabled) { background: #f3f4f6; }
+.btn-pag:disabled { opacity: 0.4; cursor: default; }
+.btn-pag.activo { background: #1f2937; color: #fff; border-color: #1f2937; }
 
 .pag-ellipsis {
     color: #9ca3af;
@@ -788,6 +794,8 @@ tbody td {
     max-width: 90vw;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
 }
+
+.modal-nuevo { width: 540px; }
 
 .modal-top {
     display: flex;
@@ -818,14 +826,8 @@ tbody td {
     border-bottom: 1px solid #f3f4f6;
 }
 
-.modal-label {
-    color: #6b7280;
-}
-
-.modal-valor {
-    color: #111827;
-    font-weight: 500;
-}
+.modal-label { color: #6b7280; }
+.modal-valor { color: #111827; font-weight: 500; }
 
 .modal-desc {
     font-size: 0.9rem;
@@ -833,6 +835,45 @@ tbody td {
     line-height: 1.55;
     margin: 8px 0 24px;
 }
+
+.nuevo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 16px 0 24px;
+}
+
+.nuevo-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.campo-input {
+    padding: 9px 12px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.campo-input:focus { border-color: #1a3a2a; }
 
 .modal-acciones {
     display: flex;
@@ -874,38 +915,24 @@ tbody td {
     transition: background 0.15s;
 }
 
-.btn-confirmar-modal:hover:not(:disabled) {
-    background: #b91c1c;
-}
+.btn-confirmar-modal:hover:not(:disabled) { background: #b91c1c; }
+.btn-confirmar-modal:disabled { opacity: 0.6; cursor: default; }
 
-.btn-confirmar-modal:disabled {
-    opacity: 0.6;
-    cursor: default;
+.error-msg {
+    color: #c0392b;
+    font-size: 0.8rem;
+    margin: 0;
 }
 
 @media (max-width: 1024px) {
-    .usr-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .usr-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
-    .usr-page {
-        padding: 20px 16px;
-    }
-
-    .usr-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
-    }
-
-    .usr-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .usr-filtros {
-        flex-direction: column;
-    }
+    .usr-page { padding: 20px 16px; }
+    .usr-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .usr-stats { grid-template-columns: repeat(2, 1fr); }
+    .usr-filtros { flex-direction: column; }
+    .nuevo-row { grid-template-columns: 1fr; }
 }
 </style>

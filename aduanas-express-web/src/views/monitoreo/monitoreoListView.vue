@@ -7,9 +7,6 @@ import { verAsignaciones } from '@/services/asignacionService.js'
 
 const CIUDAD_REFERENCIA = 'Santo Domingo, República Dominicana'
 
-// --- Normalización de estados que llegan del backend (soporta texto o número del enum) ---
-
-// Orden real confirmado en EstadosVehiculo.cs: Disponible=0, EnViaje=1, EnMantenimiento=2, FueraDeServicio=3
 const VEHICULO_ESTADO_POR_INDICE = ['libre', 'en_viaje', 'taller', 'fuera_servicio']
 const VEHICULO_ESTADO_POR_NOMBRE = {
   disponible:      'libre',
@@ -27,9 +24,6 @@ function normalizarEstadoVehiculo(valor) {
   return 'libre'
 }
 
-// EstadoAsignacion no se confirmó directamente (no se subió el enum); se infiere del orden de uso
-// en AsignacionService.cs: Pendiente, Finalizada, Cancelada. Si el filtro de "viaje activo" falla,
-// ajustar este array según el enum real.
 const ASIGNACION_INDICES_TERMINALES = [1, 2]
 const ASIGNACION_ESTADOS_TERMINALES = ['finalizada', 'cancelada']
 
@@ -39,7 +33,6 @@ function asignacionEstaActiva(valor) {
   return false
 }
 
-// Indexa la asignación activa (si existe) de cada vehículo, para no recorrer el arreglo por cada vehículo
 function indexarAsignacionesActivas(asignaciones) {
   const mapa = new Map()
   for (const a of asignaciones) {
@@ -102,7 +95,6 @@ function formatFecha(f) {
 
 const geocodeCache = new Map()
 
-// Convierte una dirección en coordenadas mediante Nominatim y almacena el resultado en caché
 async function geocodificar(direccion) {
   if (!direccion) return null
   const clave = direccion.trim().toLowerCase()
@@ -123,7 +115,6 @@ async function geocodificar(direccion) {
   return null
 }
 
-// Obtiene la ruta de conducción entre dos puntos usando el servicio OSRM
 async function obtenerRuta(origen, destino) {
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`
@@ -149,7 +140,6 @@ async function obtenerRuta(origen, destino) {
 
 const SEDE = { lat: 18.4861, lng: -69.9312 }
 
-// Estima la ubicación actual del vehículo en la ruta según el tiempo transcurrido desde la salida
 function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
   if (!coords?.length || !fechaViaje || !horaSalida || !duracionMin) return null
   try {
@@ -163,9 +153,6 @@ function posicionEstimada(coords, fechaViaje, horaSalida, duracionMin) {
     return { lat: coords[idx][0], lng: coords[idx][1] }
   } catch { return null }
 }
-
-// Construye los datos de mapa/posición de un vehículo a partir de su estado real y, si está
-// en viaje, de la asignación activa (que ya trae anidados el conductor y la solicitud)
 async function procesarVehiculo(v, asignacionPorVehiculo) {
   const estado = normalizarEstadoVehiculo(v.estado)
 

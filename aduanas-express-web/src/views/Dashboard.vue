@@ -196,10 +196,6 @@ function norm(v) {
 function estadoDe(obj) {
   return norm(campo(obj, ['estado', 'Estado', 'status', 'Status']))
 }
-// El backend expone el estado del vehículo como código numérico
-// (enum EstadosVehiculo.cs: 0=Disponible, 1=EnViaje, 2=EnMantenimiento, 3=FueraDeServicio).
-// Esta función decodifica ese número a texto; si en algún momento el backend
-// envía el estado ya como string, también lo soporta sin romperse.
 const ESTADOS_VEHICULO = ['Disponible', 'EnViaje', 'EnMantenimiento', 'FueraDeServicio']
 function estadoVehiculo(v) {
   const raw = campo(v, ['estado', 'Estado', 'status', 'Status'])
@@ -213,8 +209,6 @@ function idDe(obj) {
   return campo(obj, ['id', 'Id'])
 }
 
-// Cruces por id usando las listas ya cargadas (más confiable que adivinar
-// qué trae anidado cada Response DTO de Asignación/Mantenimiento).
 function conductorPorId(conductorId) {
   return conductores.value.find(c => idDe(c) === conductorId) || null
 }
@@ -266,7 +260,6 @@ function tiempoRelativo(valor) {
   return `hace ${dias} d`
 }
 
-// ---------- KPIs ----------
 const totalVehiculos = computed(() => vehiculos.value.length)
 const vehiculosDisponibles = computed(() =>
   vehiculos.value.filter(v => estadoVehiculo(v).includes('dispon')).length
@@ -284,8 +277,6 @@ const solicitudesPendientes = computed(() => solicitudes.value.filter(s => estad
 const solicitudesPendientesCount = computed(() => solicitudesPendientes.value.length)
 
 const totalConductores = computed(() => conductores.value.length)
-// El modelo de Conductor solo expone los estados Disponible y EnViaje
-// (no existe un estado "inactivo" a este nivel, según ConductorServices.cs).
 const conductoresEnViaje = computed(() => conductores.value.filter(c => estadoDe(c).includes('viaje')).length)
 
 const kpis = computed(() => [
@@ -315,7 +306,6 @@ const kpis = computed(() => [
   },
 ])
 
-// ---------- Gráfico de barras: viajes por mes ----------
 async function cargarViajesPorMes() {
   const hoy = new Date()
   const meses = []
@@ -331,7 +321,6 @@ async function cargarViajesPorMes() {
   viajesPorMes.value = meses.map((m, idx) => {
     const r = resultados[idx]
     const data = r.status === 'fulfilled' ? r.value?.data : null
-    // El backend devuelve un ReporteViajesDTO (no un array), con el conteo en TotalViajes.
     const total = data?.totalViajes ?? data?.TotalViajes ?? 0
     return { label: m.label, total }
   })
@@ -342,7 +331,6 @@ function barHeight(valor) {
   return Math.max(6, Math.round((valor / maxViajes.value) * 100))
 }
 
-// ---------- Gráfico circular: estado de vehículos ----------
 const estadoColores = {
   Disponibles: '#3fae5c',
   'En viaje': '#4a6fa5',
@@ -375,7 +363,6 @@ function puntoEnCirculo(anguloGrados, radio = PIE_RADIUS) {
 
 function porcionPath(anguloInicio, anguloFin) {
   if (anguloFin - anguloInicio >= 360) {
-    // Círculo completo (un solo estado con el 100%): se dibuja como dos medios arcos.
     const p1 = puntoEnCirculo(anguloInicio)
     const p2 = puntoEnCirculo(anguloInicio + 180)
     return `M ${p1.x} ${p1.y} A ${PIE_RADIUS} ${PIE_RADIUS} 0 1 1 ${p2.x} ${p2.y} A ${PIE_RADIUS} ${PIE_RADIUS} 0 1 1 ${p1.x} ${p1.y} Z`
@@ -411,7 +398,6 @@ const pieSlices = computed(() => {
 
 const pieLabels = computed(() => pieSlices.value.filter(slice => slice.percent > 0))
 
-// ---------- Solicitudes recientes ----------
 const solicitudesRecientes = computed(() =>
   [...solicitudes.value]
     .sort((a, b) => new Date(campo(b, ['fecha', 'Fecha', 'createdAt'])) - new Date(campo(a, ['fecha', 'Fecha', 'createdAt'])))
@@ -426,7 +412,6 @@ function badgeClase(estado) {
   return 'badge--default'
 }
 
-// ---------- Actividad reciente ----------
 function tagId(id) {
   if (id === '' || id === undefined || id === null) return ''
   return `#${String(id).padStart(4, '0')}`
@@ -435,14 +420,12 @@ function tagId(id) {
 const actividad = computed(() => {
   const items = []
 
-  // Nueva solicitud de transporte
   solicitudes.value.forEach(s => {
     const fecha = campo(s, ['fecha', 'Fecha', 'createdAt'])
     const area = campo(s, ['area', 'Area', 'areaSolicitante'], 'un área')
     if (fecha) items.push({ texto: `Nueva solicitud de transporte - ${area}`, fecha })
   })
 
-  // Viaje finalizado / cancelado / conductor asignado
   asignaciones.value.forEach(a => {
     const e = estadoDe(a)
     const fecha = campo(a, ['fecha', 'Fecha', 'fechaFinalizacion', 'fechaAsignacion'])
@@ -463,7 +446,6 @@ const actividad = computed(() => {
     }
   })
 
-  // Vehículo enviado a mantenimiento
   mantenimientos.value.forEach(m => {
     const fecha = campo(m, ['fecha', 'Fecha', 'fechaInicio', 'FechaInicio', 'createdAt'])
     if (!fecha) return
@@ -478,7 +460,6 @@ const actividad = computed(() => {
     .map(i => ({ ...i, relativo: tiempoRelativo(i.fecha) }))
 })
 
-// ---------- Carga inicial ----------
 onMounted(async () => {
   loading.value = true
   errorMsg.value = ''

@@ -66,6 +66,8 @@ builder.Services.AddScoped<ISolicitudTransporteService, SolicitudTransporteServi
 builder.Services.AddScoped<IAsignacionRepository, AsignacionRepository>();
 builder.Services.AddScoped<IAsignacionService, AsignacionService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
+builder.Services.AddScoped<IRolRepository, RolRepository>();
+builder.Services.AddScoped<IRolService, RolService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

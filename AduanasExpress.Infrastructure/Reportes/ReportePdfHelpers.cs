@@ -3,17 +3,9 @@ using QuestPDF.Infrastructure;
 
 namespace AduanasExpress.Infrastructure.Reportes
 {
-    /// <summary>
-    /// Componentes reutilizables para todos los reportes PDF:
-    ///  · TarjetaKpi     — indicador con acento de color izquierdo
-    ///  · SectionTitle   — título de sección con línea verde
-    ///  · Tabla          — tabla con encabezado verde y bandas alternadas
-    ///  · SinDatos       — estado vacío
-    ///  · BadgeEstado    — pastilla de estado coloreada inline
-    /// </summary>
+
     public static class ReportePdfHelpers
     {
-        // ── Tarjeta KPI ───────────────────────────────────────
 
         public static void TarjetaKpi(
             IContainer container,
@@ -28,7 +20,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 .Background(ReporteEstilo.Blanco)
                 .Row(row =>
                 {
-                    // Borde izquierdo de color — único toque de color
                     row.ConstantItem(4).Background(acento);
 
                     row.RelativeItem()
@@ -51,7 +42,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 });
         }
 
-        // ── Título de sección ─────────────────────────────────
 
         public static void TituloSeccion(IContainer container, string texto)
         {
@@ -70,18 +60,16 @@ namespace AduanasExpress.Infrastructure.Reportes
             });
         }
 
-        // ── Tabla ─────────────────────────────────────────────
 
         public static void Tabla(
             IContainer container,
             string[] encabezados,
             IReadOnlyList<string[]> filas,
             float[] anchos = null,
-            int[] columnasDerecha = null)   // índices de columnas alineadas a la derecha
+            int[] columnasDerecha = null)
         {
             container.Table(table =>
             {
-                // Definir columnas
                 table.ColumnsDefinition(cols =>
                 {
                     if (anchos != null)
@@ -90,7 +78,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                         foreach (var _ in encabezados) cols.RelativeColumn();
                 });
 
-                // Encabezados
                 table.Header(header =>
                 {
                     for (int i = 0; i < encabezados.Length; i++)
@@ -109,16 +96,15 @@ namespace AduanasExpress.Infrastructure.Reportes
                     }
                 });
 
-                // Filas de datos
                 for (int i = 0; i < filas.Count; i++)
                 {
-                    bool esPar   = i % 2 == 0;
+                    bool esPar = i % 2 == 0;
                     string fondo = esPar ? ReporteEstilo.Blanco : ReporteEstilo.GrisFondo;
 
                     for (int j = 0; j < filas[i].Length; j++)
                     {
-                        bool esDer  = columnasDerecha?.Contains(j) == true;
-                        var  valor  = filas[i][j] ?? "—";
+                        bool esDer = columnasDerecha?.Contains(j) == true;
+                        var valor = filas[i][j] ?? "—";
 
                         table.Cell()
                              .Background(fondo)
@@ -133,7 +119,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                     }
                 }
 
-                // Fila final con borde verde reforzado
                 if (filas.Count > 0)
                 {
                     table.Footer(footer =>
@@ -146,9 +131,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 }
             });
         }
-
-        // ── Sin datos ─────────────────────────────────────────
-
         public static void SinDatos(IContainer container, string mensaje)
         {
             container
@@ -171,12 +153,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 });
         }
 
-        // ── Badge de estado ───────────────────────────────────
-
-        /// <summary>
-        /// Devuelve texto coloreado para una celda de estado.
-        /// Úsalo en la lambda de cada celda cuando la columna es "Estado".
-        /// </summary>
         public static (string fondo, string texto) ColoresEstado(string estado)
         {
             var v = (estado ?? "").ToLower();

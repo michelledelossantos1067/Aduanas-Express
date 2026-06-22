@@ -26,7 +26,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             {
                 col.Spacing(14);
 
-                // ── KPIs ──────────────────────────────────────
                 col.Item().Row(row =>
                 {
                     row.Spacing(8);
@@ -40,10 +39,8 @@ namespace AduanasExpress.Infrastructure.Reportes
                         c, "Vehículos con consumo", _r.TotalVehiculos.ToString(), ReporteEstilo.AcentoConsumo));
                 });
 
-                // ── Título sección ────────────────────────────
                 col.Item().Element(c => ReportePdfHelpers.TituloSeccion(c, "Detalle por vehículo"));
 
-                // ── Tabla ─────────────────────────────────────
                 if (_r.Detalles.Count == 0)
                 {
                     col.Item().Element(c => ReportePdfHelpers.SinDatos(
@@ -66,7 +63,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                         columnasDerecha: new[] { 2, 3, 4 }
                     ));
 
-                    // Fila de totales manual
                     col.Item()
                        .Border(0.5f).BorderColor(ReporteEstilo.VerdeInstitucional)
                        .Background(ReporteEstilo.VerdeMuyClaro)

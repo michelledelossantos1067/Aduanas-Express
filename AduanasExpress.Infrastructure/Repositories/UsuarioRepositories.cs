@@ -2,8 +2,7 @@ using AduanasExpress.Infrastructure.Data;
 using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Text;
+
 namespace AduanasExpress.Infrastructure.Repositories;
 
 public class UsuarioRepositories : IUsuarioRepositories{
@@ -14,27 +13,35 @@ public class UsuarioRepositories : IUsuarioRepositories{
     }
 
     public async Task<List<Usuario?>> ObtenerTodos(){
-        return await _context.Usuarios.ToListAsync();
+        return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
     }
+
     public async Task<Usuario?> ObtenerPorId(int Id){
-        return await _context.Usuarios.FindAsync(Id);
+        return await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.Id == Id);
     }
+
     public async Task Crear(Usuario usuario){
-        _context.AddAsync(usuario);
+        await _context.AddAsync(usuario);
         await _context.SaveChangesAsync();
     }
+
     public async Task<Usuario?> ObtenerPorEmail(string email){
-        return await _context.Usuarios.FirstOrDefaultAsync(c => c.Email == email);
+        return await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(c => c.Email == email);
     }
-    public async Task Actualizar(int Id,Usuario usuario){
+
+    public async Task Actualizar(int Id, Usuario usuario){
         var usuarios = await _context.Usuarios.FindAsync(Id);
+        if (usuarios == null)
+            throw new Exception("Usuario no encontrado.");
+
         usuarios.Nombre = usuario.Nombre;
         usuarios.Apellido = usuario.Apellido;
         usuarios.Email = usuario.Email;
         usuarios.Password = usuario.Password;
-        usuarios.Rol = usuario.Rol;
+        usuarios.RolId = usuario.RolId;
         await _context.SaveChangesAsync();
     }
+
     public async Task Eliminar(int Id){
         var usuario = await _context.Usuarios.FindAsync(Id);
         if(usuario == null){

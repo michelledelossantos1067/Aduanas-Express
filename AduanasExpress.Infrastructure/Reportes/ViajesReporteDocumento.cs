@@ -27,7 +27,6 @@ namespace AduanasExpress.Infrastructure.Reportes
             {
                 col.Spacing(14);
 
-                // ── KPIs ──────────────────────────────────────
                 col.Item().Row(row =>
                 {
                     row.Spacing(8);
@@ -43,10 +42,8 @@ namespace AduanasExpress.Infrastructure.Reportes
                         c, "Pasajeros transportados", _r.TotalPasajeros.ToString(), ReporteEstilo.AcentoViajes));
                 });
 
-                // ── Título sección ────────────────────────────
                 col.Item().Element(c => ReportePdfHelpers.TituloSeccion(c, "Detalle de viajes"));
 
-                // ── Tabla o estado vacío ──────────────────────
                 if (_r.Detalles.Count == 0)
                 {
                     col.Item().Element(c => ReportePdfHelpers.SinDatos(
@@ -54,7 +51,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                 }
                 else
                 {
-                    // Construir filas con badge de estado
                     col.Item().Table(table =>
                     {
                         var anchos = new[] { 0.55f, 1.15f, 1.15f, 0.85f, 1.25f, 0.95f, 0.55f, 1f };
@@ -63,7 +59,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                             foreach (var a in anchos) cols.RelativeColumn(a);
                         });
 
-                        // Encabezados
                         string[] headers = { "#", "Área", "Destino", "Fecha", "Conductor", "Vehículo", "Pas.", "Estado" };
                         table.Header(header =>
                         {
@@ -79,7 +74,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                             }
                         });
 
-                        // Filas
                         for (int i = 0; i < _r.Detalles.Count; i++)
                         {
                             var d    = _r.Detalles[i];
@@ -104,7 +98,6 @@ namespace AduanasExpress.Infrastructure.Reportes
                             table.Cell().Element(c => Celda(c, d.VehiculoPlaca ?? "Sin asignar"));
                             table.Cell().Element(c => Celda(c, d.CantidadPasajeros.ToString()));
 
-                            // Celda de estado con badge coloreado
                             table.Cell()
                                  .Background(bg)
                                  .BorderBottom(0.4f).BorderColor(ReporteEstilo.GrisBorde)
@@ -118,12 +111,10 @@ namespace AduanasExpress.Infrastructure.Reportes
                                         .FontColor(badgeTexto));
                         }
 
-                        // Borde inferior verde
                         table.Footer(f =>
                             f.Cell().ColumnSpan(8).Height(1.5f).Background(ReporteEstilo.VerdeInstitucional));
                     });
 
-                    // Nota de totales
                     col.Item().PaddingTop(4).AlignRight()
                        .Text($"Total de registros: {_r.Detalles.Count}  ·  Pasajeros: {_r.TotalPasajeros}")
                        .FontSize(7.5f).FontColor(ReporteEstilo.GrisClaro).Italic();

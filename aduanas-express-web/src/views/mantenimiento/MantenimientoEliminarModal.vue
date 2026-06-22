@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
     modelValue: { type: Boolean, default: false },
-    registro:   { type: Object, default: null },
+    registro: { type: Object, default: null },
 })
 const emit = defineEmits(['update:modelValue', 'confirmar'])
 
@@ -24,9 +24,9 @@ function confirmar() {
         <div class="modal-box">
             <div class="modal-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                 </svg>
             </div>
             <h3 class="modal-titulo">¿Eliminar registro?</h3>
@@ -48,7 +48,7 @@ function confirmar() {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.35);
+    background: rgba(0, 0, 0, .35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,7 +61,7 @@ function confirmar() {
     padding: 28px 28px 24px;
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 8px 30px rgba(0,0,0,.15);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -113,7 +113,10 @@ function confirmar() {
     cursor: pointer;
     transition: background .15s;
 }
-.btn-cancelar:hover { background: #f3f4f6; }
+
+.btn-cancelar:hover {
+    background: #f3f4f6;
+}
 
 .btn-eliminar-confirmar {
     flex: 1;
@@ -127,5 +130,8 @@ function confirmar() {
     cursor: pointer;
     transition: background .15s;
 }
-.btn-eliminar-confirmar:hover { background: #b91c1c; }
+
+.btn-eliminar-confirmar:hover {
+    background: #b91c1c;
+}
 </style>

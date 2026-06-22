@@ -48,7 +48,7 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(l => l.Password)
                 .NotEmpty().WithMessage("La contraseña es requerida.")
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
-            RuleFor(l => l.Rol)
+            RuleFor(l => l.RolId)
                .IsInEnum().WithMessage("El rol no es válido.");
         }
     }

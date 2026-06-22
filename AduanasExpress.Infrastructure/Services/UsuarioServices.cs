@@ -58,7 +58,7 @@ public class UsuarioServices : IUsuarioService
             Apellido = createUsuario.Apellido,
             Email = createUsuario.Email,
             Password = createUsuario.Password,
-            Rol = createUsuario.Rol
+            RolId = createUsuario.RolId
         };
         if (usuarios.Password != null)
         {
@@ -80,7 +80,7 @@ public class UsuarioServices : IUsuarioService
         usuario.Apellido = updateUsuario.Apellido;
         usuario.Email = updateUsuario.Email;
         usuario.Password = updateUsuario.Password;
-        usuario.Rol = updateUsuario.Rol;
+        usuario.RolId = updateUsuario.RolId;
         if (!string.IsNullOrWhiteSpace(updateUsuario.Password))
         {
             usuario.Password = BCrypt.Net.BCrypt.HashPassword(updateUsuario.Password);

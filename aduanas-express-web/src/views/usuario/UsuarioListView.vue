@@ -105,21 +105,46 @@
                             <td>
                                 <div class="acciones">
                                     <button @click="verUsuario(u)" class="btn-accion btn-ver">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
                                         Ver
                                     </button>
-                                    <button v-if="puede.editarUsuarios.value" @click="editarUsuario(u.id)" class="btn-accion btn-editar">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    <button v-if="puede.editarUsuarios.value" @click="editarUsuario(u.id)"
+                                        class="btn-accion btn-editar">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
                                         Editar
                                     </button>
-                                    <button v-if="u.puedeEliminarse && puede.eliminarUsuarios.value" @click="confirmarEliminar(u)" class="btn-accion btn-eliminar">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                    <button v-if="u.puedeEliminarse" @click="intentarEliminar(u)"
+                                        class="btn-accion btn-eliminar">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                            <path d="M10 11v6" />
+                                            <path d="M14 11v6" />
+                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                        </svg>
                                         Eliminar
                                     </button>
-                                    <button v-if="!u.puedeEliminarse && puede.eliminarUsuarios.value" @click="toggleActivo(u)" :disabled="cambiandoEstado"
+                                    <button v-if="!u.puedeEliminarse" @click="intentarDesactivar(u)"
+                                        :disabled="cambiandoEstado"
                                         :class="['btn-accion', u.isActive ? 'btn-desactivar' : 'btn-activar']">
-                                        <svg v-if="u.isActive" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                                        <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <svg v-if="u.isActive" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                        </svg>
+                                        <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.2">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
                                         {{ u.isActive ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </div>
@@ -174,7 +199,8 @@
                 </div>
                 <div class="modal-acciones">
                     <button class="btn-cancelar-modal" @click="mostrarVer = false">Cerrar</button>
-                    <button v-if="puede.editarUsuarios.value" class="btn-editar-modal" @click="editarUsuario(usuarioSeleccionado.id)">Editar</button>
+                    <button v-if="puede.editarUsuarios.value" class="btn-editar-modal"
+                        @click="editarUsuario(usuarioSeleccionado.id)">Editar</button>
                 </div>
             </div>
         </div>
@@ -195,6 +221,7 @@
                 </div>
             </div>
         </div>
+        <ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
 
     </div>
 </template>
@@ -204,6 +231,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePermisos } from '../../composables/usePermisos'
 import { obtenerUsuario, eliminarUsuario, desactivarUsuario, activarUsuario } from '../../services/usuarioService'
+import ModalSinPermiso from '@/components/ModalSinPermiso.vue'
 
 const router = useRouter()
 const { puede } = usePermisos()
@@ -248,7 +276,26 @@ function rolLabel(rol) {
 function avatarColor(id) {
     return avatarColors[id % avatarColors.length]
 }
+const mostrarModalSinPermiso = ref(false)
+const accionSinPermiso = ref('')
 
+function intentarDesactivar(usuario) {
+    if (!puede.eliminarUsuarios.value) {
+        accionSinPermiso.value = 'desactivar usuarios'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    toggleActivo(usuario)
+}
+
+function intentarEliminar(usuario) {
+    if (!puede.eliminarUsuarios.value) {
+        accionSinPermiso.value = 'eliminar usuarios'
+        mostrarModalSinPermiso.value = true
+        return
+    }
+    confirmarEliminar(usuario)
+}
 const resumen = computed(() => ({
     total: usuarios.value.length,
     administradores: usuarios.value.filter(u => u.rol === 0).length,
@@ -256,18 +303,20 @@ const resumen = computed(() => ({
     operadores: usuarios.value.filter(u => u.rol === 2).length,
 }))
 
-const usuariosFiltrados = computed(() =>
-    usuarios.value.filter(u => {
+const usuariosFiltrados = computed(() => {
+    return usuarios.value.filter((u) => {
+        if (!u.isActive) return false
         const q = busqueda.value.toLowerCase()
-        const matchBusqueda =
+        const coincideBusqueda =
             !q ||
-            u.nombre.toLowerCase().includes(q) ||
-            u.apellido.toLowerCase().includes(q) ||
-            u.email.toLowerCase().includes(q)
-        const matchRol = filtroRol.value === '' || u.rol === Number(filtroRol.value)
-        return matchBusqueda && matchRol
+            u.nombre?.toLowerCase().includes(q) ||
+            u.apellido?.toLowerCase().includes(q) ||
+            u.email?.toLowerCase().includes(q)
+        const coincideRol =
+            filtroRol.value === '' || u.rol === filtroRol.value
+        return coincideBusqueda && coincideRol
     })
-)
+})
 
 const totalPaginas = computed(() =>
     Math.max(1, Math.ceil(usuariosFiltrados.value.length / ITEMS_POR_PAGINA))
@@ -357,10 +406,11 @@ async function toggleActivo(usuario) {
     try {
         if (usuario.isActive) {
             await desactivarUsuario(usuario.id)
+            usuarios.value = usuarios.value.filter(u => u.id !== usuario.id)
         } else {
             await activarUsuario(usuario.id)
+            usuario.isActive = true
         }
-        usuario.isActive = !usuario.isActive
     } catch (e) {
         error.value = 'No se pudo cambiar el estado del usuario.'
     } finally {
@@ -369,7 +419,6 @@ async function toggleActivo(usuario) {
 }
 
 function exportarPdf() {
-    // Lógica de exportación
     console.log('Exportar PDF')
 }
 
@@ -406,7 +455,8 @@ onMounted(cargarUsuarios)
     gap: 12px;
 }
 
-.btn-exportar, .btn-nuevo {
+.btn-exportar,
+.btn-nuevo {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -507,7 +557,8 @@ onMounted(cargarUsuarios)
     font-family: inherit;
 }
 
-.usr-estado, .usr-error {
+.usr-estado,
+.usr-error {
     text-align: center;
     padding: 60px 20px;
 }
@@ -523,7 +574,9 @@ onMounted(cargarUsuarios)
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .usr-error {
@@ -631,11 +684,25 @@ td {
     font-size: 1.5rem;
 }
 
-.av-purple { background: #8b5cf6; }
-.av-blue { background: #3b82f6; }
-.av-green { background: #10b981; }
-.av-orange { background: #f97316; }
-.av-teal { background: #14b8a6; }
+.av-purple {
+    background: #8b5cf6;
+}
+
+.av-blue {
+    background: #3b82f6;
+}
+
+.av-green {
+    background: #10b981;
+}
+
+.av-orange {
+    background: #f97316;
+}
+
+.av-teal {
+    background: #14b8a6;
+}
 
 .usuario-nombre {
     font-weight: 500;
@@ -659,9 +726,20 @@ td {
     font-weight: 600;
 }
 
-.rol-admin { background: #fef3c7; color: #92400e; }
-.rol-supervisor { background: #dbeafe; color: #1e40af; }
-.rol-operador { background: #d1fae5; color: #065f46; }
+.rol-admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.rol-supervisor {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.rol-operador {
+    background: #d1fae5;
+    color: #065f46;
+}
 
 .acciones {
     display: flex;
@@ -685,22 +763,68 @@ td {
     font-family: inherit;
 }
 
-.btn-ver { color: #374151; }
-.btn-ver:hover { background: #f3f4f6; border-color: #d1d5db; }
+.btn-ver {
+    color: #374151;
+}
 
-.btn-editar { color: #92400e; border-color: #fde68a; background: #fffbeb; }
-.btn-editar:hover { background: #fef3c7; border-color: #f59e0b; }
+.btn-ver:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
 
-.btn-eliminar { color: #991b1b; border-color: #fecaca; background: #fff5f5; }
-.btn-eliminar:hover { background: #fee2e2; border-color: #f87171; }
+.btn-editar {
+    color: #92400e;
+    border-color: #fde68a;
+    background: #fffbeb;
+}
 
-.btn-desactivar { color: #6b7280; border-color: #e5e7eb; background: #f9fafb; }
-.btn-desactivar:hover { background: #f3f4f6; border-color: #9ca3af; }
-.btn-desactivar:disabled { opacity: 0.5; cursor: default; }
+.btn-editar:hover {
+    background: #fef3c7;
+    border-color: #f59e0b;
+}
 
-.btn-activar { color: #065f46; border-color: #a7f3d0; background: #f0fdf4; }
-.btn-activar:hover { background: #d1fae5; border-color: #34d399; }
-.btn-activar:disabled { opacity: 0.5; cursor: default; }
+.btn-eliminar {
+    color: #991b1b;
+    border-color: #fecaca;
+    background: #fff5f5;
+}
+
+.btn-eliminar:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+}
+
+.btn-desactivar {
+    color: #6b7280;
+    border-color: #e5e7eb;
+    background: #f9fafb;
+}
+
+.btn-desactivar:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-desactivar:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.btn-activar {
+    color: #065f46;
+    border-color: #a7f3d0;
+    background: #f0fdf4;
+}
+
+.btn-activar:hover {
+    background: #d1fae5;
+    border-color: #34d399;
+}
+
+.btn-activar:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
 
 .usr-paginacion {
     display: flex;

@@ -44,7 +44,6 @@ public class AsignacionService : IAsignacionService
         return asignacion.ToResponse();
     }
 
-    // Crea la asignación y actualiza de forma coordinada el estado de la solicitud, el vehículo y el conductor
     public async Task Crear(CreateAsignacionDTO createAsignacionDTO)
     {
         var vehiculo = await _vehiculoRepository.ObtenerPorId(createAsignacionDTO.VehiculoId);
@@ -78,12 +77,14 @@ public class AsignacionService : IAsignacionService
             solicitud.Estado = EstadosSolicitudes.Aprobada;
             await _solicitudRepository.Actualizar(solicitud.Id, solicitud);
         }
+        var ahora = DateTime.UtcNow;
+        var fechaViaje = solicitud?.FechaViaje;
 
-        vehiculo.Estado = EstadosVehiculo.EnViaje;
-        await _vehiculoRepository.Actualizar(vehiculo.Id, vehiculo);
-
-        conductor.Estado = EstadosConductor.EnViaje;
-        await _conductorRepository.Actualizar(conductor.Id, conductor);
+        if (fechaViaje.HasValue && ahora >= fechaViaje.Value)
+        {
+            vehiculo.Estado = EstadosVehiculo.EnViaje;
+            conductor.Estado = EstadosConductor.EnViaje;
+        }
     }
 
     public async Task Finalizar(int id)

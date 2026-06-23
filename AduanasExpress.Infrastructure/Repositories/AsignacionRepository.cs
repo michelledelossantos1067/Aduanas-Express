@@ -47,4 +47,10 @@ public class AsignacionRepository : IAsignacionRepository
         _context.Asignaciones.Update(asignacion);
         await _context.SaveChangesAsync();
     }
+    public async Task<List<Asignacion>> ObtenerPorEstado(EstadoAsignacion estado)
+{
+    return await _context.Asignaciones
+        .Where(a => a.Estado == estado)
+        .ToListAsync();
+}
 }

@@ -1,10 +1,9 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import { usePermisos } from '../../composables/usePermisos'
 import { verVehiculos, eliminarVehiculo, desactivarVehiculo, activarVehiculo } from '../../services/vehiculoService'
-import { verAsignaciones } from '../../services/asignacionService'
 import { generarReporteVehiculosPdf } from '@/utils/vehiculoReportePdf'
 import VehiculoVerModal from './VehiculoVerModal.vue'
 import VehiculoEliminarModal from './VehiculoEliminarModal.vue'
@@ -15,7 +14,6 @@ const router = useRouter()
 const { puede } = usePermisos()
 
 const vehiculos = ref([])
-const asignaciones = ref([])
 const loading = ref(false)
 const error = ref('')
 const busqueda = ref('')
@@ -31,20 +29,7 @@ const estadosVehiculo = [
     { label: 'En Mantenimiento', value: 2 },
     { label: 'Fuera de Servicio', value: 3 },
 ]
-const reloj = ref(Date.now())
-let intervalo = null
 
-onMounted(() => {
-    cargarVehiculos()
-
-    intervalo = setInterval(() => {
-        reloj.value = Date.now()
-    }, 60000)
-})
-
-onUnmounted(() => {
-    clearInterval(intervalo)
-})
 const estadoBadgeClase = {
     0: 'badge-disponible',
     1: 'badge-en-viaje',
@@ -55,28 +40,6 @@ const estadoBadgeClase = {
 const estadoLabel = (valor) =>
     estadosVehiculo.find((e) => e.value === valor)?.label ?? valor
 
-function estadoReal(vehiculo) {
-    // Mantener estados especiales
-    if (vehiculo.estado === 2 || vehiculo.estado === 3) {
-        return vehiculo.estado
-    }
-
-    const ahora = new Date()
-
-    const tieneViajeActivo = asignaciones.value.some(a => {
-        if (a.vehiculoId !== vehiculo.id) return false
-
-        const estadoFinalizado = ['Finalizado', 'Cancelado', 'finalizado', 'cancelado']
-        if (estadoFinalizado.includes(a.estado)) return false
-
-        const salida = new Date(a.fechaHoraSalida)
-
-        return ahora >= salida
-    })
-
-    return tieneViajeActivo ? 1 : 0
-}
-
 const tiposUnicos = computed(() => [
     ...new Set(vehiculos.value.map((v) => v.tipo).filter(Boolean)),
 ])
@@ -84,13 +47,12 @@ const tiposUnicos = computed(() => [
 const resumen = computed(() => {
     const activos = vehiculos.value.filter(v => v.isActive)
     const total = activos.length
-    const disponibles = activos.filter((v) => estadoReal(v) === 0).length
-    const enViaje = activos.filter((v) => estadoReal(v) === 1).length
-    const mantenim = activos.filter((v) => estadoReal(v) === 2).length
-    const fuera = activos.filter((v) => estadoReal(v) === 3).length
+    const disponibles = activos.filter((v) => v.estado === 0).length
+    const enViaje = activos.filter((v) => v.estado === 1).length
+    const mantenim = activos.filter((v) => v.estado === 2).length
+    const fuera = activos.filter((v) => v.estado === 3).length
     return { total, disponibles, enViaje, mantenim, fuera }
 })
-
 const vehiculosFiltrados = computed(() => {
     return vehiculos.value.filter((v) => {
         if (!v.isActive) return false
@@ -100,16 +62,14 @@ const vehiculosFiltrados = computed(() => {
             v.matricula?.toLowerCase().includes(q) ||
             v.marca?.toLowerCase().includes(q) ||
             v.modelo?.toLowerCase().includes(q)
-        const estadoMostrado = estadoReal(v)
         const coincideEstado =
             filtroEstado.value === '' ||
-            String(estadoMostrado) === filtroEstado.value
+            String(v.estado) === filtroEstado.value
         const coincideTipo =
             filtroTipo.value === '' || v.tipo === filtroTipo.value
         return coincideBusqueda && coincideEstado && coincideTipo
     })
 })
-
 const vehiculoAToggle = ref(null)
 const cambiandoEstado = ref(false)
 const mostrarModalSinPermiso = ref(false)
@@ -132,7 +92,6 @@ function intentarEliminar(vehiculo) {
     }
     confirmarEliminar(vehiculo)
 }
-
 async function toggleActivo(vehiculo) {
     cambiandoEstado.value = true
     try {
@@ -149,14 +108,12 @@ async function toggleActivo(vehiculo) {
         cambiandoEstado.value = false
     }
 }
-
 async function cargarVehiculos() {
     loading.value = true
     error.value = ''
     try {
-        const [resVeh, resAsig] = await Promise.all([verVehiculos(), verAsignaciones()])
-        vehiculos.value = resVeh.data
-        asignaciones.value = resAsig.data
+        const res = await verVehiculos()
+        vehiculos.value = res.data
     } catch (e) {
         error.value = 'No se pudieron cargar los vehículos.'
     } finally {
@@ -181,11 +138,9 @@ function confirmarEliminar(vehiculo) {
     vehiculoAEliminar.value = vehiculo
     mostrarConfirmacion.value = true
 }
-
 function exportarPdf() {
     generarReporteVehiculosPdf(vehiculosFiltrados.value, resumen.value)
 }
-
 function formatFecha(fecha) {
     if (!fecha) return '—'
     return new Date(fecha).toLocaleDateString('es-DO', {
@@ -293,8 +248,8 @@ onMounted(cargarVehiculos)
 
                 <div class="card-top">
                     <span class="card-matricula">{{ v.matricula }}</span>
-                    <span class="badge" :class="estadoBadgeClase[estadoReal(v)]">
-                        {{ estadoLabel(estadoReal(v)) }}
+                    <span class="badge" :class="estadoBadgeClase[v.estado]">
+                        {{ estadoLabel(v.estado) }}
                     </span>
                 </div>
 
@@ -343,7 +298,7 @@ onMounted(cargarVehiculos)
         <VehiculoVerModal v-model="mostrarVer" :vehiculo-id="vehiculoVerId" />
         <VehiculoEliminarModal v-model="mostrarConfirmacion" :vehiculo="vehiculoAEliminar"
             @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)" />
-        <ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
+<ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
 
     </div>
 </template>

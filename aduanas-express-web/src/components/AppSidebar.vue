@@ -1,7 +1,9 @@
 <script setup>
-import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
-import { useAuthStore } from '../stores/authStore'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { usePermisos } from '../composables/usePermisos'
+import { useAuthStore } from '../stores/authStore'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const authStore = useAuthStore()
 const { puede } = usePermisos()
@@ -26,15 +28,9 @@ const userInitials = computed(() => {
         .substring(0, 2)
         .toUpperCase()
 })
-
-const openSections = reactive({
-    gestion: true,
-    operacion: false,
-    administracion: false
-})
-
-function toggleSection(key) {
-    openSections[key] = !openSections[key]
+function cerrarSesion() {
+    authStore.logout()
+    router.push('/login')
 }
 </script>
 
@@ -55,6 +51,7 @@ function toggleSection(key) {
 
             <div class="nav-section">
                 <span class="nav-section-title">PRINCIPAL</span>
+
                 <router-link to="/dashboard" class="nav-item">
                     <span class="nav-icon">⊞</span>
                     <span>Dashboard</span>
@@ -62,74 +59,67 @@ function toggleSection(key) {
             </div>
 
             <div class="nav-section">
-                <button class="nav-section-toggle" @click="toggleSection('gestion')">
-                    <span class="nav-section-title">GESTIÓN</span>
-                    <span class="nav-chevron" :class="{ open: openSections.gestion }">▾</span>
-                </button>
-                <div class="nav-collapsible" v-show="openSections.gestion">
-                    <router-link v-if="puede.verVehiculos.value" to="/vehiculos" class="nav-item">
-                        <span class="nav-icon">🚌</span><span>Vehiculos</span>
-                    </router-link>
-                    <router-link v-if="puede.verConductores.value" to="/conductores" class="nav-item">
-                        <span class="nav-icon">👤</span><span>Conductores</span>
-                    </router-link>
-                    <router-link v-if="puede.verSolicitudes.value" to="/solicitudes" class="nav-item">
-                        <span class="nav-icon">📋</span><span>Solicitudes</span>
-                    </router-link>
-                    <router-link v-if="puede.verAsignaciones.value" to="/asignaciones" class="nav-item">
-                        <span class="nav-icon">📝</span><span>Asignaciones</span>
-                    </router-link>
-                </div>
+                <span class="nav-section-title">GESTIÓN</span>
+
+                <router-link v-if="puede.verVehiculos.value" to="/vehiculos" class="nav-item">
+                    <span class="nav-icon">🚌</span>
+                    <span>Vehículos</span>
+                </router-link>
+
+                <router-link v-if="puede.verConductores.value" to="/conductores" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Conductores</span>
+                </router-link>
+
+                <router-link v-if="puede.verSolicitudes.value" to="/solicitudes" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Solicitudes</span>
+                </router-link>
+
+                <router-link v-if="puede.verAsignaciones.value" to="/asignaciones" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Asignaciones</span>
+                </router-link>
             </div>
 
             <div class="nav-section">
-                <button class="nav-section-toggle" @click="toggleSection('operacion')">
-                    <span class="nav-section-title">OPERACIÓN</span>
-                    <span class="nav-chevron" :class="{ open: openSections.operacion }">▾</span>
-                </button>
-                <div class="nav-collapsible" v-show="openSections.operacion">
-                    <router-link to="/agenda" class="nav-item">
-                        <span class="nav-icon">📅</span>
-                        <span>Agenda</span>
-                    </router-link>
-                    <router-link to="/mantenimiento" class="nav-item">
-                        <span class="nav-icon">🔧</span>
-                        <span>Mantenimiento</span>
-                    </router-link>
-                    <!-- Solo Admin y Supervisor ven Reportes -->
-                    <router-link v-if="puede.verReportes.value" to="/reportes" class="nav-item">
-                        <span class="nav-icon">📊</span>
-                        <span>Reportes</span>
-                    </router-link>
-                    <router-link to="/monitoreo" class="nav-item">
-                        <span class="nav-icon">🖥️</span>
-                        <span>Monitoreo</span>
-                    </router-link>
-                    <router-link to="/historial" class="nav-item">
-                        <span class="nav-icon">🗂️</span>
-                        <span>Historial</span>
-                    </router-link>
-                </div>
+                <span class="nav-section-title">OPERACIÓN</span>
+
+                <router-link to="/agenda" class="nav-item">
+                    <span class="nav-icon">📅</span>
+                    <span>Agenda</span>
+                </router-link>
+
+                <router-link to="/mantenimiento" class="nav-item">
+                    <span class="nav-icon">🔧</span>
+                    <span>Mantenimiento</span>
+                </router-link>
+
+                <router-link v-if="puede.verReportes.value" to="/reportes" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Reportes</span>
+                </router-link>
+
+                <router-link to="/monitoreo" class="nav-item">
+                    <span class="nav-icon">🖥️</span>
+                    <span>Monitoreo</span>
+                </router-link>
+
+                <router-link to="/historial" class="nav-item">
+                    <span class="nav-icon">🗂️</span>
+                    <span>Historial</span>
+                </router-link>
             </div>
 
             <div class="nav-section">
-                <button class="nav-section-toggle" @click="toggleSection('administracion')">
-                    <span class="nav-section-title">ADMINISTRACIÓN</span>
-                    <span class="nav-chevron" :class="{ open: openSections.administracion }">▾</span>
-                </button>
-                <div class="nav-collapsible" v-show="openSections.administracion">
-                    <!-- Solo Admin ve Usuarios -->
-                    <router-link v-if="puede.verUsuarios.value" to="/usuarios" class="nav-item">
-                        <span class="nav-icon">👥</span>
-                        <span>Usuarios</span>
-                    </router-link>
-                    <!-- Solo Admin ve Roles -->
-                    <router-link v-if="puede.verRoles.value" to="/roles" class="nav-item">
-                        <span class="nav-icon">⚙️</span>
-                        <span>Roles</span>
-                    </router-link>
-                </div>
+                <span class="nav-section-title">ADMINISTRACIÓN</span>
+
+                <router-link v-if="puede.verUsuarios.value" to="/usuarios" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    <span>Usuarios</span>
+                </router-link>
             </div>
+
         </nav>
 
         <div class="sidebar-footer">
@@ -155,7 +145,11 @@ function toggleSection(key) {
                         </svg>
                         Ver archivados
                     </router-link>
-                    <button class="gear-item gear-item-danger" @click="authStore.logout(); gearOpen = false">
+                    <router-link v-if="puede.verRoles.value" to="/roles" class="gear-item" @click="gearOpen = false">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Roles</span>
+                    </router-link>
+                    <button class="gear-item gear-item-danger" @click="cerrarSesion(); gearOpen = false">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -174,33 +168,48 @@ function toggleSection(key) {
 .sidebar {
     position: sticky;
     top: 0;
+
     width: 250px;
     height: 100vh;
-    background-color: #1a3a2e;
+
+    background: linear-gradient(180deg,
+            #16382d 0%,
+            #103126 50%,
+            #0d2a20 100%);
+
     display: flex;
     flex-direction: column;
+
     color: #ffffff;
     font-family: sans-serif;
+
     flex-shrink: 0;
     z-index: 100;
 }
 
 .sidebar-header {
-    padding: 14px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .logo-icon {
-    font-size: 20px;
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
     background: rgba(255, 255, 255, 0.1);
-    padding: 6px;
-    border-radius: 6px;
+    border-radius: 12px;
 }
 
 .logo-text {
@@ -209,10 +218,8 @@ function toggleSection(key) {
 }
 
 .logo-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    color: #ffffff;
-    line-height: 1.2;
 }
 
 .logo-subtitle {
@@ -222,8 +229,16 @@ function toggleSection(key) {
 
 .sidebar-nav {
     flex: 1;
-    padding: 6px 0;
     overflow-y: auto;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    padding: 4px 0;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    display: none;
 }
 
 .nav-section {
@@ -231,92 +246,78 @@ function toggleSection(key) {
 }
 
 .nav-section-title {
-    display: block;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 0.5px;
-}
+    padding: 8px 16px 4px;
 
-.nav-section-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 9px 16px 5px;
-    color: inherit;
-    font-family: inherit;
-}
-
-.nav-section-toggle .nav-section-title {
-    padding: 0;
-}
-
-.nav-chevron {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
-    transition: transform 0.2s;
-}
+    font-weight: 700;
 
-.nav-chevron.open {
-    transform: rotate(180deg);
-}
+    text-transform: uppercase;
+    letter-spacing: 1px;
 
-.nav-collapsible {
-    display: flex;
-    flex-direction: column;
+    color: rgba(255, 255, 255, 0.45);
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 7px 16px;
-    color: rgba(255, 255, 255, 0.75);
+    gap: 12px;
+
+    margin: 1px 8px;
+    padding: 8px 14px;
+
+    border-radius: 10px;
+
     text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+
     font-size: 14px;
-    transition: background 0.2s, color 0.2s;
+    font-weight: 500;
+
+    transition: all 0.2s ease;
 }
 
 .nav-item:hover {
     background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
+    color: #fff;
+    transform: translateX(2px);
 }
 
 .nav-item.router-link-active {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-    border-left: 3px solid #4caf82;
+    background: rgba(76, 175, 130, 0.18);
+    color: #fff;
 }
 
 .nav-icon {
-    font-size: 16px;
     width: 18px;
     text-align: center;
+    font-size: 16px;
 }
 
 .sidebar-footer {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 10px;
+
+    padding: 12px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
+
     background: #4caf82;
     border-radius: 50%;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    font-size: 16px;
     font-weight: 700;
-    font-size: 13px;
-    flex-shrink: 0;
 }
 
 .user-info {
@@ -325,9 +326,8 @@ function toggleSection(key) {
 }
 
 .user-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .user-role {
@@ -338,25 +338,29 @@ function toggleSection(key) {
 .footer-gear-wrap {
     position: relative;
     margin-left: auto;
-    flex-shrink: 0;
 }
 
 .btn-gear {
-    width: 30px;
-    height: 30px;
-    border-radius: 7px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.07);
-    color: rgba(255, 255, 255, 0.65);
-    cursor: pointer;
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, color 0.15s;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
 }
 
 .btn-gear:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.12);
     color: #fff;
 }
 
@@ -364,30 +368,33 @@ function toggleSection(key) {
     position: absolute;
     bottom: calc(100% + 8px);
     right: 0;
+
+    min-width: 180px;
+
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    min-width: 170px;
+    border-radius: 12px;
+
     overflow: hidden;
-    z-index: 200;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .gear-item {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
+
     width: 100%;
-    padding: 11px 14px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #374151;
-    background: none;
+    padding: 12px 14px;
+
     border: none;
-    cursor: pointer;
+    background: none;
+
     text-decoration: none;
-    transition: background 0.13s;
-    font-family: inherit;
     text-align: left;
+
+    color: #374151;
+    cursor: pointer;
 }
 
 .gear-item:hover {

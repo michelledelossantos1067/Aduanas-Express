@@ -3,11 +3,17 @@ import { ref, computed, onMounted } from 'vue'
 import { verSolicitud } from '@/services/solicitudService'
 import { verAsignaciones } from '@/services/asignacionService'
 import { usePermisos } from '@/composables/usePermisos'
-const { puede } = usePermisos()
+import AgendaDiaView from './AgendaDiaView.vue'
 
-const vistaActiva = ref('mes')
+
+// Importamos el composable del calendario
+import { useCalendar } from '@/composables/useCalendar'
+
+const { puede } = usePermisos()
+const { currentView } = useCalendar() // Usamos el estado global en lugar del local
+
 const hoy = new Date()
-const fechaActual = ref(new Date(hoy.getFullYear(), hoy.getMonth(), 1))
+const fechaActual = ref(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()))
 
 const filtros = ref({ vehiculos: false, conductores: false, pendientes: false, cancelados: false })
 
@@ -88,8 +94,67 @@ function mesSiguiente() {
     fechaActual.value = new Date(fechaActual.value.getFullYear(), fechaActual.value.getMonth() + 1, 1)
 }
 function irAHoy() {
-    fechaActual.value = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+    fechaActual.value = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
     mostrarPicker.value = false
+}
+
+// Navegación por día
+function diaAnterior() {
+    const d = new Date(fechaActual.value)
+    d.setDate(d.getDate() - 1)
+    fechaActual.value = d
+}
+function diaSiguiente() {
+    const d = new Date(fechaActual.value)
+    d.setDate(d.getDate() + 1)
+    fechaActual.value = d
+}
+
+// Vista semana: obtener los 7 días de la semana que contiene fechaActual
+const diasDeSemana = computed(() => {
+    const d = new Date(fechaActual.value)
+    // Ir al domingo de esa semana
+    const diaSemana = d.getDay() // 0=Dom
+    const inicio = new Date(d)
+    inicio.setDate(d.getDate() - diaSemana)
+    return Array.from({ length: 7 }, (_, i) => {
+        const dia = new Date(inicio)
+        dia.setDate(inicio.getDate() + i)
+        return dia
+    })
+})
+
+const horasSemana = Array.from({ length: 17 }, (_, i) => i + 6)
+
+function viajesEnFechaYHora(fecha, hora) {
+    return viajesEnFecha(fecha).filter(v => parseInt(v.horaInicio.split(':')[0]) === hora)
+}
+
+function formatDiaSemana(fecha) {
+    const nombres = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+    return nombres[fecha.getDay()]
+}
+
+function semanaAnterior() {
+    const d = new Date(fechaActual.value)
+    d.setDate(d.getDate() - 7)
+    fechaActual.value = d
+}
+function semanaSiguiente() {
+    const d = new Date(fechaActual.value)
+    d.setDate(d.getDate() + 7)
+    fechaActual.value = d
+}
+
+function rangoSemanaLabel() {
+    const dias = diasDeSemana.value
+    const ini = dias[0]
+    const fin = dias[6]
+    const mismoMes = ini.getMonth() === fin.getMonth()
+    if (mismoMes) {
+        return `${ini.getDate()} – ${fin.getDate()} ${MESES[fin.getMonth()]} ${fin.getFullYear()}`
+    }
+    return `${ini.getDate()} ${MESES[ini.getMonth()].substring(0,3)} – ${fin.getDate()} ${MESES[fin.getMonth()].substring(0,3)} ${fin.getFullYear()}`
 }
 
 const mostrarPicker = ref(false)
@@ -235,16 +300,17 @@ function badgeEstado(estado) {
 
         <div class="agenda-header">
             <div>
-                <h1 class="agenda-title">Agenda y Calendario</h1>
+                <h1 class="agenda-title">Agenda</h1>
                 <p class="agenda-sub">Sistema de transporte institucional</p>
             </div>
+            
             <div class="vista-tabs">
-                <button class="tab-btn" :class="{ 'tab-activo': vistaActiva === 'dia' }"
-                    @click="vistaActiva = 'dia'">Día</button>
-                <button class="tab-btn" :class="{ 'tab-activo': vistaActiva === 'semana' }"
-                    @click="vistaActiva = 'semana'">Semana</button>
-                <button class="tab-btn" :class="{ 'tab-activo': vistaActiva === 'mes' }"
-                    @click="vistaActiva = 'mes'">Mes</button>
+                <button class="tab-btn" :class="{ 'tab-activo': currentView === 'day' }"
+                    @click="currentView = 'day'">Día</button>
+                <button class="tab-btn" :class="{ 'tab-activo': currentView === 'week' }"
+                    @click="currentView = 'week'">Semana</button>
+                <button class="tab-btn" :class="{ 'tab-activo': currentView === 'month' }"
+                    @click="currentView = 'month'">Mes</button>
             </div>
         </div>
 
@@ -252,99 +318,176 @@ function badgeEstado(estado) {
         <div v-else-if="errorCarga" class="estado-error">{{ errorCarga }}</div>
 
         <div v-else class="agenda-layout">
-            <div class="cal-panel">
+            
+            <div class="calendar-render">
+                
+                <div v-if="currentView === 'month'" class="cal-panel">
 
-                <div class="cal-nav">
-                    <button class="nav-btn" @click="mesAnterior">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                    </button>
-
-                    <div class="picker-wrapper">
-                        <button class="cal-mes-label-btn"
-                            @click.stop="mostrarPicker = !mostrarPicker; pickerAño = fechaActual.getFullYear(); vistaPickerAño = false">
-                            {{ nombreMes(fechaActual) }}
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    <div class="cal-nav">
+                        <button class="nav-btn" @click="mesAnterior">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2.5">
-                                <polyline points="6 9 12 15 18 9" />
+                                <polyline points="15 18 9 12 15 6" />
                             </svg>
                         </button>
 
-                        <div v-if="mostrarPicker" class="picker-dropdown" @click.stop>
+                        <div class="picker-wrapper">
+                            <button class="cal-mes-label-btn"
+                                @click.stop="mostrarPicker = !mostrarPicker; pickerAño = fechaActual.getFullYear(); vistaPickerAño = false">
+                                {{ nombreMes(fechaActual) }}
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </button>
 
-                            <template v-if="!vistaPickerAño">
-                                <div class="picker-nav">
-                                    <button class="picker-nav-btn" @click="añoAnteriorPicker">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <polyline points="15 18 9 12 15 6" />
-                                        </svg>
-                                    </button>
-                                    <button class="picker-año-btn" @click="toggleVistaAño">{{ pickerAño }}</button>
-                                    <button class="picker-nav-btn" @click="añoSiguientePicker">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <polyline points="9 18 15 12 9 6" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="picker-meses-grid">
-                                    <button v-for="(mes, i) in MESES_CORTOS" :key="i" class="picker-mes-btn" :class="{
-                                        'picker-mes-activo': i === fechaActual.getMonth() && pickerAño === fechaActual.getFullYear(),
-                                        'picker-mes-hoy': i === hoy.getMonth() && pickerAño === hoy.getFullYear()
-                                    }" @click="seleccionarMesPicker(i)">{{ mes }}</button>
-                                </div>
-                            </template>
+                            <div v-if="mostrarPicker" class="picker-dropdown" @click.stop>
 
-                            <template v-else>
-                                <div class="picker-nav">
-                                    <button class="picker-nav-btn" @click="pickerAño -= 12">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <polyline points="15 18 9 12 15 6" />
-                                        </svg>
-                                    </button>
-                                    <span class="picker-rango-label">{{ añosRango[0] }} – {{ añosRango[11] }}</span>
-                                    <button class="picker-nav-btn" @click="pickerAño += 12">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <polyline points="9 18 15 12 9 6" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="picker-meses-grid">
-                                    <button v-for="año in añosRango" :key="año" class="picker-mes-btn" :class="{
-                                        'picker-mes-activo': año === fechaActual.getFullYear(),
-                                        'picker-mes-hoy': año === hoy.getFullYear()
-                                    }" @click="seleccionarAñoPicker(año)">{{ año }}</button>
-                                </div>
-                            </template>
+                                <template v-if="!vistaPickerAño">
+                                    <div class="picker-nav">
+                                        <button class="picker-nav-btn" @click="añoAnteriorPicker">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="15 18 9 12 15 6" />
+                                            </svg>
+                                        </button>
+                                        <button class="picker-año-btn" @click="toggleVistaAño">{{ pickerAño }}</button>
+                                        <button class="picker-nav-btn" @click="añoSiguientePicker">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="9 18 15 12 9 6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="picker-meses-grid">
+                                        <button v-for="(mes, i) in MESES_CORTOS" :key="i" class="picker-mes-btn" :class="{
+                                            'picker-mes-activo': i === fechaActual.getMonth() && pickerAño === fechaActual.getFullYear(),
+                                            'picker-mes-hoy': i === hoy.getMonth() && pickerAño === hoy.getFullYear()
+                                        }" @click="seleccionarMesPicker(i)">{{ mes }}</button>
+                                    </div>
+                                </template>
 
+                                <template v-else>
+                                    <div class="picker-nav">
+                                        <button class="picker-nav-btn" @click="pickerAño -= 12">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="15 18 9 12 15 6" />
+                                            </svg>
+                                        </button>
+                                        <span class="picker-rango-label">{{ añosRango[0] }} – {{ añosRango[11] }}</span>
+                                        <button class="picker-nav-btn" @click="pickerAño += 12">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="9 18 15 12 9 6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="picker-meses-grid">
+                                        <button v-for="año in añosRango" :key="año" class="picker-mes-btn" :class="{
+                                            'picker-mes-activo': año === fechaActual.getFullYear(),
+                                            'picker-mes-hoy': año === hoy.getFullYear()
+                                        }" @click="seleccionarAñoPicker(año)">{{ año }}</button>
+                                    </div>
+                                </template>
+
+                            </div>
+                        </div>
+
+                        <button class="nav-btn" @click="mesSiguiente">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                        <button class="btn-hoy" @click="irAHoy">Hoy</button>
+                    </div>
+
+                    <div class="filtros-row">
+                        <button class="filtro-btn filtro-vehiculos" :class="{ activo: filtros.vehiculos }"
+                            @click="toggleFiltro('vehiculos')">Vehículos</button>
+                        <button class="filtro-btn filtro-conductores" :class="{ activo: filtros.conductores }"
+                            @click="toggleFiltro('conductores')">Conductores</button>
+                        <button class="filtro-btn filtro-pendientes" :class="{ activo: filtros.pendientes }"
+                            @click="toggleFiltro('pendientes')">Pendientes</button>
+                        <button class="filtro-btn filtro-cancelados" :class="{ activo: filtros.cancelados }"
+                            @click="toggleFiltro('cancelados')">Cancelados</button>
+                    </div>
+
+                    <div class="cal-grid">
+                        <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
+                        <div v-for="(fecha, i) in celdasMes" :key="i" class="cal-celda" :class="{
+                            'celda-otro-mes': !esMesActual(fecha),
+                            'celda-hoy': esMismaFecha(fecha, hoy),
+                            'celda-con-viajes': viajesEnFecha(fecha).length > 0
+                        }" @click="seleccionarFecha(fecha)">
+                            <span class="celda-numero">{{ fecha.getDate() }}</span>
+                            <div class="celda-chips">
+                                <div v-for="viaje in viajesEnFecha(fecha).slice(0, 2)" :key="viaje.id" class="cal-chip"
+                                    :class="chipClase(viaje)" :title="viaje.titulo">
+                                    {{ formatHora(viaje.horaInicio) }} {{ viaje.titulo.substring(0, 10) }}
+                                </div>
+                                <div v-if="viajesEnFecha(fecha).length > 2" class="chip-mas">
+                                    +{{ viajesEnFecha(fecha).length - 2 }} más
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div v-else-if="currentView === 'day'" class="cal-panel">
+                    <div class="cal-nav">
+                        <button class="nav-btn" @click="diaAnterior">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+                        </button>
+                        <span class="cal-mes-label">{{ formatFechaCorta(fechaActual) }}</span>
+                        <button class="nav-btn" @click="diaSiguiente">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                        </button>
+                        <button class="btn-hoy" @click="irAHoy">Hoy</button>
+                    </div>
+                    <AgendaDiaView
+                        :viajes="viajesEnFecha(fechaActual)"
+                        :fecha="fechaActual"
+                        @seleccionarViaje="viajeSeleccionado = $event"
+                    />
+                </div>
+
+                <div v-else-if="currentView === 'week'" class="cal-panel semana-panel">
+                    <div class="cal-nav">
+                        <button class="nav-btn" @click="semanaAnterior">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+                        </button>
+                        <span class="cal-mes-label">{{ rangoSemanaLabel() }}</span>
+                        <button class="nav-btn" @click="semanaSiguiente">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                        </button>
+                        <button class="btn-hoy" @click="irAHoy">Hoy</button>
+                    </div>
+
+                    <div class="semana-header">
+                        <div class="semana-time-col"></div>
+                        <div v-for="dia in diasDeSemana" :key="dia.toISOString()" class="semana-dia-col"
+                            :class="{ 'semana-dia-hoy': esMismaFecha(dia, hoy) }">
+                            <span class="semana-dia-nombre">{{ formatDiaSemana(dia) }}</span>
+                            <span class="semana-dia-num" :class="{ 'semana-dia-num-hoy': esMismaFecha(dia, hoy) }">{{ dia.getDate() }}</span>
                         </div>
                     </div>
 
-                    <button class="nav-btn" @click="mesSiguiente">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </button>
-                    <button class="btn-hoy" @click="irAHoy">Hoy</button>
-                </div>
-
-                <div class="filtros-row">
-                    <button class="filtro-btn filtro-vehiculos" :class="{ activo: filtros.vehiculos }"
-                        @click="toggleFiltro('vehiculos')">Vehículos</button>
-                    <button class="filtro-btn filtro-conductores" :class="{ activo: filtros.conductores }"
-                        @click="toggleFiltro('conductores')">Conductores</button>
-                    <button class="filtro-btn filtro-pendientes" :class="{ activo: filtros.pendientes }"
-                        @click="toggleFiltro('pendientes')">Pendientes</button>
-                    <button class="filtro-btn filtro-cancelados" :class="{ activo: filtros.cancelados }"
-                        @click="toggleFiltro('cancelados')">Cancelados</button>
-                </div>
-
+                    <div class="semana-body">
+                        <div v-for="hora in horasSemana" :key="hora" class="semana-row">
+                            <div class="semana-time-label">{{ String(hora).padStart(2,'0') }}:00</div>
+                            <div v-for="dia in diasDeSemana" :key="dia.toISOString()" class="semana-slot"
+                                :class="{ 'semana-slot-hoy': esMismaFecha(dia, hoy) }">
+                                <div v-for="viaje in viajesEnFechaYHora(dia, hora)" :key="viaje.id"
+                                    class="semana-viaje-chip" :class="chipClase(viaje)"
+                                    :title="viaje.titulo + ' — ' + viaje.conductor"
+                                    @click="seleccionarViaje(viaje)">
+                                    <span class="sv-hora">{{ viaje.horaInicio }}</span>
+                                    <span class="sv-titulo">{{ viaje.titulo.substring(0, 14) }}</span>
+                                </div>
                 <div class="cal-grid">
                     <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
                     <div v-for="(fecha, i) in celdasMes" :key="i" class="cal-celda" :class="{
@@ -584,6 +727,166 @@ function badgeEstado(estado) {
     grid-template-columns: 1fr 340px;
     gap: 16px;
     align-items: start;
+}
+
+.calendar-render {
+    display: flex;
+    flex-direction: column;
+}
+
+.cal-mes-label {
+    flex: 1;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #111827;
+    padding: 4px 8px;
+}
+
+/* ===== VISTA SEMANA ===== */
+.semana-panel {
+    overflow-x: auto;
+}
+
+.semana-header {
+    display: grid;
+    grid-template-columns: 56px repeat(7, 1fr);
+    border-bottom: 1.5px solid #e5e7eb;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.semana-time-col {
+    border-right: 1px solid #f3f4f6;
+}
+
+.semana-dia-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px;
+    border-right: 1px solid #f3f4f6;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.semana-dia-hoy {
+    background: #f0fdf4;
+    color: #1a3a2a;
+}
+
+.semana-dia-nombre {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    color: inherit;
+}
+
+.semana-dia-num {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #374151;
+    line-height: 1;
+}
+
+.semana-dia-num-hoy {
+    background: #1a3a2a;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.semana-body {
+    display: flex;
+    flex-direction: column;
+    max-height: 560px;
+    overflow-y: auto;
+}
+
+.semana-row {
+    display: grid;
+    grid-template-columns: 56px repeat(7, 1fr);
+    border-bottom: 1px solid #f3f4f6;
+    min-height: 52px;
+}
+
+.semana-time-label {
+    font-size: .68rem;
+    font-weight: 600;
+    color: #9ca3af;
+    padding: 6px 4px 0;
+    border-right: 1px solid #f3f4f6;
+    text-align: right;
+}
+
+.semana-slot {
+    border-right: 1px solid #f3f4f6;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: default;
+}
+
+.semana-slot-hoy {
+    background: #f0fdf4;
+}
+
+.semana-viaje-chip {
+    display: flex;
+    flex-direction: column;
+    padding: 3px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity .15s;
+    border-left: 3px solid transparent;
+    font-size: .65rem;
+    overflow: hidden;
+}
+
+.semana-viaje-chip:hover {
+    opacity: .8;
+}
+
+.semana-viaje-chip.chip-normal {
+    background: #d1fae5;
+    border-left-color: #16a34a;
+    color: #065f46;
+}
+
+.semana-viaje-chip.chip-urgente {
+    background: #fee2e2;
+    border-left-color: #dc2626;
+    color: #991b1b;
+}
+
+.semana-viaje-chip.chip-en-viaje {
+    background: #dbeafe;
+    border-left-color: #2563eb;
+    color: #1e40af;
+}
+
+.sv-hora {
+    font-weight: 700;
+    font-size: .62rem;
+}
+
+.sv-titulo {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .cal-panel {

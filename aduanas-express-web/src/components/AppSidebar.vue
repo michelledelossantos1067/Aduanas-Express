@@ -109,10 +109,7 @@ function cerrarSesion() {
                     <span>Monitoreo</span>
                 </router-link>
 
-                <router-link to="/historial" class="nav-item">
-                    <span class="nav-icon">🗂️</span>
-                    <span>Historial</span>
-                </router-link>
+            
             </div>
 
             <div class="nav-section">

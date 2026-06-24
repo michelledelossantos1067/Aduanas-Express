@@ -70,6 +70,10 @@ function cerrarSesion() {
                     <span class="nav-icon">👤</span>
                     <span>Conductores</span>
                 </router-link>
+                <router-link v-if="puede.verConsumoCombustible.value" to="/consumo-combustible" class="nav-item">
+                    <span class="nav-icon">⛽️</span>
+                    <span>Consumo Combustible</span>
+                </router-link>
 
                 <router-link v-if="puede.verSolicitudes.value" to="/solicitudes" class="nav-item">
                     <span class="nav-icon">📋</span>

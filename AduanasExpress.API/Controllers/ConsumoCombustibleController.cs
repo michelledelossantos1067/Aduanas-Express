@@ -23,7 +23,7 @@ public class ConsumoCombustibleController : ControllerBase{
     [Authorize(Roles = "Administrador,Supervisor,Operador")]
     [HttpGet("{Id}")]
     public async Task<IActionResult> ObtenerPorId(int Id){
-        var consumoCombustible = await _consumoCombustibleService.ObtenerTodos();
+        var consumoCombustible = await _consumoCombustibleService.ObtenerPorId(Id);
         return Ok(consumoCombustible);
     }
     [Authorize(Roles = "Administrador,Supervisor")]

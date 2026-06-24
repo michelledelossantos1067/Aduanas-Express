@@ -31,6 +31,16 @@ const grupos = [
             { key: 'editar', label: 'Editar' },
             { key: 'cancelar', label: 'Cancelar' },
         ],
+    },{
+        key: 'consumo-combustible',
+        nombre: 'consumo-combustible',
+        icono: '⛽️',
+        acciones: [
+            { key: 'ver', label: 'Ver' },
+            { key: 'crear', label: 'Crear' },
+            { key: 'editar', label: 'Editar' },
+            { key: 'cancelar', label: 'Cancelar' },
+        ],
     },
     {
         key: 'solicitudes',

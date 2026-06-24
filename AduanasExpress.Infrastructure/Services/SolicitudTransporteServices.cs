@@ -1,6 +1,7 @@
 using AduanasExpress.Application.DTOs.ConsumoCombustible;
 using AduanasExpress.Application.DTOs.Mantenimiento;
 using AduanasExpress.Application.DTOs.SolicitudTransporte;
+using AduanasExpress.Application.interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
 using AduanasExpress.Application.Mappings;
@@ -11,10 +12,20 @@ namespace AduanasExpress.Infrastructure.Services;
 public class SolicitudTransporteServices : ISolicitudTransporteService
 {
     private readonly ISolicitudTransporteRepositories _solicitudTransporteRepositories;
+    private readonly IAsignacionRepository _asignacionRepository;
+    private readonly IVehiculoRepositories _vehiculoRepository;
+    private readonly IConductorRepositories _conductorRepository;
 
-    public SolicitudTransporteServices(ISolicitudTransporteRepositories solicitudTransporteRepositories)
+    public SolicitudTransporteServices(
+        ISolicitudTransporteRepositories solicitudTransporteRepositories,
+        IAsignacionRepository asignacionRepository,
+        IVehiculoRepositories vehiculoRepository,
+        IConductorRepositories conductorRepository)
     {
         _solicitudTransporteRepositories = solicitudTransporteRepositories;
+        _asignacionRepository = asignacionRepository;
+        _vehiculoRepository = vehiculoRepository;
+        _conductorRepository = conductorRepository;
     }
 
     public async Task<List<SolicitudTransporteReponseDTOs?>> ObtenerTodos()
@@ -58,9 +69,10 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
     {
         var solicitudTrans = await _solicitudTransporteRepositories.ObtenerPorId(Id);
         if (solicitudTrans == null)
-        {
             throw new Exception("Error al actualizar el solicitud transporte.");
-        }
+
+        bool cambioFechaHora = solicitudTrans.FechaViaje != updateSolicitudTransporteDTOs.FechaViaje
+                            || solicitudTrans.HoraSalida != updateSolicitudTransporteDTOs.HoraSalida;
 
         solicitudTrans.AreaSolicitante = updateSolicitudTransporteDTOs.AreaSolicitante;
         solicitudTrans.CantidadColaboradores = updateSolicitudTransporteDTOs.CantidadColaboradores;
@@ -72,6 +84,27 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
         solicitudTrans.MotivoViaje = updateSolicitudTransporteDTOs.MotivoViaje;
         solicitudTrans.Estado = updateSolicitudTransporteDTOs.Estado;
         await _solicitudTransporteRepositories.Actualizar(Id, solicitudTrans);
+
+        if (cambioFechaHora)
+        {
+            var asignacion = await _asignacionRepository.ObtenerPorSolicitudId(Id);
+            if (asignacion != null && asignacion.Estado == EstadoAsignacion.EnCurso)
+            {
+                var vehiculo = await _vehiculoRepository.ObtenerPorId(asignacion.VehiculoId);
+                if (vehiculo != null)
+                {
+                    vehiculo.Estado = EstadosVehiculo.Disponible;
+                    await _vehiculoRepository.Actualizar(vehiculo.Id, vehiculo);
+                }
+
+                var conductor = await _conductorRepository.ObtenerPorId(asignacion.ConductorId);
+                if (conductor != null)
+                {
+                    conductor.Estado = EstadosConductor.Disponible;
+                    await _conductorRepository.Actualizar(conductor.Id, conductor);
+                }
+            }
+        }
     }
     public async Task Eliminar(int Id)
     {

@@ -163,35 +163,6 @@ async function cargarSolicitudes() {
         loading.value = false
     }
 }
-function exportar() {
-    const headers = [
-        'ID', 'Área Solicitante', 'Colaboradores',
-        'Fecha Viaje', 'Hora Salida', 'Destino',
-        'Motivo', 'Vehículo', 'Conductor', 'Estado'
-    ]
-
-    const filas = solicitudes.value.map((s) => [
-        s.id,
-        s.areaSolicitante,
-        s.cantidadColaboradores,
-        formatFecha(s.fechaViaje),
-        formatHora(s.horaSalida),
-        s.destino,
-        s.motivoViaje,
-        s.vehiculo?.matricula ?? '',
-        s.conductor ? `${s.conductor.nombre} ${s.conductor.apellido}` : '',
-        estadoLabel(s.estado)
-    ])
-
-    const csv = [headers, ...filas].map(f => f.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'solicitudes.csv'
-    a.click()
-    URL.revokeObjectURL(url)
-}
 
 function formatFecha(fecha) {
     if (!fecha) return '—'
@@ -218,14 +189,7 @@ onMounted(cargarSolicitudes)
         <div class="sol-header">
             <h1 class="sol-title">Solicitudes de transporte</h1>
             <div class="sol-header-actions">
-                <button class="btn-exportar" @click="exportar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Exportar
-                </button>
+                
                 <button class="btn-nuevo" @click="abrirNuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
@@ -436,25 +400,6 @@ onMounted(cargarSolicitudes)
     gap: 12px;
 }
 
-.btn-exportar {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 18px;
-    background: #fff;
-    border: 1.5px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-}
-
-.btn-exportar:hover {
-    border-color: #9ca3af;
-    background: #f9fafb;
-}
 
 .btn-nuevo {
     display: inline-flex;

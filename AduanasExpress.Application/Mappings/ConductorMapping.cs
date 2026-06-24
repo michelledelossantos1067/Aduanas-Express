@@ -15,6 +15,7 @@ namespace AduanasExpress.Application.Mappings
                 Cedula = conductor.Cedula,
                 NumeroLicencia = conductor.NumeroLicencia,
                 TipoLicencia = conductor.TipoLicencia,
+                FechaVencLicencia = conductor.FechaVencLicencia,
                 Telefono = conductor.Telefono,
                 Direccion = conductor.Direccion,
                 SupervisorId = conductor.SupervisorId,

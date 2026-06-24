@@ -17,13 +17,13 @@ const form = ref({
     apellido: '',
     email:    '',
     password: '',
-    rol:      2,
+    rolId:3,
 })
 
 const ROLES = [
-    { label: 'Administrador', value: 0 },
-    { label: 'Supervisor',    value: 1 },
-    { label: 'Operador',      value: 2 },
+    { label: 'Administrador', value: 1 },
+    { label: 'Supervisor',    value: 2 },
+    { label: 'Operador',      value: 3 },
 ]
 async function cargarUsuario() {
     loading.value = true
@@ -36,7 +36,7 @@ async function cargarUsuario() {
             apellido: u.apellido ?? '',
             email:    u.email    ?? '',
             password: '',
-            rol:      u.rol      ?? 2,
+            rol:      u.rol      ?? 3,
         }
     } catch (e) {
         console.error('Error completo:', e)
@@ -77,7 +77,7 @@ async function guardar() {
         apellido: form.value.apellido,
         email:    form.value.email,
         password: form.value.password,
-        rol:      Number(form.value.rol),
+        rolId:    Number(form.value.rol),
     }
 
     guardando.value = true

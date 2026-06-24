@@ -76,5 +76,12 @@ public class UsuarioController : ControllerBase
         await _usuarioService.Activar(id);
         return NoContent();
     }
+    [Authorize(Roles = "Administrador,Supervisor")]
+    [HttpGet("por-rol/{rol}")]
+    public async Task<IActionResult> ObtenerPorRol(string rol)
+    {
+        var usuarios = await _usuarioService.ObtenerPorRol(rol);
+        return Ok(usuarios);
+    }
 
 }

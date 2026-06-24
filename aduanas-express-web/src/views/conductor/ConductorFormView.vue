@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { obtenerUsuariosPorRol } from '@/services/usuarioService'
 
 import {
     crearConductor,
@@ -11,6 +12,7 @@ import {
 
 const router = useRouter()
 const route = useRoute()
+const supervisores = ref([])
 
 const loading = ref(false)
 const error = ref('')
@@ -42,6 +44,12 @@ function formatearCedula(e) {
     form.value.cedula = formatted
     console.log('formatted:', formatted)
 }
+function formatearCedulaStr(val) {
+    const d = (val ?? '').replace(/\D/g, '').slice(0, 11)
+    if (d.length > 10) return d.slice(0, 3) + '-' + d.slice(3, 10) + '-' + d.slice(10)
+    if (d.length > 3) return d.slice(0, 3) + '-' + d.slice(3)
+    return d
+}
 async function guardar() {
     try {
         loading.value = true
@@ -52,10 +60,10 @@ async function guardar() {
         if (!form.value.cedula) { error.value = 'La cédula es requerida.'; return }
 
         const cedulaRegex = /^\d{3}-\d{7}-\d{1}$/
-if (!cedulaRegex.test(form.value.cedula)) {
-    error.value = 'Cédula inválida. Use el formato 001-0000000-0.'
-    return
-}
+        if (!cedulaRegex.test(form.value.cedula)) {
+            error.value = 'Cédula inválida. Use el formato 001-0000000-0.'
+            return
+        }
 
         if (!form.value.numeroLicencia) { error.value = 'El número de licencia es requerido.'; return }
         if (!form.value.tipoLicencia) { error.value = 'El tipo de licencia es requerido.'; return }
@@ -64,14 +72,16 @@ if (!cedulaRegex.test(form.value.cedula)) {
         if (!form.value.direccion) { error.value = 'La dirección es requerida.'; return }
 
         const payload = {
-    ...form.value,
-    cedula: form.value.cedula.replace(/-/g, ''),
-    supervisorId: Number(form.value.supervisorId),
-    estado: Number(form.value.estado),
-    fechaVencLicencia: form.value.fechaVencLicencia
-        ? new Date(form.value.fechaVencLicencia + 'T00:00:00').toISOString()
-        : null
-}
+            ...form.value,
+            cedula: form.value.cedula,
+
+            supervisorId: Number(form.value.supervisorId),
+            estado: Number(form.value.estado),
+            fechaVencLicencia: form.value.fechaVencLicencia
+                ? new Date(form.value.fechaVencLicencia + 'T00:00:00').toISOString()
+                : null
+        }
+        console.log('cedula enviada:', payload.cedula, 'longitud:', payload.cedula.length)
 
         if (esEdicion.value) {
             console.log('payload completo:', JSON.stringify(payload))
@@ -79,17 +89,18 @@ if (!cedulaRegex.test(form.value.cedula)) {
         } else {
             await crearConductor(payload)
         }
+        console.log('cedula enviada:', payload.cedula, '| longitud:', payload.cedula.length)
 
         router.push('/conductores')
     } catch (e) {
-    console.log('error completo:', JSON.stringify(e?.response?.data))
-    const data = e?.response?.data
-    if (data?.errors) {
-        error.value = Object.values(data.errors).flat().join(' ')
-    } else {
-        error.value = data?.message || data?.title || 'Error al guardar el conductor.'
-    }
-} finally {
+        console.log('error completo:', JSON.stringify(e?.response?.data))
+        const data = e?.response?.data
+        if (data?.errors) {
+            error.value = Object.values(data.errors).flat().join(' ')
+        } else {
+            error.value = data?.message || data?.title || 'Error al guardar el conductor.'
+        }
+    } finally {
         loading.value = false
     }
 }
@@ -108,7 +119,6 @@ async function eliminar() {
         mostrarConfirmacion.value = false
     }
 }
-
 async function cargarConductor() {
     try {
         loading.value = true
@@ -118,20 +128,43 @@ async function cargarConductor() {
             ? response.data.find(c => c.id == route.params.id)
             : response.data
         if (!data) throw new Error('Conductor no encontrado.')
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr || fechaStr.startsWith('0001')) return ''
+
+            try {
+                if (typeof fechaStr === 'string' && fechaStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                    return fechaStr.substring(0, 10)
+                }
+
+                const fecha = new Date(fechaStr)
+                if (isNaN(fecha.getTime())) return ''
+
+                const year = fecha.getFullYear()
+                const month = String(fecha.getMonth() + 1).padStart(2, '0')
+                const day = String(fecha.getDate()).padStart(2, '0')
+
+                return `${year}-${month}-${day}`
+            } catch (e) {
+                console.error('Error al formatear fecha:', e)
+                return ''
+            }
+        }
+
         form.value = {
             nombre: data.nombre ?? '',
             apellido: data.apellido ?? '',
-            cedula: data.cedula ?? '',
+            cedula: formatearCedulaStr(data.cedula ?? ''),
             numeroLicencia: data.numeroLicencia ?? '',
             tipoLicencia: data.tipoLicencia ?? '',
-            fechaVencLicencia: (data.fechaVencLicencia && !data.fechaVencLicencia.startsWith('0001')) ? data.fechaVencLicencia.split('T')[0] : '',
+            fechaVencLicencia: formatearFecha(data.fechaVencLicencia),
             telefono: data.telefono ?? '',
             direccion: data.direccion ?? '',
             supervisorId: data.supervisorId ?? null,
             estado: data.estado ?? 0
         }
-        console.log('data completo:', JSON.stringify(data))
-console.log('fechaVencLicencia raw:', data.fechaVencLicencia)
+        console.log('Fecha cargada:', form.value.fechaVencLicencia)
+        console.log('Data completo:', JSON.stringify(data))
     } catch (e) {
         error.value = e?.response?.data?.message || 'No se pudo cargar el conductor.'
     } finally {
@@ -140,6 +173,8 @@ console.log('fechaVencLicencia raw:', data.fechaVencLicencia)
 }
 
 onMounted(async () => {
+    const res = await obtenerUsuariosPorRol('Supervisor')
+    supervisores.value = res.data
     if (esEdicion.value) await cargarConductor()
 })
 </script>
@@ -245,7 +280,8 @@ onMounted(async () => {
                         </div>
                         <div class="field field-highlight">
                             <label>Cédula <span class="req">*</span></label>
-                            <input :value="form.cedula" type="text" placeholder="001-0000000-0" maxlength="13" @input="formatearCedula" autocomplete="off" />
+                            <input :value="form.cedula" type="text" placeholder="001-0000000-0" maxlength="13"
+                                @input="formatearCedula" autocomplete="off" />
                         </div>
                     </div>
                 </div>
@@ -298,8 +334,13 @@ onMounted(async () => {
                             <input v-model="form.direccion" type="text" placeholder="Calle, sector, ciudad" />
                         </div>
                         <div class="field">
-                            <label>ID Supervisor</label>
-                            <input type="number" v-model.number="form.supervisorId" placeholder="0" min="0" />
+                            <label>Supervisor <span class="req">*</span></label>
+                            <select v-model="form.supervisorId">
+                                <option :value="null" disabled>Seleccione un supervisor</option>
+                                <option v-for="s in supervisores" :key="s.id" :value="s.id">
+                                    {{ s.nombre }} {{ s.apellido }}
+                                </option>
+                            </select>
                         </div>
                         <div class="field">
                             <label>Estado operativo</label>
@@ -374,7 +415,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
 .cf-page {
     padding: 32px 40px;
     background: #f3f4f6;

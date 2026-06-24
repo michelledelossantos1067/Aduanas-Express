@@ -119,24 +119,6 @@ function editar() {
                             <span class="detalle-label">Hora de salida</span>
                             <span class="detalle-valor">{{ formatHora(solicitud.horaSalida) }}</span>
                         </div>
-                        <div class="detalle-item">
-                            <span class="detalle-label">Hora de llegada</span>
-                            <span class="detalle-valor">{{ formatHora(solicitud.horaLlegada) }}</span>
-                        </div>
-                        <div class="detalle-item">
-                            <span class="detalle-label">Vehículo</span>
-                            <span class="detalle-valor">{{ solicitud.vehiculo?.placa || 'Sin asignar' }}</span>
-                        </div>
-                        <div class="detalle-item">
-                            <span class="detalle-label">Conductor</span>
-                            <span class="detalle-valor">
-                                {{
-                                    solicitud.conductor
-                                        ? `${solicitud.conductor.nombre} ${solicitud.conductor.apellido}`
-                                        : 'Sin asignar'
-                                }}
-                            </span>
-                        </div>
                         <div class="detalle-item detalle-item-full">
                             <span class="detalle-label">Motivo del viaje</span>
                             <span class="detalle-valor">{{ solicitud.motivoViaje || '—' }}</span>

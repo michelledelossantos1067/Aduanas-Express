@@ -237,17 +237,17 @@ const router = useRouter()
 const { puede } = usePermisos()
 
 const ROLES = [
-    { label: 'Administrador', value: 0 },
-    { label: 'Supervisor', value: 1 },
-    { label: 'Operador', value: 2 },
+    { label: 'Administrador', value: 1 },
+    { label: 'Supervisor', value: 2 },
+    { label: 'Operador', value: 3 },
 ]
 
 const ITEMS_POR_PAGINA = 9
 
 const rolClase = {
-    0: 'rol-admin',
-    1: 'rol-supervisor',
-    2: 'rol-operador',
+    1: 'rol-admin',
+    2: 'rol-supervisor',
+    3: 'rol-operador',
 }
 
 const avatarColors = ['av-purple', 'av-blue', 'av-green', 'av-orange', 'av-teal']
@@ -276,6 +276,7 @@ function rolLabel(rol) {
 function avatarColor(id) {
     return avatarColors[id % avatarColors.length]
 }
+
 const mostrarModalSinPermiso = ref(false)
 const accionSinPermiso = ref('')
 
@@ -296,6 +297,7 @@ function intentarEliminar(usuario) {
     }
     confirmarEliminar(usuario)
 }
+
 const usuariosActivos = computed(() =>
     usuarios.value.filter(u => u.isActive)
 )
@@ -317,7 +319,7 @@ const usuariosFiltrados = computed(() => {
             u.apellido?.toLowerCase().includes(q) ||
             u.email?.toLowerCase().includes(q)
         const coincideRol =
-            filtroRol.value === '' || u.rolId === filtroRol.value
+            filtroRol.value === '' || u.rolId === Number(filtroRol.value)
         return coincideBusqueda && coincideRol
     })
 })
@@ -449,7 +451,7 @@ onMounted(cargarUsuarios)
 }
 
 .usr-title {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #111827;
     margin: 0;
@@ -464,118 +466,127 @@ onMounted(cargarUsuarios)
 .btn-nuevo {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     padding: 9px 16px;
-    border: none;
+    border: 1.5px solid #e5e7eb;
     border-radius: 8px;
+    background: #fff;
     font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.13s;
-    font-family: inherit;
-}
-
-.btn-exportar {
-    background: #f3f4f6;
+    font-weight: 600;
     color: #374151;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
 }
 
 .btn-exportar:hover {
-    background: #e5e7eb;
+    background: #f9fafb;
+    border-color: #d1d5db;
 }
 
 .btn-nuevo {
     background: #1a3a2a;
     color: #fff;
+    border-color: #1a3a2a;
 }
 
 .btn-nuevo:hover {
-    background: #0f2818;
+    background: #14532d;
+    border-color: #14532d;
 }
 
 .usr-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .stat-card {
     background: #fff;
-    border: 1px solid #e5e7eb;
+    border: 1.5px solid #f3f4f6;
     border-radius: 12px;
-    padding: 20px 16px;
+    padding: 20px;
     text-align: center;
 }
 
 .stat-num {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: #111827;
-    margin: 0 0 4px;
+    color: #1a3a2a;
+    margin: 0;
 }
 
 .stat-label {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     color: #6b7280;
-    margin: 0;
+    margin: 4px 0 0;
 }
 
 .usr-filtros {
     display: flex;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .filtro-search {
     flex: 1;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    background: #fff;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    gap: 8px;
+    position: relative;
 }
 
 .filtro-search svg {
-    flex-shrink: 0;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 .filtro-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 8px 0;
+    width: 100%;
+    height: 40px;
+    padding: 0 12px 0 38px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
     font-size: 0.875rem;
-    font-family: inherit;
+    color: #111827;
+}
+
+.filtro-input:focus {
+    outline: none;
+    border-color: #1a3a2a;
+    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
 }
 
 .filtro-select {
-    min-width: 160px;
-    padding: 8px 12px;
+    padding: 9px 12px;
     border: 1.5px solid #e5e7eb;
     border-radius: 8px;
-    background: #fff;
     font-size: 0.875rem;
+    color: #111827;
+    background: #fff;
     cursor: pointer;
-    font-family: inherit;
+    min-width: 180px;
+}
+
+.filtro-select:focus {
+    outline: none;
+    border-color: #1a3a2a;
 }
 
 .usr-estado,
 .usr-error {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px;
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid #f3f4f6;
+    border: 4px solid #f3f4f6;
     border-top-color: #1a3a2a;
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    margin: 0 auto 12px;
+    animation: spin 0.75s linear infinite;
+    margin: 0 auto 16px;
 }
 
 @keyframes spin {
@@ -591,22 +602,24 @@ onMounted(cargarUsuarios)
     color: #991b1b;
 }
 
-.usr-error p {
-    margin: 0 0 12px;
-}
-
 .btn-reintentar {
-    padding: 8px 16px;
-    background: #991b1b;
+    margin-top: 16px;
+    padding: 9px 18px;
+    background: #dc2626;
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-reintentar:hover {
+    background: #b91c1c;
 }
 
 .usr-tabla-wrap {
     background: #fff;
-    border: 1px solid #e5e7eb;
+    border: 1.5px solid #f3f4f6;
     border-radius: 12px;
     overflow: hidden;
 }
@@ -615,23 +628,24 @@ onMounted(cargarUsuarios)
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 20px 24px;
     border-bottom: 1px solid #f3f4f6;
 }
 
 .tabla-titulo {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #111827;
     margin: 0;
 }
 
 .tabla-badge {
+    background: #f3f4f6;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.75rem;
     color: #6b7280;
-    background: #f3f4f6;
-    padding: 4px 10px;
-    border-radius: 6px;
+    font-weight: 600;
 }
 
 .tabla-scroll {
@@ -651,23 +665,34 @@ th {
     padding: 12px 24px;
     text-align: left;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f3f4f6;
 }
 
 td {
-    padding: 14px 24px;
+    padding: 16px 24px;
     border-bottom: 1px solid #f3f4f6;
     font-size: 0.875rem;
-    color: #374151;
+    color: #111827;
+}
+
+tbody tr:hover {
+    background: #fafafa;
+}
+
+.td-vacio {
+    text-align: center;
+    color: #9ca3af;
+    padding: 40px 24px;
 }
 
 .usuario-cell {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .avatar {
@@ -677,40 +702,39 @@ td {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
     font-size: 0.75rem;
+    font-weight: 700;
     color: #fff;
-    flex-shrink: 0;
 }
 
 .avatar-lg {
-    width: 64px;
-    height: 64px;
-    font-size: 1.5rem;
+    width: 56px;
+    height: 56px;
+    font-size: 1rem;
 }
 
 .av-purple {
-    background: #8b5cf6;
+    background: linear-gradient(135deg, #a78bfa 0%, #9333ea 100%);
 }
 
 .av-blue {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
 }
 
 .av-green {
-    background: #10b981;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
 }
 
 .av-orange {
-    background: #f97316;
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
 }
 
 .av-teal {
-    background: #14b8a6;
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
 }
 
 .usuario-nombre {
-    font-weight: 500;
+    font-weight: 600;
     color: #111827;
 }
 
@@ -718,15 +742,10 @@ td {
     color: #6b7280;
 }
 
-.td-vacio {
-    text-align: center;
-    color: #9ca3af;
-}
-
 .badge-rol {
     display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
 }
@@ -742,55 +761,60 @@ td {
 }
 
 .rol-operador {
-    background: #d1fae5;
-    color: #065f46;
+    background: #dcfce7;
+    color: #166534;
 }
 
 .acciones {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .btn-accion {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 5px 11px;
-    border-radius: 7px;
-    border: 1.5px solid #e5e7eb;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
     background: #fff;
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #374151;
     cursor: pointer;
-    transition: background 0.13s, border-color 0.13s, color 0.13s;
-    white-space: nowrap;
-    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-accion:hover:not(:disabled) {
+    background: #f3f4f6;
 }
 
 .btn-ver {
-    color: #374151;
+    color: #0284c7;
+    border-color: #0ea5e9;
+    background: #f0f9ff;
 }
 
-.btn-ver:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
+.btn-ver:hover:not(:disabled) {
+    background: #e0f2fe;
+    border-color: #06b6d4;
 }
 
 .btn-editar {
-    color: #92400e;
-    border-color: #fde68a;
-    background: #fffbeb;
+    color: #7c3aed;
+    border-color: #a78bfa;
+    background: #faf5ff;
 }
 
-.btn-editar:hover {
-    background: #fef3c7;
-    border-color: #f59e0b;
+.btn-editar:hover:not(:disabled) {
+    background: #f3e8ff;
+    border-color: #c4b5fd;
 }
 
 .btn-eliminar {
-    color: #991b1b;
-    border-color: #fecaca;
+    color: #dc2626;
+    border-color: #f87171;
     background: #fff5f5;
 }
 

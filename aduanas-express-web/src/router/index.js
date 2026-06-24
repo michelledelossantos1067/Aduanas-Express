@@ -152,12 +152,7 @@ const router = createRouter({
       component: () => import('@/views/monitoreo/monitoreoListView.vue'),
     },
 
-    {
-      path: '/historial',
-      name: 'historial',
-      meta: { roles: ['Administrador', 'Supervisor', 'Operador'] },
-      component: () => import('@/views/historial/historialVehiculoListView.vue'),
-    },
+   
 
     {
       path: '/mantenimiento',

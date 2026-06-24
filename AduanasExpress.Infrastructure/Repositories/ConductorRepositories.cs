@@ -43,6 +43,7 @@ public class ConductorRepositories : IConductorRepositories
         conductores.Cedula = conductor.Cedula;
         conductores.NumeroLicencia = conductor.NumeroLicencia;
         conductores.TipoLicencia = conductor.TipoLicencia;
+        conductores.FechaVencLicencia = conductor.FechaVencLicencia;
         conductores.Telefono = conductor.Telefono;
         conductores.Direccion = conductor.Direccion;
         conductores.SupervisorId = conductor.SupervisorId;

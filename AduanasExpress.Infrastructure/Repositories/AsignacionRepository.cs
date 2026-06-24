@@ -37,7 +37,8 @@ public class AsignacionRepository : IAsignacionRepository
     {
         return await _context.Asignaciones
         .AnyAsync(c => c.VehiculoId == vehiculoId);
-    }public async Task<bool> ExisteParaConductor(int conductorId)
+    }
+    public async Task<bool> ExisteParaConductor(int conductorId)
     {
         return await _context.Asignaciones
         .AnyAsync(c => c.ConductorId == conductorId);
@@ -48,9 +49,17 @@ public class AsignacionRepository : IAsignacionRepository
         await _context.SaveChangesAsync();
     }
     public async Task<List<Asignacion>> ObtenerPorEstado(EstadoAsignacion estado)
-{
-    return await _context.Asignaciones
-        .Where(a => a.Estado == estado)
-        .ToListAsync();
-}
+    {
+        return await _context.Asignaciones
+            .Where(a => a.Estado == estado)
+            .ToListAsync();
+    }
+    public async Task<Asignacion?> ObtenerPorSolicitudId(int solicitudId)
+    {
+        return await _context.Asignaciones
+            .Include(a => a.Conductor)
+            .Include(a => a.Vehiculo)
+            .Include(a => a.Solicitud)
+            .FirstOrDefaultAsync(a => a.SolicitudId == solicitudId);
+    }
 }

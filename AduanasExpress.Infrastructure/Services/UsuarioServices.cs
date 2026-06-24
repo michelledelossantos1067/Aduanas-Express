@@ -87,6 +87,14 @@ public class UsuarioServices : IUsuarioService
         }
         await _usuarioRepositories.Actualizar(Id, usuario);
     }
+    public async Task<List<UsuarioResponse>> ObtenerPorRol(string rol)
+    {
+        var usuarios = await _usuarioRepositories.ObtenerTodos();
+        return usuarios
+            .Where(u => u.Rol != null && u.Rol.Nombre == rol && u.IsActive)
+            .Select(u => u.ToResponse())
+            .ToList();
+    }
 
     public async Task Eliminar(int Id)
     {

@@ -16,8 +16,8 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(15).WithMessage("El apellido no puede exceder los 15 caracteres.");
             RuleFor(c => c.Cedula)
                 .NotEmpty().WithMessage("La cédula es requerida.")
-                .MinimumLength(11).WithMessage("Digito incompleto")
-                .MaximumLength(11).WithMessage("Cédula no valida");
+                .MinimumLength(13).WithMessage("Digito incompleto")
+                .MaximumLength(13).WithMessage("Cédula no valida");
             RuleFor(c => c.NumeroLicencia)
                 .NotEmpty().WithMessage("El número de licencia es requerido.")
                 .MinimumLength(10).WithMessage("El número de licencia debe tener al menos 10 caracteres.")
@@ -56,8 +56,8 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(15).WithMessage("El apellido no puede exceder los 15 caracteres.");
             RuleFor(c => c.Cedula)
                 .NotEmpty().WithMessage("La cédula es requerida.")
-                .MinimumLength(11).WithMessage("Digito incompleto")
-                .MaximumLength(11).WithMessage("Cédula no valida");
+                .MinimumLength(13).WithMessage("Digito incompleto")
+                .MaximumLength(13).WithMessage("Cédula no valida");
             RuleFor(c => c.NumeroLicencia)
                 .NotEmpty().WithMessage("El número de licencia es requerido.")
                 .MinimumLength(10).WithMessage("El número de licencia debe tener al menos 10 caracteres.")

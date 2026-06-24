@@ -33,7 +33,6 @@ public class AsignacionActivadorService : BackgroundService
                 _logger.LogError(ex, "Error en AsignacionActivadorService");
             }
 
-            // Correr cada minuto
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
@@ -43,9 +42,9 @@ public class AsignacionActivadorService : BackgroundService
         using var scope = _scopeFactory.CreateScope();
 
         var asignacionRepo = scope.ServiceProvider.GetRequiredService<IAsignacionRepository>();
-        var solicitudRepo  = scope.ServiceProvider.GetRequiredService<ISolicitudTransporteRepositories>();
-        var vehiculoRepo   = scope.ServiceProvider.GetRequiredService<IVehiculoRepositories>();
-        var conductorRepo  = scope.ServiceProvider.GetRequiredService<IConductorRepositories>();
+        var solicitudRepo = scope.ServiceProvider.GetRequiredService<ISolicitudTransporteRepositories>();
+        var vehiculoRepo = scope.ServiceProvider.GetRequiredService<IVehiculoRepositories>();
+        var conductorRepo = scope.ServiceProvider.GetRequiredService<IConductorRepositories>();
 
         var pendientes = await asignacionRepo.ObtenerPorEstado(EstadoAsignacion.Pendiente);
         var ahora = DateTime.UtcNow;
@@ -54,9 +53,11 @@ public class AsignacionActivadorService : BackgroundService
         {
             var solicitud = await solicitudRepo.ObtenerPorId(asignacion.SolicitudId);
             if (solicitud?.FechaViaje == null) continue;
-            if (ahora < solicitud.FechaViaje.Value) continue;
+            var zonaRD = TimeZoneInfo.FindSystemTimeZoneById("America/Santo_Domingo");
+            var fechaHoraLocal = solicitud.FechaViaje.Value.Date.Add(solicitud.HoraSalida);
+            var fechaHoraUtc = TimeZoneInfo.ConvertTimeToUtc(fechaHoraLocal, zonaRD);
 
-            // Ya llegó la hora — pasar a EnViaje
+            if (ahora < fechaHoraUtc) continue;
             asignacion.Estado = EstadoAsignacion.EnCurso;
             await asignacionRepo.Actualizar(asignacion.Id, asignacion);
 
@@ -73,9 +74,9 @@ public class AsignacionActivadorService : BackgroundService
                 conductor.Estado = EstadosConductor.EnViaje;
                 await conductorRepo.Actualizar(conductor.Id, conductor);
             }
-
+            
             _logger.LogInformation(
-                "Asignación {Id} activada — FechaViaje: {Fecha}", 
+                "Asignación {Id} activada — FechaViaje: {Fecha}",
                 asignacion.Id, solicitud.FechaViaje);
         }
     }

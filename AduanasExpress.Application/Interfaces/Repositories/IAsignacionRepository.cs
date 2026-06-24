@@ -9,4 +9,5 @@ public interface IAsignacionRepository{
     Task<bool> ExisteParaVehiculo(int vehiculoId);
     Task<bool> ExisteParaConductor(int conductorId);
     Task<List<Asignacion>> ObtenerPorEstado(EstadoAsignacion estado);
+    Task<Asignacion?> ObtenerPorSolicitudId(int solicitudId);
 }

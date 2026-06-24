@@ -55,6 +55,7 @@ public class ConductorServices : IConductorService
             Apellido = createConductorDTOs.Apellido,
             Cedula = createConductorDTOs.Cedula,
             NumeroLicencia = createConductorDTOs.NumeroLicencia,
+            FechaVencLicencia = createConductorDTOs.FechaVencLicencia.Value,
             TipoLicencia = createConductorDTOs.TipoLicencia,
             Telefono = createConductorDTOs.Telefono,
             Direccion = createConductorDTOs.Direccion,
@@ -74,6 +75,8 @@ public class ConductorServices : IConductorService
         conductor.Apellido = updateConductorDTOs.Apellido;
         conductor.Cedula = updateConductorDTOs.Cedula;
         conductor.NumeroLicencia = updateConductorDTOs.NumeroLicencia;
+        conductor.FechaVencLicencia = updateConductorDTOs.FechaVencLicencia
+                                      ?? conductor.FechaVencLicencia;
         conductor.TipoLicencia = updateConductorDTOs.TipoLicencia;
         conductor.Telefono = updateConductorDTOs.Telefono;
         conductor.Direccion = updateConductorDTOs.Direccion;

@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace AduanasExpress.Application.Validaciones
 {
-    public class UsuarioValidator:AbstractValidator<CreateUsuario>
+    public class UsuarioValidator : AbstractValidator<CreateUsuario>
     {
         public UsuarioValidator()
         {
@@ -21,7 +21,8 @@ namespace AduanasExpress.Application.Validaciones
                 .NotEmpty().WithMessage("La contraseña es requerida.")
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
             RuleFor(u => u.RolId)
-               .IsInEnum().WithMessage("El rol no es válido.");
+    .GreaterThanOrEqualTo(1).WithMessage("El rol no es válido.")
+    .LessThanOrEqualTo(3).WithMessage("El rol no es válido.");
         }
 
     }
@@ -41,7 +42,8 @@ namespace AduanasExpress.Application.Validaciones
             RuleFor(u => u.Password)
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
             RuleFor(u => u.RolId)
-               .IsInEnum().WithMessage("El rol no es válido.");
+    .GreaterThanOrEqualTo(1).WithMessage("El rol no es válido.")
+    .LessThanOrEqualTo(3).WithMessage("El rol no es válido.");
         }
     }
 }

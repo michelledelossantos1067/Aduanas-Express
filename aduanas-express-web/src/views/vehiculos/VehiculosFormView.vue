@@ -37,10 +37,10 @@ async function guardar() {
         error.value = ''
 
         if (!form.value.matricula) { error.value = 'La matrícula es requerida.'; return }
-        if (!form.value.marca)     { error.value = 'La marca es requerida.'; return }
-        if (!form.value.modelo)    { error.value = 'El modelo es requerido.'; return }
-        if (!form.value.tipo)      { error.value = 'El tipo es requerido.'; return }
-        if (!form.value.color)     { error.value = 'El color es requerido.'; return }
+        if (!form.value.marca) { error.value = 'La marca es requerida.'; return }
+        if (!form.value.modelo) { error.value = 'El modelo es requerido.'; return }
+        if (!form.value.tipo) { error.value = 'El tipo es requerido.'; return }
+        if (!form.value.color) { error.value = 'El color es requerido.'; return }
 
         if (esEdicion.value) {
             await actualizarVehiculo(route.params.id, form.value)
@@ -82,6 +82,14 @@ async function cargarVehiculo() {
             ? response.data.find(v => v.id == route.params.id)
             : response.data
         if (!data) throw new Error('Vehículo no encontrado.')
+
+        // Formatear la fecha si existe
+        let fechaFormato = ''
+        if (data.fechaUltimoMant) {
+            const fecha = new Date(data.fechaUltimoMant)
+            fechaFormato = fecha.toISOString().split('T')[0]
+        }
+
         form.value = {
             marca: data.marca,
             modelo: data.modelo,
@@ -92,7 +100,7 @@ async function cargarVehiculo() {
             capacidad: data.capacidad,
             estado: data.estado,
             kilometraje: data.kilometraje,
-            fechaUltimoMant: data.fechaUltimoMant
+            fechaUltimoMant: fechaFormato
         }
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el vehículo.'
@@ -100,7 +108,6 @@ async function cargarVehiculo() {
         loading.value = false
     }
 }
-
 onMounted(async () => {
     if (esEdicion.value) await cargarVehiculo()
 })
@@ -112,7 +119,8 @@ onMounted(async () => {
         <div class="vf-header">
             <div class="vf-header-left">
                 <button class="btn-back" @click="router.push('/vehiculos')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
                         <polyline points="15 18 9 12 15 6" />
                     </svg>
                     Vehículos
@@ -139,7 +147,9 @@ onMounted(async () => {
 
         <div v-if="error" class="vf-alert">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {{ error }}
         </div>
@@ -178,9 +188,9 @@ onMounted(async () => {
                     }">
                         {{
                             form.estado === 0 ? 'Disponible' :
-                            form.estado === 1 ? 'En Viaje' :
-                            form.estado === 2 ? 'En Mantenimiento' :
-                            'Fuera de Servicio'
+                                form.estado === 1 ? 'En Viaje' :
+                                    form.estado === 2 ? 'En Mantenimiento' :
+                                        'Fuera de Servicio'
                         }}
                     </span>
                 </div>
@@ -279,20 +289,17 @@ onMounted(async () => {
                         </div>
                         <div class="field">
                             <label>Último mantenimiento</label>
-                            <input type="date" v-model="form.fechaUltimoMant" readonly />
+                            <input type="date" v-model="form.fechaUltimoMant" />
                         </div>
                     </div>
-                    <button
-                        v-if="esEdicion"
-                        type="button"
-                        class="btn-mantenimiento-link"
-                        @click="router.push({ path: '/mantenimiento', query: { vehiculoId: route.params.id } })"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="3" width="15" height="13" rx="2"/>
-                            <path d="M16 8h4l3 3v5h-7V8z"/>
-                            <circle cx="5.5" cy="18.5" r="2.5"/>
-                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                    <button v-if="esEdicion" type="button" class="btn-mantenimiento-link"
+                        @click="router.push({ path: '/mantenimiento', query: { vehiculoId: route.params.id } })">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13" rx="2" />
+                            <path d="M16 8h4l3 3v5h-7V8z" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
                         </svg>
                         Registrar mantenimiento para este vehículo
                     </button>
@@ -301,8 +308,12 @@ onMounted(async () => {
                 <div class="action-bar">
                     <div class="action-bar-left">
                         <button v-if="esEdicion" class="btn-danger" @click="confirmarEliminar" :disabled="loading">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                <path d="M10 11v6" />
+                                <path d="M14 11v6" />
                             </svg>
                             Eliminar registro
                         </button>
@@ -313,7 +324,8 @@ onMounted(async () => {
                         </button>
                         <button class="btn-primary" @click="guardar" :disabled="loading">
                             <span v-if="loading" class="btn-spinner"></span>
-                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
                             {{ loading ? 'Guardando…' : (esEdicion ? 'Actualizar Vehículo' : 'Registrar Vehículo') }}
@@ -328,9 +340,12 @@ onMounted(async () => {
             <div v-if="mostrarConfirmacion" class="modal-overlay" @click.self="mostrarConfirmacion = false">
                 <div class="modal">
                     <div class="modal-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                            <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
                         </svg>
                     </div>
                     <h2 class="modal-titulo">¿Eliminar este vehículo?</h2>
@@ -351,17 +366,16 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
 :root {
-    --green:     #1a3a2a;
-    --green-h:   #14532d;
-    --surface:   #f3f4f6;
-    --card:      #ffffff;
-    --border:    #e5e7eb;
-    --text:      #111827;
-    --muted:     #6b7280;
-    --tag-bg:    #f0fdf4;
-    --tag-text:  #166534;
+    --green: #1a3a2a;
+    --green-h: #14532d;
+    --surface: #f3f4f6;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --tag-bg: #f0fdf4;
+    --tag-text: #166534;
 }
 
 .vf-page {
@@ -398,7 +412,10 @@ onMounted(async () => {
     padding: 0;
     transition: color 0.15s;
 }
-.btn-back:hover { color: #1a3a2a; }
+
+.btn-back:hover {
+    color: #1a3a2a;
+}
 
 .vf-breadcrumb-sep {
     color: #d1d5db;
@@ -468,12 +485,14 @@ onMounted(async () => {
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
     position: sticky;
     top: 24px;
 }
 
-.aside-section { padding: 4px 0; }
+.aside-section {
+    padding: 4px 0;
+}
 
 .aside-label {
     font-size: 0.7rem;
@@ -517,15 +536,30 @@ onMounted(async () => {
     font-weight: 600;
 }
 
-.badge-disponible  { background: #d1fae5; color: #065f46; }
-.badge-en-viaje    { background: #dbeafe; color: #1e40af; }
-.badge-mantenimiento { background: #fef3c7; color: #92400e; }
-.badge-fuera-servicio { background: #fee2e2; color: #991b1b; }
+.badge-disponible {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-en-viaje {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-mantenimiento {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-fuera-servicio {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
 .vf-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
     overflow: hidden;
 }
 
@@ -597,7 +631,10 @@ onMounted(async () => {
     letter-spacing: 0.05em;
 }
 
-.req { color: #dc2626; margin-left: 2px; }
+.req {
+    color: #dc2626;
+    margin-left: 2px;
+}
 
 .field input,
 .field select {
@@ -619,9 +656,13 @@ onMounted(async () => {
     box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
 }
 
-.field input::placeholder { color: #9ca3af; }
+.field input::placeholder {
+    color: #9ca3af;
+}
 
-.field select option:disabled { color: #9ca3af; }
+.field select option:disabled {
+    color: #9ca3af;
+}
 
 .field-hint {
     margin: 6px 0 0;
@@ -650,7 +691,10 @@ onMounted(async () => {
     transition: background 0.15s;
     font-family: inherit;
 }
-.btn-mantenimiento-link:hover { background: #f0fdf4; }
+
+.btn-mantenimiento-link:hover {
+    background: #f0fdf4;
+}
 
 .input-suffix-wrap {
     display: flex;
@@ -660,17 +704,23 @@ onMounted(async () => {
     overflow: hidden;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
+
 .input-suffix-wrap:focus-within {
     border-color: #1a3a2a;
     box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
 }
+
 .input-suffix-wrap input {
     border: none;
     border-radius: 0;
     flex: 1;
     box-shadow: none !important;
 }
-.input-suffix-wrap input:focus { border: none; box-shadow: none; }
+
+.input-suffix-wrap input:focus {
+    border: none;
+    box-shadow: none;
+}
 
 .input-suffix {
     padding: 0 12px;
@@ -727,38 +777,51 @@ onMounted(async () => {
     background: #1a3a2a;
     color: #fff;
 }
-.btn-primary:hover:not(:disabled) { background: #14532d; }
+
+.btn-primary:hover:not(:disabled) {
+    background: #14532d;
+}
 
 .btn-secondary {
     background: #f3f4f6;
     color: #374151;
     border: 1.5px solid #e5e7eb;
 }
-.btn-secondary:hover:not(:disabled) { background: #e5e7eb; }
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
 
 .btn-danger {
     background: #fff;
     color: #991b1b;
     border: 1.5px solid #fecaca;
 }
-.btn-danger:hover:not(:disabled) { background: #fef2f2; }
+
+.btn-danger:hover:not(:disabled) {
+    background: #fef2f2;
+}
 
 .btn-spinner {
     width: 13px;
     height: 13px;
-    border: 2px solid rgba(255,255,255,.4);
+    border: 2px solid rgba(255, 255, 255, .4);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.65s linear infinite;
     flex-shrink: 0;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(0, 0, 0, .45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -771,7 +834,7 @@ onMounted(async () => {
     padding: 32px;
     width: 420px;
     max-width: 90vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
     text-align: center;
 }
 
@@ -831,22 +894,60 @@ onMounted(async () => {
     font-family: inherit;
     transition: background 0.15s;
 }
-.btn-confirmar-modal:hover:not(:disabled) { background: #b91c1c; }
-.btn-confirmar-modal:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-confirmar-modal:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.btn-confirmar-modal:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
 @media (max-width: 900px) {
-    .vf-layout { grid-template-columns: 1fr; }
-    .vf-aside { position: static; }
-    .form-grid.col-3 { grid-template-columns: repeat(2, 1fr); }
+    .vf-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .vf-aside {
+        position: static;
+    }
+
+    .form-grid.col-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 640px) {
-    .vf-page { padding: 20px 16px; }
-    .form-section { padding: 20px 16px; }
-    .section-divider { margin: 0 16px; }
-    .action-bar { padding: 16px; flex-direction: column; gap: 12px; }
-    .action-bar-right { width: 100%; justify-content: flex-end; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid.col-3 { grid-template-columns: 1fr; }
+    .vf-page {
+        padding: 20px 16px;
+    }
+
+    .form-section {
+        padding: 20px 16px;
+    }
+
+    .section-divider {
+        margin: 0 16px;
+    }
+
+    .action-bar {
+        padding: 16px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-bar-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid.col-3 {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

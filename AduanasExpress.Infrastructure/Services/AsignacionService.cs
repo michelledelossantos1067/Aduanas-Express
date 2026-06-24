@@ -43,7 +43,6 @@ public class AsignacionService : IAsignacionService
 
         return asignacion.ToResponse();
     }
-
     public async Task Crear(CreateAsignacionDTO createAsignacionDTO)
     {
         var vehiculo = await _vehiculoRepository.ObtenerPorId(createAsignacionDTO.VehiculoId);
@@ -57,7 +56,7 @@ public class AsignacionService : IAsignacionService
             throw new Exception("Conductor no encontrado.");
         if (conductor.Estado != EstadosConductor.Disponible)
             throw new Exception($"El conductor no está disponible (estado actual: {conductor.Estado}).");
-        if (vehiculo == null || !vehiculo.IsActive)
+        if (!vehiculo.IsActive)
             throw new Exception("Vehículo no encontrado o está desactivado.");
 
         var asignacion = new Asignacion
@@ -77,16 +76,7 @@ public class AsignacionService : IAsignacionService
             solicitud.Estado = EstadosSolicitudes.Aprobada;
             await _solicitudRepository.Actualizar(solicitud.Id, solicitud);
         }
-        var ahora = DateTime.UtcNow;
-        var fechaViaje = solicitud?.FechaViaje;
-
-        if (fechaViaje.HasValue && ahora >= fechaViaje.Value)
-        {
-            vehiculo.Estado = EstadosVehiculo.EnViaje;
-            conductor.Estado = EstadosConductor.EnViaje;
-        }
     }
-
     public async Task Finalizar(int id)
     {
         var asignacion = await _asignacionRepository.ObtenerPorId(id);

@@ -15,5 +15,9 @@ export const verVehiculos = () => {
 export const verVehiculoPorId = (Id) => {
     return api.get(`/vehiculo/${Id}`)
 }
-export const desactivarVehiculo = (id) => api.patch(`/vehiculo/${id}/desactivar`)
-export const activarVehiculo = (id) => api.patch(`/vehiculo/${id}/activar`)
+export const desactivarVehiculo = (id) => {
+    return api.patch(`/vehiculo/${id}/desactivar`)
+}
+export const activarVehiculo = (id) => {
+    return api.patch(`/vehiculo/${id}/activar`)
+}

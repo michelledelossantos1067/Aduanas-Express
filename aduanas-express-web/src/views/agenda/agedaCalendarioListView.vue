@@ -488,6 +488,21 @@ function badgeEstado(estado) {
                                     <span class="sv-hora">{{ viaje.horaInicio }}</span>
                                     <span class="sv-titulo">{{ viaje.titulo.substring(0, 14) }}</span>
                                 </div>
+                <div class="cal-grid">
+                    <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
+                    <div v-for="(fecha, i) in celdasMes" :key="i" class="cal-celda" :class="{
+                        'celda-otro-mes': !esMesActual(fecha),
+                        'celda-hoy': esMismaFecha(fecha, hoy),
+                        'celda-con-viajes': viajesEnFecha(fecha).length > 0
+                    }" @click="seleccionarFecha(fecha)">
+                        <span class="celda-numero">{{ fecha.getDate() }}</span>
+                        <div class="celda-chips">
+                            <div v-for="viaje in viajesEnFecha(fecha).slice(0, 2)" :key="viaje.id" class="cal-chip"
+                                :class="chipClase(viaje)" :title="viaje.titulo">
+                                {{ formatHora(viaje.horaInicio) }} {{ viaje.titulo.substring(0, 10) }}
+                            </div>
+                            <div v-if="viajesEnFecha(fecha).length > 2" class="chip-mas">
+                                +{{ viajesEnFecha(fecha).length - 2 }} más
                             </div>
                         </div>
                     </div>

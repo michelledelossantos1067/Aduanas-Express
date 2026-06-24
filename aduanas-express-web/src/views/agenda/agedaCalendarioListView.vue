@@ -5,27 +5,18 @@ import { verAsignaciones } from '@/services/asignacionService'
 import { usePermisos } from '@/composables/usePermisos'
 import AgendaDiaView from './AgendaDiaView.vue'
 
-
-// Importamos el composable del calendario
 import { useCalendar } from '@/composables/useCalendar'
 
 const { puede } = usePermisos()
-const { currentView } = useCalendar() // Usamos el estado global en lugar del local
+const { currentView } = useCalendar()
 
 const hoy = new Date()
 const fechaActual = ref(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()))
-
-const filtros = ref({ vehiculos: false, conductores: false, pendientes: false, cancelados: false })
-
-function toggleFiltro(key) {
-    filtros.value[key] = !filtros.value[key]
-}
 
 const viajes = ref([])
 const cargando = ref(true)
 const errorCarga = ref(null)
 
-// Estados para los nuevos cuadros de diálogo (Modales)
 const fechaSeleccionada = ref(null)
 const viajeSeleccionado = ref(null)
 
@@ -98,7 +89,6 @@ function irAHoy() {
     mostrarPicker.value = false
 }
 
-// Navegación por día
 function diaAnterior() {
     const d = new Date(fechaActual.value)
     d.setDate(d.getDate() - 1)
@@ -110,11 +100,9 @@ function diaSiguiente() {
     fechaActual.value = d
 }
 
-// Vista semana: obtener los 7 días de la semana que contiene fechaActual
 const diasDeSemana = computed(() => {
     const d = new Date(fechaActual.value)
-    // Ir al domingo de esa semana
-    const diaSemana = d.getDay() // 0=Dom
+    const diaSemana = d.getDay()
     const inicio = new Date(d)
     inicio.setDate(d.getDate() - diaSemana)
     return Array.from({ length: 7 }, (_, i) => {
@@ -193,7 +181,6 @@ function nombreMes(fecha) {
     return `${MESES[fecha.getMonth()]} ${fecha.getFullYear()}`
 }
 
-// Funciones para manejar la apertura de cuadros de diálogo
 function seleccionarFecha(fecha) {
     const viajesDelDia = viajesEnFecha(fecha)
     if (viajesDelDia.length > 0) {
@@ -303,7 +290,7 @@ function badgeEstado(estado) {
                 <h1 class="agenda-title">Agenda</h1>
                 <p class="agenda-sub">Sistema de transporte institucional</p>
             </div>
-            
+
             <div class="vista-tabs">
                 <button class="tab-btn" :class="{ 'tab-activo': currentView === 'day' }"
                     @click="currentView = 'day'">Día</button>
@@ -318,15 +305,15 @@ function badgeEstado(estado) {
         <div v-else-if="errorCarga" class="estado-error">{{ errorCarga }}</div>
 
         <div v-else class="agenda-layout">
-            
+
             <div class="calendar-render">
-                
+
+                <!-- ===== VISTA MES ===== -->
                 <div v-if="currentView === 'month'" class="cal-panel">
 
                     <div class="cal-nav">
                         <button class="nav-btn" @click="mesAnterior">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="15 18 9 12 15 6" />
                             </svg>
                         </button>
@@ -335,26 +322,22 @@ function badgeEstado(estado) {
                             <button class="cal-mes-label-btn"
                                 @click.stop="mostrarPicker = !mostrarPicker; pickerAño = fechaActual.getFullYear(); vistaPickerAño = false">
                                 {{ nombreMes(fechaActual) }}
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <polyline points="6 9 12 15 18 9" />
                                 </svg>
                             </button>
 
                             <div v-if="mostrarPicker" class="picker-dropdown" @click.stop>
-
                                 <template v-if="!vistaPickerAño">
                                     <div class="picker-nav">
                                         <button class="picker-nav-btn" @click="añoAnteriorPicker">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.5">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                 <polyline points="15 18 9 12 15 6" />
                                             </svg>
                                         </button>
                                         <button class="picker-año-btn" @click="toggleVistaAño">{{ pickerAño }}</button>
                                         <button class="picker-nav-btn" @click="añoSiguientePicker">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.5">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                 <polyline points="9 18 15 12 9 6" />
                                             </svg>
                                         </button>
@@ -370,15 +353,13 @@ function badgeEstado(estado) {
                                 <template v-else>
                                     <div class="picker-nav">
                                         <button class="picker-nav-btn" @click="pickerAño -= 12">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.5">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                 <polyline points="15 18 9 12 15 6" />
                                             </svg>
                                         </button>
                                         <span class="picker-rango-label">{{ añosRango[0] }} – {{ añosRango[11] }}</span>
                                         <button class="picker-nav-btn" @click="pickerAño += 12">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                stroke="currentColor" stroke-width="2.5">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                 <polyline points="9 18 15 12 9 6" />
                                             </svg>
                                         </button>
@@ -390,28 +371,15 @@ function badgeEstado(estado) {
                                         }" @click="seleccionarAñoPicker(año)">{{ año }}</button>
                                     </div>
                                 </template>
-
                             </div>
                         </div>
 
                         <button class="nav-btn" @click="mesSiguiente">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </button>
                         <button class="btn-hoy" @click="irAHoy">Hoy</button>
-                    </div>
-
-                    <div class="filtros-row">
-                        <button class="filtro-btn filtro-vehiculos" :class="{ activo: filtros.vehiculos }"
-                            @click="toggleFiltro('vehiculos')">Vehículos</button>
-                        <button class="filtro-btn filtro-conductores" :class="{ activo: filtros.conductores }"
-                            @click="toggleFiltro('conductores')">Conductores</button>
-                        <button class="filtro-btn filtro-pendientes" :class="{ activo: filtros.pendientes }"
-                            @click="toggleFiltro('pendientes')">Pendientes</button>
-                        <button class="filtro-btn filtro-cancelados" :class="{ activo: filtros.cancelados }"
-                            @click="toggleFiltro('cancelados')">Cancelados</button>
                     </div>
 
                     <div class="cal-grid">
@@ -435,8 +403,7 @@ function badgeEstado(estado) {
                     </div>
                 </div>
 
-
-
+                <!-- ===== VISTA DÍA ===== -->
                 <div v-else-if="currentView === 'day'" class="cal-panel">
                     <div class="cal-nav">
                         <button class="nav-btn" @click="diaAnterior">
@@ -455,6 +422,7 @@ function badgeEstado(estado) {
                     />
                 </div>
 
+                <!-- ===== VISTA SEMANA ===== -->
                 <div v-else-if="currentView === 'week'" class="cal-panel semana-panel">
                     <div class="cal-nav">
                         <button class="nav-btn" @click="semanaAnterior">
@@ -488,27 +456,14 @@ function badgeEstado(estado) {
                                     <span class="sv-hora">{{ viaje.horaInicio }}</span>
                                     <span class="sv-titulo">{{ viaje.titulo.substring(0, 14) }}</span>
                                 </div>
-                <div class="cal-grid">
-                    <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
-                    <div v-for="(fecha, i) in celdasMes" :key="i" class="cal-celda" :class="{
-                        'celda-otro-mes': !esMesActual(fecha),
-                        'celda-hoy': esMismaFecha(fecha, hoy),
-                        'celda-con-viajes': viajesEnFecha(fecha).length > 0
-                    }" @click="seleccionarFecha(fecha)">
-                        <span class="celda-numero">{{ fecha.getDate() }}</span>
-                        <div class="celda-chips">
-                            <div v-for="viaje in viajesEnFecha(fecha).slice(0, 2)" :key="viaje.id" class="cal-chip"
-                                :class="chipClase(viaje)" :title="viaje.titulo">
-                                {{ formatHora(viaje.horaInicio) }} {{ viaje.titulo.substring(0, 10) }}
-                            </div>
-                            <div v-if="viajesEnFecha(fecha).length > 2" class="chip-mas">
-                                +{{ viajesEnFecha(fecha).length - 2 }} más
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
+            <!-- ===== PANEL LATERAL ===== -->
             <div class="side-panel">
                 <div class="side-section">
                     <h3 class="side-titulo">Resumen del mes</h3>
@@ -539,11 +494,10 @@ function badgeEstado(estado) {
                             :class="bordeClase(viaje.estado)" @click="seleccionarViaje(viaje)">
                             <div class="viaje-hora">{{ viaje.horaInicio }} - {{ viaje.horaFin }}</div>
                             <div class="viaje-titulo">{{ viaje.titulo }}</div>
-                            <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}
-                            </div>
+                            <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}</div>
                             <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">{{
                                 badgeEstado(viaje.estado).label
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>
@@ -558,17 +512,17 @@ function badgeEstado(estado) {
                                 &mdash; {{ viaje.horaInicio }}
                             </div>
                             <div class="viaje-titulo">{{ viaje.titulo }}</div>
-                            <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}
-                            </div>
+                            <div class="viaje-recurso">{{ viaje.vehiculo }} · {{ viaje.placa }} / {{ viaje.conductor }}</div>
                             <span class="badge-pill" :class="badgeEstado(viaje.estado).clase">{{
                                 badgeEstado(viaje.estado).label
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ===== MODAL LISTA DE VIAJES DEL DÍA ===== -->
         <div v-if="fechaSeleccionada" class="modal-overlay" @click="fechaSeleccionada = null">
             <div class="modal-content modal-lista" @click.stop>
                 <div class="modal-header-box">
@@ -580,7 +534,7 @@ function badgeEstado(estado) {
                 </div>
                 <div class="modal-body-scroll">
                     <div class="viajes-lista-modal">
-                        <div v-for="viaje in viajesEnFecha(fechaSeleccionada)" :key="viaje.id" 
+                        <div v-for="viaje in viajesEnFecha(fechaSeleccionada)" :key="viaje.id"
                             class="viaje-modal-row" :class="bordeClase(viaje.estado)"
                             @click="seleccionarViaje(viaje)">
                             <div class="viaje-modal-meta">
@@ -597,6 +551,7 @@ function badgeEstado(estado) {
             </div>
         </div>
 
+        <!-- ===== MODAL DETALLE DE VIAJE ===== -->
         <div v-if="viajeSeleccionado" class="modal-overlay z-top" @click="viajeSeleccionado = null">
             <div class="modal-content modal-detalle" @click.stop>
                 <div class="modal-header-box border-b">
@@ -668,9 +623,7 @@ function badgeEstado(estado) {
     border-radius: 14px;
 }
 
-.estado-error {
-    color: #dc2626;
-}
+.estado-error { color: #dc2626; }
 
 .agenda-header {
     display: flex;
@@ -742,10 +695,238 @@ function badgeEstado(estado) {
     padding: 4px 8px;
 }
 
-/* ===== VISTA SEMANA ===== */
-.semana-panel {
-    overflow-x: auto;
+.cal-panel {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+    overflow: hidden;
 }
+
+.cal-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.nav-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    color: #374151;
+    transition: background .15s;
+}
+
+.nav-btn:hover { background: #f3f4f6; }
+
+.picker-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.cal-mes-label-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #111827;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 7px;
+    transition: background .15s;
+}
+
+.cal-mes-label-btn:hover { background: #f3f4f6; }
+
+.picker-dropdown {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    z-index: 200;
+    width: 220px;
+}
+
+.picker-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.picker-nav-btn {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    color: #374151;
+    transition: background .15s;
+}
+
+.picker-nav-btn:hover { background: #f3f4f6; }
+
+.picker-año-btn {
+    font-size: .9rem;
+    font-weight: 700;
+    color: #111827;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+
+.picker-año-btn:hover { background: #f3f4f6; }
+
+.picker-rango-label {
+    font-size: .85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.picker-meses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.picker-mes-btn {
+    padding: 8px 4px;
+    border: none;
+    border-radius: 7px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #374151;
+    background: transparent;
+    cursor: pointer;
+    transition: background .15s;
+    text-align: center;
+}
+
+.picker-mes-btn:hover { background: #f3f4f6; }
+.picker-mes-activo { background: #1a3a2a !important; color: #fff !important; }
+.picker-mes-hoy { color: #1a3a2a; font-weight: 800; }
+
+.btn-hoy {
+    padding: 6px 16px;
+    background: #1a3a2a;
+    border: none;
+    border-radius: 7px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.btn-hoy:hover { background: #14532d; }
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-top: 1px solid #f3f4f6;
+}
+
+.cal-day-header {
+    padding: 10px 0;
+    text-align: center;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3a2a;
+    letter-spacing: .05em;
+}
+
+.cal-celda {
+    min-height: 88px;
+    padding: 6px 6px 4px;
+    border-right: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    position: relative;
+    transition: background-color 0.1s;
+}
+
+.cal-celda:nth-child(7n) { border-right: none; }
+
+.celda-con-viajes { cursor: pointer; }
+.celda-con-viajes:hover { background-color: #f9fafb; }
+
+.celda-numero {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.celda-otro-mes .celda-numero { color: #d1d5db; }
+
+.celda-hoy { background: #f0fdf4; }
+.celda-hoy:hover { background-color: #dcfee7; }
+
+.celda-hoy .celda-numero {
+    background: #1a3a2a;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+}
+
+.celda-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: none;
+}
+
+.cal-chip {
+    font-size: .68rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chip-normal { background: #a7f3d0; color: #065f46; }
+.chip-en-viaje { background: #bfdbfe; color: #1e40af; }
+.chip-urgente { background: #fecaca; color: #991b1b; }
+
+.chip-mas {
+    font-size: .65rem;
+    color: #9ca3af;
+    padding: 1px 4px;
+    font-weight: 600;
+}
+
+/* ===== VISTA SEMANA ===== */
+.semana-panel { overflow-x: auto; }
 
 .semana-header {
     display: grid;
@@ -757,9 +938,7 @@ function badgeEstado(estado) {
     z-index: 10;
 }
 
-.semana-time-col {
-    border-right: 1px solid #f3f4f6;
-}
+.semana-time-col { border-right: 1px solid #f3f4f6; }
 
 .semana-dia-col {
     display: flex;
@@ -774,10 +953,7 @@ function badgeEstado(estado) {
     text-transform: uppercase;
 }
 
-.semana-dia-hoy {
-    background: #f0fdf4;
-    color: #1a3a2a;
-}
+.semana-dia-hoy { background: #f0fdf4; color: #1a3a2a; }
 
 .semana-dia-nombre {
     font-size: .68rem;
@@ -839,9 +1015,7 @@ function badgeEstado(estado) {
     cursor: default;
 }
 
-.semana-slot-hoy {
-    background: #f0fdf4;
-}
+.semana-slot-hoy { background: #f0fdf4; }
 
 .semana-viaje-chip {
     display: flex;
@@ -855,369 +1029,16 @@ function badgeEstado(estado) {
     overflow: hidden;
 }
 
-.semana-viaje-chip:hover {
-    opacity: .8;
-}
+.semana-viaje-chip:hover { opacity: .8; }
 
-.semana-viaje-chip.chip-normal {
-    background: #d1fae5;
-    border-left-color: #16a34a;
-    color: #065f46;
-}
+.semana-viaje-chip.chip-normal { background: #d1fae5; border-left-color: #16a34a; color: #065f46; }
+.semana-viaje-chip.chip-urgente { background: #fee2e2; border-left-color: #dc2626; color: #991b1b; }
+.semana-viaje-chip.chip-en-viaje { background: #dbeafe; border-left-color: #2563eb; color: #1e40af; }
 
-.semana-viaje-chip.chip-urgente {
-    background: #fee2e2;
-    border-left-color: #dc2626;
-    color: #991b1b;
-}
+.sv-hora { font-weight: 700; font-size: .62rem; }
+.sv-titulo { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.semana-viaje-chip.chip-en-viaje {
-    background: #dbeafe;
-    border-left-color: #2563eb;
-    color: #1e40af;
-}
-
-.sv-hora {
-    font-weight: 700;
-    font-size: .62rem;
-}
-
-.sv-titulo {
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.cal-panel {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
-    overflow: hidden;
-}
-
-.cal-nav {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.nav-btn {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 7px;
-    background: #fff;
-    cursor: pointer;
-    color: #374151;
-    transition: background .15s;
-}
-
-.nav-btn:hover {
-    background: #f3f4f6;
-}
-
-.picker-wrapper {
-    position: relative;
-    flex: 1;
-}
-
-.cal-mes-label-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    font-size: .95rem;
-    font-weight: 700;
-    color: #111827;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 7px;
-    transition: background .15s;
-}
-
-.cal-mes-label-btn:hover {
-    background: #f3f4f6;
-}
-
-.picker-dropdown {
-    position: absolute;
-    top: 38px;
-    left: 0;
-    background: #fff;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
-    z-index: 200;
-    width: 220px;
-}
-
-.picker-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.picker-nav-btn {
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 6px;
-    background: #fff;
-    cursor: pointer;
-    color: #374151;
-    transition: background .15s;
-}
-
-.picker-nav-btn:hover {
-    background: #f3f4f6;
-}
-
-.picker-año-btn {
-    font-size: .9rem;
-    font-weight: 700;
-    color: #111827;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px 10px;
-    border-radius: 6px;
-    transition: background .15s;
-}
-
-.picker-año-btn:hover {
-    background: #f3f4f6;
-}
-
-.picker-rango-label {
-    font-size: .85rem;
-    font-weight: 700;
-    color: #111827;
-}
-
-.picker-meses-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-}
-
-.picker-mes-btn {
-    padding: 8px 4px;
-    border: none;
-    border-radius: 7px;
-    font-size: .8rem;
-    font-weight: 600;
-    color: #374151;
-    background: transparent;
-    cursor: pointer;
-    transition: background .15s;
-    text-align: center;
-}
-
-.picker-mes-btn:hover {
-    background: #f3f4f6;
-}
-
-.picker-mes-activo {
-    background: #1a3a2a !important;
-    color: #fff !important;
-}
-
-.picker-mes-hoy {
-    color: #1a3a2a;
-    font-weight: 800;
-}
-
-.btn-hoy {
-    padding: 6px 16px;
-    background: #1a3a2a;
-    border: none;
-    border-radius: 7px;
-    font-size: .8rem;
-    font-weight: 700;
-    color: #fff;
-    cursor: pointer;
-    transition: background .15s;
-}
-
-.btn-hoy:hover {
-    background: #14532d;
-}
-
-.filtros-row {
-    display: flex;
-    gap: 8px;
-    padding: 10px 20px 12px;
-    flex-wrap: wrap;
-}
-
-.filtro-btn {
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: .75rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    background: transparent;
-    transition: all .15s;
-}
-
-.filtro-vehiculos {
-    border-color: #93c5fd;
-    color: #1e40af;
-}
-
-.filtro-vehiculos.activo {
-    background: #dbeafe;
-}
-
-.filtro-conductores {
-    border-color: #6ee7b7;
-    color: #065f46;
-}
-
-.filtro-conductores.activo {
-    background: #d1fae5;
-}
-
-.filtro-pendientes {
-    border-color: #fca5a5;
-    color: #991b1b;
-}
-
-.filtro-pendientes.activo {
-    background: #fee2e2;
-}
-
-.filtro-cancelados {
-    border-color: #d1d5db;
-    color: #374151;
-}
-
-.filtro-cancelados.activo {
-    background: #f3f4f6;
-}
-
-.cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    border-top: 1px solid #f3f4f6;
-}
-
-.cal-day-header {
-    padding: 10px 0;
-    text-align: center;
-    font-size: .72rem;
-    font-weight: 700;
-    color: #fff;
-    background: #1a3a2a;
-    letter-spacing: .05em;
-}
-
-.cal-celda {
-    min-height: 88px;
-    padding: 6px 6px 4px;
-    border-right: 1px solid #f3f4f6;
-    border-bottom: 1px solid #f3f4f6;
-    vertical-align: top;
-    position: relative;
-    transition: background-color 0.1s;
-}
-
-.cal-celda:nth-child(7n) {
-    border-right: none;
-}
-
-.celda-con-viajes {
-    cursor: pointer;
-}
-
-.celda-con-viajes:hover {
-    background-color: #f9fafb;
-}
-
-.celda-numero {
-    display: block;
-    font-size: .8rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 4px;
-}
-
-.celda-otro-mes .celda-numero {
-    color: #d1d5db;
-}
-
-.celda-hoy {
-    background: #f0fdf4;
-}
-
-.celda-hoy:hover {
-    background-color: #dcfee7;
-}
-
-.celda-hoy .celda-numero {
-    background: #1a3a2a;
-    color: #fff;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .75rem;
-}
-
-.celda-chips {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    pointer-events: none; /* Hace que el clic se registre directamente en la celda entera */
-}
-
-.cal-chip {
-    font-size: .68rem;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.chip-normal {
-    background: #a7f3d0;
-    color: #065f46;
-}
-
-.chip-en-viaje {
-    background: #bfdbfe;
-    color: #1e40af;
-}
-
-.chip-urgente {
-    background: #fecaca;
-    color: #991b1b;
-}
-
-.chip-mas {
-    font-size: .65rem;
-    color: #9ca3af;
-    padding: 1px 4px;
-    font-weight: 600;
-}
-
+/* ===== PANEL LATERAL ===== */
 .side-panel {
     display: flex;
     flex-direction: column;
@@ -1255,33 +1076,13 @@ function badgeEstado(estado) {
     gap: 2px;
 }
 
-.resumen-num {
-    font-size: 1.7rem;
-    font-weight: 800;
-    line-height: 1;
-}
+.resumen-num { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.resumen-label { font-size: .74rem; color: #6b7280; font-weight: 500; }
 
-.resumen-label {
-    font-size: .74rem;
-    color: #6b7280;
-    font-weight: 500;
-}
-
-.azul {
-    color: #2563eb;
-}
-
-.verde {
-    color: #16a34a;
-}
-
-.rojo {
-    color: #dc2626;
-}
-
-.gris {
-    color: #374151;
-}
+.azul { color: #2563eb; }
+.verde { color: #16a34a; }
+.rojo { color: #dc2626; }
+.gris { color: #374151; }
 
 .viajes-lista {
     display: flex;
@@ -1299,52 +1100,18 @@ function badgeEstado(estado) {
     gap: 2px;
 }
 
-.viaje-card.clickable {
-    cursor: pointer;
-    transition: background-color 0.15s;
-}
+.viaje-card.clickable { cursor: pointer; transition: background-color 0.15s; }
+.viaje-card.clickable:hover { background-color: #f3f4f6; }
 
-.viaje-card.clickable:hover {
-    background-color: #f3f4f6;
-}
+.borde-en-viaje { border-left-color: #2563eb; }
+.borde-programado { border-left-color: #16a34a; }
+.borde-pendiente { border-left-color: #d97706; }
+.borde-espera { border-left-color: #9ca3af; }
+.borde-cancelado { border-left-color: #dc2626; }
 
-.borde-en-viaje {
-    border-left-color: #2563eb;
-}
-
-.borde-programado {
-    border-left-color: #16a34a;
-}
-
-.borde-pendiente {
-    border-left-color: #d97706;
-}
-
-.borde-espera {
-    border-left-color: #9ca3af;
-}
-
-.borde-cancelado {
-    border-left-color: #dc2626;
-}
-
-.viaje-hora {
-    font-size: .72rem;
-    color: #6b7280;
-    font-weight: 500;
-}
-
-.viaje-titulo {
-    font-size: .95rem;
-    font-weight: 700;
-    color: #111827;
-}
-
-.viaje-recurso {
-    font-size: .75rem;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
+.viaje-hora { font-size: .72rem; color: #6b7280; font-weight: 500; }
+.viaje-titulo { font-size: .95rem; font-weight: 700; color: #111827; }
+.viaje-recurso { font-size: .75rem; color: #6b7280; margin-bottom: 4px; }
 
 .badge-pill {
     display: inline-block;
@@ -1355,34 +1122,13 @@ function badgeEstado(estado) {
     align-self: flex-start;
 }
 
-.badge-en-viaje-pill {
-    background: #dbeafe;
-    color: #1e40af;
-}
+.badge-en-viaje-pill { background: #dbeafe; color: #1e40af; }
+.badge-programado-pill { background: #d1fae5; color: #065f46; }
+.badge-pendiente-pill { background: #fef3c7; color: #92400e; }
+.badge-espera-pill { background: #f3f4f6; color: #374151; }
+.badge-cancelado-pill { background: #fee2e2; color: #991b1b; }
 
-.badge-programado-pill {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.badge-pendiente-pill {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.badge-espera-pill {
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.badge-cancelado-pill {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-/* ==========================================================================
-   ESTILOS DE LOS CUADROS DE DIÁLOGO (MODALES)
-   ========================================================================== */
+/* ===== MODALES ===== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -1398,9 +1144,7 @@ function badgeEstado(estado) {
     padding: 16px;
 }
 
-.modal-overlay.z-top {
-    z-index: 400; /* Asegura que el detalle quede sobre la lista */
-}
+.modal-overlay.z-top { z-index: 400; }
 
 .modal-content {
     background: #fff;
@@ -1417,15 +1161,8 @@ function badgeEstado(estado) {
     to { transform: scale(1); opacity: 1; }
 }
 
-.modal-lista {
-    width: 100%;
-    max-width: 440px;
-}
-
-.modal-detalle {
-    width: 100%;
-    max-width: 520px;
-}
+.modal-lista { width: 100%; max-width: 440px; }
+.modal-detalle { width: 100%; max-width: 520px; }
 
 .modal-header-box {
     padding: 18px 24px;
@@ -1434,27 +1171,11 @@ function badgeEstado(estado) {
     justify-content: space-between;
 }
 
-.modal-header-box.border-b {
-    border-bottom: 1px solid #f3f4f6;
-}
+.modal-header-box.border-b { border-bottom: 1px solid #f3f4f6; }
 
-.modal-main-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-}
-
-.text-xl {
-    font-size: 1.3rem;
-}
-
-.modal-subtitle {
-    font-size: 0.82rem;
-    color: #6b7280;
-    margin: 2px 0 0;
-    font-weight: 500;
-}
+.modal-main-title { font-size: 1.15rem; font-weight: 700; color: #111827; margin: 0; }
+.text-xl { font-size: 1.3rem; }
+.modal-subtitle { font-size: 0.82rem; color: #6b7280; margin: 2px 0 0; font-weight: 500; }
 
 .modal-close-btn {
     background: transparent;
@@ -1468,20 +1189,11 @@ function badgeEstado(estado) {
     transition: color 0.15s;
 }
 
-.modal-close-btn:hover {
-    color: #374151;
-}
+.modal-close-btn:hover { color: #374151; }
 
-.modal-body-scroll {
-    padding: 0 24px 24px;
-    overflow-y: auto;
-}
+.modal-body-scroll { padding: 0 24px 24px; overflow-y: auto; }
 
-.viajes-lista-modal {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+.viajes-lista-modal { display: flex; flex-direction: column; gap: 12px; }
 
 .viaje-modal-row {
     border-left: 4px solid #e5e7eb;
@@ -1492,10 +1204,7 @@ function badgeEstado(estado) {
     transition: all 0.15s;
 }
 
-.viaje-modal-row:hover {
-    background: #f3f4f6;
-    transform: translateX(2px);
-}
+.viaje-modal-row:hover { background: #f3f4f6; transform: translateX(2px); }
 
 .viaje-modal-meta {
     display: flex;
@@ -1504,29 +1213,11 @@ function badgeEstado(estado) {
     margin-bottom: 4px;
 }
 
-.v-modal-time {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #374151;
-}
+.v-modal-time { font-size: 0.75rem; font-weight: 700; color: #374151; }
+.v-modal-title { font-size: 0.95rem; font-weight: 700; color: #111827; margin-bottom: 2px; }
+.v-modal-subtext { font-size: 0.78rem; color: #6b7280; }
 
-.v-modal-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 2px;
-}
-
-.v-modal-subtext {
-    font-size: 0.78rem;
-    color: #6b7280;
-}
-
-/* Cuerpo detallado */
-.modal-body-detail {
-    padding: 24px;
-    overflow-y: auto;
-}
+.modal-body-detail { padding: 24px; overflow-y: auto; }
 
 .detail-grid {
     display: grid;
@@ -1534,15 +1225,8 @@ function badgeEstado(estado) {
     gap: 16px;
 }
 
-.detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.detail-item.full-w {
-    grid-column: span 2;
-}
+.detail-item { display: flex; flex-direction: column; gap: 3px; }
+.detail-item.full-w { grid-column: span 2; }
 
 .detail-label {
     font-size: 0.72rem;
@@ -1552,16 +1236,8 @@ function badgeEstado(estado) {
     letter-spacing: 0.03em;
 }
 
-.detail-value {
-    font-size: 0.92rem;
-    color: #374151;
-}
-
-.detail-value.highlight {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #1a3a2a;
-}
+.detail-value { font-size: 0.92rem; color: #374151; }
+.detail-value.highlight { font-size: 1.05rem; font-weight: 600; color: #1a3a2a; }
 
 .detail-divider {
     grid-column: span 2;
@@ -1608,53 +1284,21 @@ function badgeEstado(estado) {
     transition: background 0.15s;
 }
 
-.btn-modal-action:hover {
-    background: #14532d;
-}
+.btn-modal-action:hover { background: #14532d; }
 
 @media (max-width: 1100px) {
-    .agenda-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .side-panel {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .side-section {
-        flex: 1;
-        min-width: 280px;
-    }
+    .agenda-layout { grid-template-columns: 1fr; }
+    .side-panel { flex-direction: row; flex-wrap: wrap; }
+    .side-section { flex: 1; min-width: 280px; }
 }
 
 @media (max-width: 700px) {
-    .agenda-page {
-        padding: 16px;
-    }
-
-    .agenda-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .cal-celda {
-        min-height: 60px;
-    }
-
-    .side-panel {
-        flex-direction: column;
-    }
-    
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
-    .detail-item.full-w {
-        grid-column: span 1;
-    }
-    .detail-divider {
-        grid-column: span 1;
-    }
+    .agenda-page { padding: 16px; }
+    .agenda-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .cal-celda { min-height: 60px; }
+    .side-panel { flex-direction: column; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-item.full-w { grid-column: span 1; }
+    .detail-divider { grid-column: span 1; }
 }
 </style>

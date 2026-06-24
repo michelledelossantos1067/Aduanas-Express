@@ -28,6 +28,11 @@ export function usePermisos() {
         crearConductores: computed(() => esAdmin.value || esSupervisor.value),
         editarConductores: computed(() => esAdmin.value || esSupervisor.value),
         eliminarConductores: computed(() => esAdmin.value),
+        
+        // Consume-combistible
+        verConsumoCombustible: computed(() => true),
+        crearCombustible: computed(() => esAdmin.value || esSupervisor.value),
+        editarCombustible: computed(() => esAdmin.value || esSupervisor.value),
 
         // Solicitudes
         verSolicitudes: computed(() => true),

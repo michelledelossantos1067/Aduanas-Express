@@ -1,9 +1,9 @@
+using AduanasExpress.Application.DTOs.ConsumoCombustible;
 using AduanasExpress.Application.DTOs.Mantenimiento;
 using AduanasExpress.Application.Interfaces.Repositories;
 using AduanasExpress.Application.Interfaces.Services;
-using AduanasExpress.Application.DTOs.ConsumoCombustible;
-using AduanasExpress.Domain.Entitis;
 using AduanasExpress.Application.Mappings;
+using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Infrastructure.Services;
 public class ConsumoCombustibleServices : IConsumoCombustibleService{
@@ -33,7 +33,7 @@ public class ConsumoCombustibleServices : IConsumoCombustibleService{
             CostoPorGalon = createConsumoCombustibleDTOs.CostoPorGalon,
             CostoTotal = createConsumoCombustibleDTOs.CostoTotal,
             VehiculoId = createConsumoCombustibleDTOs.VehiculoId,
-
+            Fecha = DateTime.UtcNow,
         };
         await _consumoCombustibleRepositories.Crear(consumo);
     }

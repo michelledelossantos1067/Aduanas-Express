@@ -15,6 +15,7 @@ namespace AduanasExpress.Application.Mappings
                 CostoPorGalon = consumo.CostoPorGalon,
                 CostoTotal = consumo.CostoTotal,
                 VehiculoId = consumo.VehiculoId,
+                SolicitudId = consumo.SolicitudId ?? 0,
             };
         }
     }

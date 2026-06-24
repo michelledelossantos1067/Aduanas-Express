@@ -209,6 +209,34 @@ const router = createRouter({
       },
       component: () => import('../views/usuario/UsuarioFormView.vue'),
     },
+    {
+      path: '/consumo-combustible',
+      name: 'editarSolicitudes',
+      name: 'consumoCombustible',
+      meta: {
+        roles: ['Administrador', 'Supervisor', 'Operador'],
+        permiso: ['usuarios', 'editar'],
+      },
+      component: () => import('../views/consumo/ConsumoCombustibleListView.vue'),
+    },
+    {
+      path: '/consumo-combustible/nuevo',
+      name: 'consumoCombustibleNuevo',
+      meta: { 
+        roles: ['Administrador', 'Supervisor'],
+        permiso: ['usuarios', 'editar'],
+      },
+      component: () => import('../views/consumo/ConsumoCombustibleFormView.vue'),
+    },
+    {
+      path: '/consumo-combustible/:id/editar',
+      name: 'editarCombustible',
+      meta: {
+        roles: ['Administrador', 'Supervisor'],
+        permiso: ['usuarios', 'editar'],
+      },
+      component: () => import('../views/consumo/ConsumoCombustibleFormView.vue'),
+    },
   ],
 })
 
@@ -230,11 +258,11 @@ router.beforeEach((to, from, next) => {
   if (to.meta.permiso && authStore.usuario) {
     const [modulo, accion] = to.meta.permiso
     if (Object.keys(authStore.permisos).length > 0) {
-        if (!authStore.tienePermiso(modulo, accion)) {
-            return next({ name: 'dashboard' })
-        }
+      if (!authStore.tienePermiso(modulo, accion)) {
+        return next({ name: 'dashboard' })
+      }
     }
-}
+  }
 
   next()
 })

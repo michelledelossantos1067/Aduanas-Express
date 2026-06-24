@@ -9,7 +9,7 @@ const vistaActiva = ref('mes')
 const hoy = new Date()
 const fechaActual = ref(new Date(hoy.getFullYear(), hoy.getMonth(), 1))
 
-const filtros = ref({ vehiculos: false, conductores: false, pendientes: false, cancelados: false })
+
 
 function toggleFiltro(key) {
     filtros.value[key] = !filtros.value[key]
@@ -314,16 +314,7 @@ function badgeEstado(estado) {
                     <button class="btn-hoy" @click="irAHoy">Hoy</button>
                 </div>
 
-                <div class="filtros-row">
-                    <button class="filtro-btn filtro-vehiculos" :class="{ activo: filtros.vehiculos }"
-                        @click="toggleFiltro('vehiculos')">Vehículos</button>
-                    <button class="filtro-btn filtro-conductores" :class="{ activo: filtros.conductores }"
-                        @click="toggleFiltro('conductores')">Conductores</button>
-                    <button class="filtro-btn filtro-pendientes" :class="{ activo: filtros.pendientes }"
-                        @click="toggleFiltro('pendientes')">Pendientes</button>
-                    <button class="filtro-btn filtro-cancelados" :class="{ activo: filtros.cancelados }"
-                        @click="toggleFiltro('cancelados')">Cancelados</button>
-                </div>
+               
 
                 <div class="cal-grid">
                     <div class="cal-day-header" v-for="dia in DIAS" :key="dia">{{ dia }}</div>
@@ -652,59 +643,6 @@ function badgeEstado(estado) {
     background: #14532d;
 }
 
-.filtros-row {
-    display: flex;
-    gap: 8px;
-    padding: 10px 20px 12px;
-    flex-wrap: wrap;
-}
-
-.filtro-btn {
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: .75rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    background: transparent;
-    transition: all .15s;
-}
-
-.filtro-vehiculos {
-    border-color: #93c5fd;
-    color: #1e40af;
-}
-
-.filtro-vehiculos.activo {
-    background: #dbeafe;
-}
-
-.filtro-conductores {
-    border-color: #6ee7b7;
-    color: #065f46;
-}
-
-.filtro-conductores.activo {
-    background: #d1fae5;
-}
-
-.filtro-pendientes {
-    border-color: #fca5a5;
-    color: #991b1b;
-}
-
-.filtro-pendientes.activo {
-    background: #fee2e2;
-}
-
-.filtro-cancelados {
-    border-color: #d1d5db;
-    color: #374151;
-}
-
-.filtro-cancelados.activo {
-    background: #f3f4f6;
-}
 
 .cal-grid {
     display: grid;

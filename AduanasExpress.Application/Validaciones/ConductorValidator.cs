@@ -34,7 +34,7 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(15).WithMessage("El teléfono no puede exceder los 15 caracteres.");
             RuleFor(c => c.Direccion)
                 .NotEmpty().WithMessage("La dirección es requerida.")
-                .MaximumLength(50).WithMessage("La dirección no puede exceder los 50 caracteres.");
+                .MaximumLength(255).WithMessage("La dirección no puede exceder los 255 caracteres.");
             RuleFor(c => c.SupervisorId)
                 .NotEmpty().WithMessage("El ID del supervisor es requerido.")
                 .GreaterThan(0).WithMessage("El ID del supervisor debe ser mayor que 0.");
@@ -74,7 +74,7 @@ namespace AduanasExpress.Application.Validaciones
                 .MaximumLength(15).WithMessage("El teléfono no puede exceder los 15 caracteres.");
             RuleFor(c => c.Direccion)
                 .NotEmpty().WithMessage("La dirección es requerida.")
-                .MaximumLength(50).WithMessage("La dirección no puede exceder los 50 caracteres.");
+                .MaximumLength(255).WithMessage("La dirección no puede exceder los 255 caracteres.");
             RuleFor(c => c.SupervisorId)
                 .NotEmpty().WithMessage("El ID del supervisor es requerido.")
                 .GreaterThan(0).WithMessage("El ID del supervisor debe ser mayor que 0.");

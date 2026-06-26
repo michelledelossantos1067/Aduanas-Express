@@ -74,11 +74,18 @@ const vehiculoAToggle = ref(null)
 const cambiandoEstado = ref(false)
 const mostrarModalSinPermiso = ref(false)
 const accionSinPermiso = ref('')
+const mostrarModalEnViaje = ref(false)
+const vehiculoEnViaje = ref(null)
 
 function intentarDesactivar(vehiculo) {
     if (!puede.eliminarVehiculos.value) {
         accionSinPermiso.value = 'desactivar vehículos'
         mostrarModalSinPermiso.value = true
+        return
+    }
+    if (vehiculo.estado === 1) {
+        vehiculoEnViaje.value = vehiculo
+        mostrarModalEnViaje.value = true
         return
     }
     toggleActivo(vehiculo)
@@ -298,7 +305,32 @@ onMounted(cargarVehiculos)
         <VehiculoVerModal v-model="mostrarVer" :vehiculo-id="vehiculoVerId" />
         <VehiculoEliminarModal v-model="mostrarConfirmacion" :vehiculo="vehiculoAEliminar"
             @eliminado="(id) => vehiculos = vehiculos.filter(v => v.id !== id)" />
-<ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
+        <ModalSinPermiso v-model="mostrarModalSinPermiso" :accion="accionSinPermiso" />
+
+        <Teleport to="body">
+            <div v-if="mostrarModalEnViaje" class="modal-overlay" @click.self="mostrarModalEnViaje = false">
+                <div class="modal modal-en-viaje">
+                    <div class="modal-en-viaje-icono">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <p class="modal-titulo">Vehículo en viaje</p>
+                    <p class="modal-desc">
+                        El vehículo
+                        <strong>{{ vehiculoEnViaje?.matricula }} — {{ vehiculoEnViaje?.marca }} {{
+                            vehiculoEnViaje?.modelo }}</strong>
+                        se encuentra actualmente <strong>En Viaje</strong> y no puede ser archivado.<br /><br />
+                        Espera a que finalice el viaje o cambia su estado antes de intentar archivarlo.
+                    </p>
+                    <div class="modal-acciones">
+                        <button class="btn-cancelar-modal" @click="mostrarModalEnViaje = false">Entendido</button>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
 
     </div>
 </template>
@@ -755,6 +787,23 @@ onMounted(cargarVehiculos)
 
 .btn-confirmar-modal:hover {
     background: #b91c1c;
+}
+
+.modal-en-viaje {
+    border-top: 4px solid #3b82f6;
+    text-align: center;
+}
+
+.modal-en-viaje-icono {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+    background: #dbeafe;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    align-items: center;
+    margin: 0 auto 16px;
 }
 
 @media (max-width: 1024px) {

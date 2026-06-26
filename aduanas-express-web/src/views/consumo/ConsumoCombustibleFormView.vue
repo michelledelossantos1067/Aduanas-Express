@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { verConsumoPorId, crearConsumo, actualizarConsumo, eliminarConsumo } from '@/services/consumoCombustibleService'
 import { verVehiculos } from '@/services/vehiculoService'
+import { verSolicitud } from '@/services/solicitudService'
 
 const router = useRouter()
 const route = useRoute()
@@ -11,6 +12,7 @@ const loading = ref(false)
 const error = ref('')
 const mostrarConfirmacion = ref(false)
 const vehiculos = ref([])
+const solicitudes = ref([])
 
 const esEdicion = computed(() => !!route.params.id)
 
@@ -84,16 +86,15 @@ async function cargarConsumo() {
     try {
         loading.value = true
         const res = await verConsumoPorId(route.params.id)
-        form.value = { ...res.data }
-        const data = res.data.find(c => c.id == route.params.id)
+        const data = res.data
         if (!data) throw new Error('Registro no encontrado.')
 
         form.value = {
-            galones: data.galones,
-            costoPorGalon: data.costoPorGalon,
-            costoTotal: data.costoTotal,
-            vehiculoId: data.vehiculoId,
-            solicitudId: data.solicitudId ?? null,
+            galones: data.Galones,
+            costoPorGalon: data.CostoPorGalon,
+            costoTotal: data.CostoTotal,
+            vehiculoId: data.VehiculoId,
+            solicitudId: data.SolicitudId ?? null,
         }
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el registro.'
@@ -105,6 +106,9 @@ async function cargarConsumo() {
 onMounted(async () => {
     const resV = await verVehiculos()
     vehiculos.value = resV.data
+
+    const resS = await verSolicitud()
+    solicitudes.value = resS.data
 
     if (esEdicion.value) await cargarConsumo()
 })
@@ -196,14 +200,19 @@ onMounted(async () => {
                             <label>Vehículo <span class="req">*</span></label>
                             <select v-model="form.vehiculoId">
                                 <option :value="null" disabled>Seleccionar vehículo…</option>
-                                <option v-for="v in vehiculos" :key="v.id" :value="v.id">
-                                    {{ v.matricula }} — {{ v.marca }} {{ v.modelo }}
+                                <option v-for="v in vehiculos" :key="v.Id" :value="v.Id">
+                                    {{ v.Matricula }} — {{ v.Marca }} {{ v.Modelo }}
                                 </option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>ID de Solicitud <span class="field-optional">(opcional)</span></label>
-                            <input v-model="form.solicitudId" type="number" placeholder="Ej. 12" min="1" />
+                            <label>Solicitud <span class="field-optional">(opcional)</span></label>
+                            <select v-model="form.solicitudId">
+                                <option :value="null">Sin solicitud</option>
+                                <option v-for="s in solicitudes" :key="s.id" :value="s.id">
+                                    #{{ s.id }} — {{ s.descripcion ?? s.origen ?? 'Solicitud ' + s.id }}
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>

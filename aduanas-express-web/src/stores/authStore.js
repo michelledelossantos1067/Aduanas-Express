@@ -20,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
             this.usuario = usuario
             localStorage.setItem('token', token)
             localStorage.setItem('usuario', JSON.stringify(usuario))
+            console.log('Usuario guardado:', this.usuario) 
             await this.cargarPermisos()
         },
 
@@ -27,7 +28,14 @@ export const useAuthStore = defineStore('auth', {
             try {
                 const { obtenerRoles } = await import('@/services/rolService')
                 const { data } = await obtenerRoles()
-                const rol = data.find(r => r.nombre === this.usuario?.rol)
+                console.log('data completa:', JSON.stringify(data)) 
+                console.log('Usuario en store:', this.usuario)        // ← ¿tiene rolId?
+console.log('rolId buscado:', this.usuario?.rolId)    // ← ¿qué valor tiene?
+console.log('Roles disponibles:', data.map(r => r.nombre)) // ← ¿coincide?
+
+                const rol = data.find(r => r.nombre === this.usuario?.rolId)
+                console.log('Resultado find:', rol)
+console.log('Comparando:', data.map(r => `"${r.nombre}" === "${this.usuario?.rolId}" → ${r.nombre === this.usuario?.rolId}`))
                 if (!rol) return
 
                 const obj = {}
@@ -37,7 +45,8 @@ export const useAuthStore = defineStore('auth', {
                 }
                 this.permisos = obj
                 localStorage.setItem('permisos', JSON.stringify(obj))
-            } catch {
+            } catch (e) {
+                console.error('Error cargando permisos:', e)
                 this.permisos = {}
             }
         },

@@ -19,11 +19,13 @@ async function handleLogin() {
     error.value = ""
     try {
         const response = await login(form.value.email, form.value.password)
+        console.log('Respuesta completa:', response.data)
         authStore.iniciarSesion(response.data.token, {
             id: response.data.id,
             nombre: response.data.nombre,
-            rol: response.data.rol
+            rolId: response.data.rolId
         })
+        
         router.push('/dashboard')
     } catch (e) {
         error.value = e.response?.data?.message || "Error al iniciar sesión"
@@ -109,7 +111,7 @@ async function handleLogin() {
                     </button>
 
                    
-                    <p>¿Se te olvido la contraseña? <span class="suport" @click="router.push('/reset-password')">Recuperar contraseña</span></p>
+                    <p>¿Se te olvido la contraseña? <span class="suport" @click="router.push('reset-password')">Recuperar contraseña</span></p>
 
                     <p class="mobile-footer">Aduanas Express — Uso institucional exclusivo © 2026</p>
                 </div>

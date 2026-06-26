@@ -12,14 +12,97 @@ namespace AduanasExpress.Infrastructure.Services;
 
 public class AuthServices : IAuthService
 {
-
     private readonly IUsuarioRepositories _usuarioRepositories;
     private readonly IConfiguration _configuration;
+    private static Dictionary<string, (string otp, DateTime expiry)> _otpStorage = new();
 
     public AuthServices(IUsuarioRepositories usuarioRepositories, IConfiguration configuration)
     {
         _usuarioRepositories = usuarioRepositories;
         _configuration = configuration;
+    }
+
+    public async Task<bool> GenerateOtp(GenerateOtpDTO request)
+    {
+        var usuario = await _usuarioRepositories.ObtenerPorEmail(request.Email);
+        if (usuario == null)
+            throw new Exception("El email no existe.");
+
+        var otp = new Random().Next(100000, 999999).ToString();
+        var expiryTime = DateTime.Now.AddMinutes(10);
+
+        if (_otpStorage.ContainsKey(request.Email))
+            _otpStorage[request.Email] = (otp, expiryTime);
+        else
+            _otpStorage.Add(request.Email, (otp, expiryTime));
+
+        await SendOtpEmail(request.Email, otp);
+        
+        return true;
+    }
+
+    public async Task<bool> ValidateOtp(ValidateOtpDTO request)
+    {
+        if (!_otpStorage.ContainsKey(request.Email))
+            throw new Exception("OTP no solicitado o expirado.");
+
+        var (storedOtp, expiry) = _otpStorage[request.Email];
+
+        if (DateTime.Now > expiry)
+        {
+            _otpStorage.Remove(request.Email);
+            throw new Exception("El OTP ha expirado.");
+        }
+
+        if (storedOtp != request.Otp)
+            throw new Exception("El código OTP es incorrecto.");
+
+        return true;
+    }
+
+    public async Task ResetPasswordWithOtp(ResetPasswordWithOtpDTO request)
+    {
+        await ValidateOtp(new ValidateOtpDTO { Email = request.Email, Otp = request.Otp });
+
+        var usuario = await _usuarioRepositories.ObtenerPorEmail(request.Email);
+        if (usuario == null)
+            throw new Exception("El email no existe.");
+
+        var hashPassword = BCrypt.Net.BCrypt.HashPassword(request.NuevaPassword);
+        usuario.Password = hashPassword;
+
+        await _usuarioRepositories.Actualizar(usuario.Id, usuario);
+
+        _otpStorage.Remove(request.Email);
+    }
+
+    private async Task SendOtpEmail(string email, string otp)
+    {
+        using (var smtpClient = new System.Net.Mail.SmtpClient("smtp.gmail.com", 587))
+        {
+            smtpClient.EnableSsl = true;
+            smtpClient.Credentials = new System.Net.NetworkCredential(
+                _configuration["Email:Username"],
+                _configuration["Email:Password"]
+            );
+
+            var mailMessage = new System.Net.Mail.MailMessage(
+                from: _configuration["Email:FromAddress"],
+                to: email,
+                subject: "Tu código de recuperación - Aduanas Express",
+                body: $@"
+                    <h1>Código de recuperación</h1>
+                    <p>Tu código OTP es: <strong>{otp}</strong></p>
+                    <p>Este código es válido por <strong>10 minutos</strong></p>
+                    <p>Si no solicitaste esto, ignora este email.</p>
+                "
+            )
+            {
+                IsBodyHtml = true
+            };
+
+            await smtpClient.SendMailAsync(mailMessage);
+        }
     }
     public async Task<AuthResponseDTOs?> Login(AuthDTOs authDTOs)
     {
@@ -75,7 +158,7 @@ public class AuthServices : IAuthService
         {
             Id = usuario.Id,
             Token = tokenString,
-            Rol = usuario.Rol.Nombre,
+            RolId = usuario.Rol.Nombre,
             Nombre = usuario.Nombre
         };
     }
@@ -132,4 +215,5 @@ public class AuthServices : IAuthService
         };
         await _usuarioRepositories.Crear(usuario);
     }
+
 }

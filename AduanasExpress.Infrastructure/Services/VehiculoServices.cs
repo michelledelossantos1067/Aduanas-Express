@@ -9,9 +9,9 @@ namespace AduanasExpress.Infrastructure.Services;
 public class VehiculoServices : IVehiculoService
 {
     private readonly IVehiculoRepositories _vehiculoRepositories;
-    private readonly IAsignacionRepository _asignacionRepo;          // 👈 nuevo
-    private readonly IConsumoCombustibleRepositories _consumoRepo;   // 👈 nuevo
-    private readonly IMantenimientoRepositories _mantenimientoRepo; // 👈 nuevo
+    private readonly IAsignacionRepository _asignacionRepo;
+    private readonly IConsumoCombustibleRepositories _consumoRepo;
+    private readonly IMantenimientoRepositories _mantenimientoRepo;
 
     public VehiculoServices(
         IVehiculoRepositories vehiculoRepositories,
@@ -41,7 +41,12 @@ public class VehiculoServices : IVehiculoService
         var responses = vehiculo.Select(c => c.ToResponse()).ToList();
         foreach (var r in responses)
             if (r != null)
+            {
                 r.PuedeEliminarse = !await TieneHistorialAsync(r.Id);
+                var ultimoConsumo = await _consumoRepo.ObtenerUltimoPorVehiculo(r.Id);
+                r.UltimosGalones = ultimoConsumo?.Galones;
+                r.FechaUltimoCombustible = ultimoConsumo?.Fecha;
+            };
 
         return responses;
     }
@@ -54,6 +59,11 @@ public class VehiculoServices : IVehiculoService
 
         var response = vehiculo.ToResponse();
         response.PuedeEliminarse = !await TieneHistorialAsync(Id);
+
+        var ultimoConsumo = await _consumoRepo.ObtenerUltimoPorVehiculo(Id);
+        response.UltimosGalones = ultimoConsumo?.Galones;
+        response.FechaUltimoCombustible = ultimoConsumo?.Fecha;
+
         return response;
     }
     public async Task Crear(CreateVehiculoDTOs createVehiculoDTOs)
@@ -72,7 +82,8 @@ public class VehiculoServices : IVehiculoService
             Capacidad = createVehiculoDTOs.Capacidad,
             Estado = createVehiculoDTOs.Estado,
             Kilometraje = createVehiculoDTOs.Kilometraje,
-            FechaUltimoMant = createVehiculoDTOs.FechaUltimoMant
+            FechaUltimoMant = createVehiculoDTOs.FechaUltimoMant,
+            UbicacionActual = createVehiculoDTOs.UbicacionActual
         };
         await _vehiculoRepositories.Crear(vehiculo);
     }
@@ -97,6 +108,7 @@ public class VehiculoServices : IVehiculoService
         vehiculo.Estado = updateVehiculoDTOs.Estado;
         vehiculo.Kilometraje = updateVehiculoDTOs.Kilometraje;
         vehiculo.FechaUltimoMant = updateVehiculoDTOs.FechaUltimoMant;
+        vehiculo.UbicacionActual = updateVehiculoDTOs.UbicacionActual;
         await _vehiculoRepositories.Actualizar(Id, vehiculo);
     }
     public async Task Eliminar(int Id)
@@ -134,5 +146,12 @@ public class VehiculoServices : IVehiculoService
     {
         var vehiculos = await _vehiculoRepositories.ObtenerDisponiblesEnFecha(fecha);
         return vehiculos.Select(v => v.ToResponse()).ToList();
+    }
+    public async Task<IEnumerable<Vehiculo>> ObtenerVehiculosPorUbicacion(string ubicacion)
+    {
+        var vehiculos = await _vehiculoRepositories.ObtenerTodos();
+        return vehiculos.Where(v => v.UbicacionActual == ubicacion &&
+                                    v.IsActive &&
+                                    v.Estado == EstadosVehiculo.Disponible);
     }
 }

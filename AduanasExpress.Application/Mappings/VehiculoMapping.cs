@@ -20,8 +20,8 @@ namespace AduanasExpress.Application.Mappings
                 Estado = vehiculo.Estado,
                 Kilometraje = vehiculo.Kilometraje,
                 FechaUltimoMant = vehiculo.FechaUltimoMant,
-                IsActive = vehiculo.IsActive
-
+                IsActive = vehiculo.IsActive,
+                UbicacionActual = vehiculo.UbicacionActual,
             };
         }
     }

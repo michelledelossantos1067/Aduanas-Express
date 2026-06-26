@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/change-password', name: 'change-password', component: () => import('../views/auth/ChangePasswordView.vue') },
 
     { path: '/dashboard', name: 'dashboard', component: () => import('../views/Dashboard.vue') },
+    
 
     {
       path: '/archivados',
@@ -212,20 +213,19 @@ const router = createRouter({
     },
     {
       path: '/consumo-combustible',
-      name: 'editarSolicitudes',
       name: 'consumoCombustible',
       meta: {
         roles: ['Administrador', 'Supervisor', 'Operador'],
-        permiso: ['usuarios', 'editar'],
+        permiso: ['consumo-combustible', 'ver'],
       },
       component: () => import('../views/consumo/ConsumoCombustibleListView.vue'),
     },
     {
       path: '/consumo-combustible/nuevo',
       name: 'consumoCombustibleNuevo',
-      meta: { 
+      meta: {
         roles: ['Administrador', 'Supervisor'],
-        permiso: ['usuarios', 'editar'],
+        permiso: ['consumo-combustible', 'crear'],
       },
       component: () => import('../views/consumo/ConsumoCombustibleFormView.vue'),
     },
@@ -234,7 +234,7 @@ const router = createRouter({
       name: 'editarCombustible',
       meta: {
         roles: ['Administrador', 'Supervisor'],
-        permiso: ['usuarios', 'editar'],
+        permiso: ['consumo-combustible', 'editar'],
       },
       component: () => import('../views/consumo/ConsumoCombustibleFormView.vue'),
     },
@@ -250,7 +250,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.roles && authStore.usuario) {
-    const rolUsuario = authStore.usuario.rol
+    const rolUsuario = authStore.usuario.rolId
     if (!to.meta.roles.includes(rolUsuario)) {
       return next({ name: 'dashboard' })
     }
@@ -261,6 +261,7 @@ router.beforeEach((to, from, next) => {
     if (Object.keys(authStore.permisos).length > 0) {
       if (!authStore.tienePermiso(modulo, accion)) {
         return next({ name: 'dashboard' })
+        
       }
     }
   }

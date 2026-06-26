@@ -1,4 +1,5 @@
 using AduanasExpress.Application.DTOs.Vehiculo;
+using AduanasExpress.Domain.Entitis;
 
 namespace AduanasExpress.Application.interfaces.Services;
 public interface IVehiculoService{
@@ -10,4 +11,5 @@ public interface IVehiculoService{
     Task Desactivar(int id);
     Task Activar(int id);
     Task<List<VehiculoResponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha);
+    Task<IEnumerable<Vehiculo>> ObtenerVehiculosPorUbicacion(string ubicacion);
 }

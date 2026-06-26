@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AduanasExpress.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260622114111_FixRolSeedIds")]
-    partial class FixRolSeedIds
+    [Migration("20260624182525_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -451,7 +451,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 20,
                             Accion = "ver",
-                            Modulo = "usuarios",
+                            Modulo = "consumo-combustible",
                             Permitido = true,
                             RolId = 1
                         },
@@ -459,7 +459,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 21,
                             Accion = "crear",
-                            Modulo = "usuarios",
+                            Modulo = "consumo-combustible",
                             Permitido = true,
                             RolId = 1
                         },
@@ -467,15 +467,15 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 22,
                             Accion = "editar",
-                            Modulo = "usuarios",
+                            Modulo = "consumo-combustible",
                             Permitido = true,
                             RolId = 1
                         },
                         new
                         {
                             Id = 23,
-                            Accion = "cancelar",
-                            Modulo = "usuarios",
+                            Accion = "eliminar",
+                            Modulo = "consumo-combustible",
                             Permitido = true,
                             RolId = 1
                         },
@@ -483,39 +483,39 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 24,
                             Accion = "ver",
-                            Modulo = "vehiculos",
+                            Modulo = "usuarios",
                             Permitido = true,
-                            RolId = 2
+                            RolId = 1
                         },
                         new
                         {
                             Id = 25,
                             Accion = "crear",
-                            Modulo = "vehiculos",
-                            Permitido = false,
-                            RolId = 2
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
                         },
                         new
                         {
                             Id = 26,
                             Accion = "editar",
-                            Modulo = "vehiculos",
+                            Modulo = "usuarios",
                             Permitido = true,
-                            RolId = 2
+                            RolId = 1
                         },
                         new
                         {
                             Id = 27,
                             Accion = "cancelar",
-                            Modulo = "vehiculos",
-                            Permitido = false,
-                            RolId = 2
+                            Modulo = "usuarios",
+                            Permitido = true,
+                            RolId = 1
                         },
                         new
                         {
                             Id = 28,
                             Accion = "ver",
-                            Modulo = "conductores",
+                            Modulo = "vehiculos",
                             Permitido = true,
                             RolId = 2
                         },
@@ -523,15 +523,15 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 29,
                             Accion = "crear",
-                            Modulo = "conductores",
-                            Permitido = true,
+                            Modulo = "vehiculos",
+                            Permitido = false,
                             RolId = 2
                         },
                         new
                         {
                             Id = 30,
                             Accion = "editar",
-                            Modulo = "conductores",
+                            Modulo = "vehiculos",
                             Permitido = true,
                             RolId = 2
                         },
@@ -539,7 +539,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 31,
                             Accion = "cancelar",
-                            Modulo = "conductores",
+                            Modulo = "vehiculos",
                             Permitido = false,
                             RolId = 2
                         },
@@ -547,7 +547,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 32,
                             Accion = "ver",
-                            Modulo = "solicitudes",
+                            Modulo = "conductores",
                             Permitido = true,
                             RolId = 2
                         },
@@ -555,7 +555,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 33,
                             Accion = "crear",
-                            Modulo = "solicitudes",
+                            Modulo = "conductores",
                             Permitido = true,
                             RolId = 2
                         },
@@ -563,7 +563,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 34,
                             Accion = "editar",
-                            Modulo = "solicitudes",
+                            Modulo = "conductores",
                             Permitido = true,
                             RolId = 2
                         },
@@ -571,7 +571,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 35,
                             Accion = "cancelar",
-                            Modulo = "solicitudes",
+                            Modulo = "conductores",
                             Permitido = false,
                             RolId = 2
                         },
@@ -579,15 +579,15 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 36,
                             Accion = "ver",
-                            Modulo = "asignaciones",
+                            Modulo = "solicitudes",
                             Permitido = true,
                             RolId = 2
                         },
                         new
                         {
                             Id = 37,
-                            Accion = "asignar",
-                            Modulo = "asignaciones",
+                            Accion = "crear",
+                            Modulo = "solicitudes",
                             Permitido = true,
                             RolId = 2
                         },
@@ -595,7 +595,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 38,
                             Accion = "editar",
-                            Modulo = "asignaciones",
+                            Modulo = "solicitudes",
                             Permitido = true,
                             RolId = 2
                         },
@@ -603,7 +603,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 39,
                             Accion = "cancelar",
-                            Modulo = "asignaciones",
+                            Modulo = "solicitudes",
                             Permitido = false,
                             RolId = 2
                         },
@@ -611,13 +611,45 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 40,
                             Accion = "ver",
-                            Modulo = "reportes",
+                            Modulo = "asignaciones",
                             Permitido = true,
                             RolId = 2
                         },
                         new
                         {
                             Id = 41,
+                            Accion = "asignar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Accion = "editar",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Accion = "cancelar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Accion = "ver",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 2
+                        },
+                        new
+                        {
+                            Id = 45,
                             Accion = "exportar",
                             Modulo = "reportes",
                             Permitido = true,
@@ -625,41 +657,9 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 42,
+                            Id = 46,
                             Accion = "estadisticas",
                             Modulo = "reportes",
-                            Permitido = false,
-                            RolId = 2
-                        },
-                        new
-                        {
-                            Id = 43,
-                            Accion = "ver",
-                            Modulo = "usuarios",
-                            Permitido = true,
-                            RolId = 2
-                        },
-                        new
-                        {
-                            Id = 44,
-                            Accion = "crear",
-                            Modulo = "usuarios",
-                            Permitido = false,
-                            RolId = 2
-                        },
-                        new
-                        {
-                            Id = 45,
-                            Accion = "editar",
-                            Modulo = "usuarios",
-                            Permitido = false,
-                            RolId = 2
-                        },
-                        new
-                        {
-                            Id = 46,
-                            Accion = "cancelar",
-                            Modulo = "usuarios",
                             Permitido = false,
                             RolId = 2
                         },
@@ -667,71 +667,71 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 47,
                             Accion = "ver",
-                            Modulo = "vehiculos",
+                            Modulo = "consumo-combustible",
                             Permitido = true,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 48,
                             Accion = "crear",
-                            Modulo = "vehiculos",
-                            Permitido = false,
-                            RolId = 3
+                            Modulo = "consumo-combustible",
+                            Permitido = true,
+                            RolId = 2
                         },
                         new
                         {
                             Id = 49,
                             Accion = "editar",
-                            Modulo = "vehiculos",
-                            Permitido = false,
-                            RolId = 3
+                            Modulo = "consumo-combustible",
+                            Permitido = true,
+                            RolId = 2
                         },
                         new
                         {
                             Id = 50,
-                            Accion = "cancelar",
-                            Modulo = "vehiculos",
+                            Accion = "eliminar",
+                            Modulo = "consumo-combustible",
                             Permitido = false,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 51,
                             Accion = "ver",
-                            Modulo = "conductores",
+                            Modulo = "usuarios",
                             Permitido = true,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 52,
                             Accion = "crear",
-                            Modulo = "conductores",
+                            Modulo = "usuarios",
                             Permitido = false,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 53,
                             Accion = "editar",
-                            Modulo = "conductores",
+                            Modulo = "usuarios",
                             Permitido = false,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 54,
                             Accion = "cancelar",
-                            Modulo = "conductores",
+                            Modulo = "usuarios",
                             Permitido = false,
-                            RolId = 3
+                            RolId = 2
                         },
                         new
                         {
                             Id = 55,
                             Accion = "ver",
-                            Modulo = "solicitudes",
+                            Modulo = "vehiculos",
                             Permitido = true,
                             RolId = 3
                         },
@@ -739,15 +739,15 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 56,
                             Accion = "crear",
-                            Modulo = "solicitudes",
-                            Permitido = true,
+                            Modulo = "vehiculos",
+                            Permitido = false,
                             RolId = 3
                         },
                         new
                         {
                             Id = 57,
                             Accion = "editar",
-                            Modulo = "solicitudes",
+                            Modulo = "vehiculos",
                             Permitido = false,
                             RolId = 3
                         },
@@ -755,7 +755,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 58,
                             Accion = "cancelar",
-                            Modulo = "solicitudes",
+                            Modulo = "vehiculos",
                             Permitido = false,
                             RolId = 3
                         },
@@ -763,15 +763,15 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 59,
                             Accion = "ver",
-                            Modulo = "asignaciones",
+                            Modulo = "conductores",
                             Permitido = true,
                             RolId = 3
                         },
                         new
                         {
                             Id = 60,
-                            Accion = "asignar",
-                            Modulo = "asignaciones",
+                            Accion = "crear",
+                            Modulo = "conductores",
                             Permitido = false,
                             RolId = 3
                         },
@@ -779,7 +779,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 61,
                             Accion = "editar",
-                            Modulo = "asignaciones",
+                            Modulo = "conductores",
                             Permitido = false,
                             RolId = 3
                         },
@@ -787,7 +787,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 62,
                             Accion = "cancelar",
-                            Modulo = "asignaciones",
+                            Modulo = "conductores",
                             Permitido = false,
                             RolId = 3
                         },
@@ -795,13 +795,109 @@ namespace AduanasExpress.Infrastructure.Migrations
                         {
                             Id = 63,
                             Accion = "ver",
-                            Modulo = "reportes",
+                            Modulo = "solicitudes",
                             Permitido = true,
                             RolId = 3
                         },
                         new
                         {
                             Id = 64,
+                            Accion = "crear",
+                            Modulo = "solicitudes",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Accion = "editar",
+                            Modulo = "solicitudes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Accion = "cancelar",
+                            Modulo = "solicitudes",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Accion = "ver",
+                            Modulo = "consumo-combustible",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Accion = "crear",
+                            Modulo = "consumo-combustible",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Accion = "editar",
+                            Modulo = "consumo-combustible",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Accion = "eliminar",
+                            Modulo = "consumo-combustible",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Accion = "ver",
+                            Modulo = "asignaciones",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Accion = "asignar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Accion = "editar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Accion = "cancelar",
+                            Modulo = "asignaciones",
+                            Permitido = false,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Accion = "ver",
+                            Modulo = "reportes",
+                            Permitido = true,
+                            RolId = 3
+                        },
+                        new
+                        {
+                            Id = 76,
                             Accion = "exportar",
                             Modulo = "reportes",
                             Permitido = false,
@@ -809,7 +905,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 65,
+                            Id = 77,
                             Accion = "estadisticas",
                             Modulo = "reportes",
                             Permitido = false,
@@ -817,7 +913,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 66,
+                            Id = 78,
                             Accion = "ver",
                             Modulo = "usuarios",
                             Permitido = true,
@@ -825,7 +921,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 67,
+                            Id = 79,
                             Accion = "crear",
                             Modulo = "usuarios",
                             Permitido = false,
@@ -833,7 +929,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 68,
+                            Id = 80,
                             Accion = "editar",
                             Modulo = "usuarios",
                             Permitido = false,
@@ -841,7 +937,7 @@ namespace AduanasExpress.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = 69,
+                            Id = 81,
                             Accion = "cancelar",
                             Modulo = "usuarios",
                             Permitido = false,

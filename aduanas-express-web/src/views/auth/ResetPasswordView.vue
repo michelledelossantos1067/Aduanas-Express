@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { generateOtp, validateOtp, resetPasswordWithOtp } from '../../services/authService'
 
 const router = useRouter()
 
@@ -10,27 +11,49 @@ const error = ref('')
 
 const form = ref({
     email: '',
+    otp: '',
     password: '',
     confirmPassword: ''
 })
 
-async function handleVerifyEmail() {
+async function handleGenerateOtp() {
     if (!form.value.email) {
         error.value = 'Ingresa tu correo electrónico'
         return
     }
+    
     loading.value = true
     error.value = ''
     try {
-
-        step.value = 'password'
+        await generateOtp(form.value.email)
+        step.value = 'otp'
     } catch (e) {
-        error.value = e.response?.data?.message || 'Correo no encontrado'
+        error.value = e.response?.data?.message || 'Error al enviar el código'
     } finally {
         loading.value = false
     }
 }
 
+// PASO 2: Validar OTP
+async function handleValidateOtp() {
+    if (!form.value.otp) {
+        error.value = 'Ingresa el código OTP'
+        return
+    }
+    
+    loading.value = true
+    error.value = ''
+    try {
+        await validateOtp(form.value.email, form.value.otp)
+        step.value = 'password'
+    } catch (e) {
+        error.value = e.response?.data?.message || 'Código OTP incorrecto o expirado'
+    } finally {
+        loading.value = false
+    }
+}
+
+// PASO 3: Cambiar contraseña
 async function handleResetPassword() {
     if (!form.value.password || !form.value.confirmPassword) {
         error.value = 'Completa ambos campos'
@@ -44,13 +67,18 @@ async function handleResetPassword() {
         error.value = 'Las contraseñas no coinciden'
         return
     }
+
     loading.value = true
     error.value = ''
     try {
-
+        await resetPasswordWithOtp(
+            form.value.email,
+            form.value.otp,
+            form.value.password
+        )
         step.value = 'done'
     } catch (e) {
-        error.value = e.response?.data?.message || 'Error al restablecer la contraseña'
+        error.value = e.response?.data?.message || 'Error al cambiar la contraseña'
     } finally {
         loading.value = false
     }
@@ -61,7 +89,6 @@ async function handleResetPassword() {
     <div class="reset-page">
         <div class="reset-card">
             <div class="reset-container">
-
                 <div class="reset-left">
                     <div>
                         <div class="brand">
@@ -81,8 +108,8 @@ async function handleResetPassword() {
                             <li>
                                 <i class="ti ti-lock-open" aria-hidden="true"></i>
                                 <div>
-                                    <span class="feature-title">Recuperación simple</span>
-                                    <span class="feature-sub">Solo tu correo y nueva clave</span>
+                                    <span class="feature-title">Recuperación segura</span>
+                                    <span class="feature-sub">Código de verificación por email</span>
                                 </div>
                             </li>
                             <li>
@@ -99,15 +126,16 @@ async function handleResetPassword() {
 
                 <div class="reset-right">
 
+                    <!-- PASO 1: Ingresar email -->
                     <template v-if="step === 'email'">
                         <h1>Recuperar contraseña</h1>
-                        <h4>Ingresa tu correo para continuar</h4>
+                        <h4>Ingresa tu correo para recibir el código</h4>
                         <div class="form-group">
                             <label class="form-label">Correo electrónico</label>
                             <input v-model="form.email" type="email" class="form-input" placeholder="correo@ejemplo.com" />
                             <p v-if="error" class="error-msg">{{ error }}</p>
-                            <button @click="handleVerifyEmail" class="btn-action" :disabled="loading">
-                                {{ loading ? 'Verificando...' : 'Continuar' }}
+                            <button @click="handleGenerateOtp" class="btn-action" :disabled="loading">
+                                {{ loading ? 'Enviando...' : 'Enviar código OTP' }}
                             </button>
                             <p>¿Recordaste tu contraseña?
                                 <span class="support" @click="router.push('/login')">Inicia sesión</span>
@@ -115,9 +143,27 @@ async function handleResetPassword() {
                         </div>
                     </template>
 
+                    <!-- PASO 2: Ingresar código OTP -->
+                    <template v-if="step === 'otp'">
+                        <h1>Verificar código</h1>
+                        <h4>Hemos enviado un código a <strong>{{ form.email }}</strong></h4>
+                        <div class="form-group">
+                            <label class="form-label">Código OTP (6 dígitos)</label>
+                            <input v-model="form.otp" type="text" class="form-input" placeholder="123456" maxlength="6" />
+                            <p v-if="error" class="error-msg">{{ error }}</p>
+                            <button @click="handleValidateOtp" class="btn-action" :disabled="loading">
+                                {{ loading ? 'Validando...' : 'Validar código' }}
+                            </button>
+                            <p>
+                                <span class="support" @click="step = 'email'">← Cambiar correo</span>
+                            </p>
+                        </div>
+                    </template>
+
+                    <!-- PASO 3: Ingresar nueva contraseña -->
                     <template v-if="step === 'password'">
                         <h1>Nueva contraseña</h1>
-                        <h4>Elige una contraseña segura para <strong>{{ form.email }}</strong></h4>
+                        <h4>Elige una contraseña segura</h4>
                         <div class="form-group">
                             <label class="form-label">Nueva contraseña</label>
                             <input v-model="form.password" type="password" class="form-input" placeholder="Mínimo 6 caracteres" />
@@ -127,12 +173,10 @@ async function handleResetPassword() {
                             <button @click="handleResetPassword" class="btn-action" :disabled="loading">
                                 {{ loading ? 'Guardando...' : 'Restablecer contraseña' }}
                             </button>
-                            <p>
-                                <span class="support" @click="step = 'email'">← Cambiar correo</span>
-                            </p>
                         </div>
                     </template>
 
+                    <!-- PASO 4: Éxito -->
                     <template v-if="step === 'done'">
                         <div class="success-state">
                             <div class="success-icon">

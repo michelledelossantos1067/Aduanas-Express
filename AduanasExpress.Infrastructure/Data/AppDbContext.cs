@@ -20,6 +20,14 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(u => u.RolId)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OtpVerification>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.Code).IsRequired().HasMaxLength(6);
+                entity.HasIndex(e => e.Email);
+                entity.HasIndex(e => e.ExpiryTime);
+            });
 
         modelBuilder.Entity<RolPermiso>()
             .HasOne(p => p.Rol)
@@ -68,9 +76,19 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(a => a.AsignadoPorId)
             .OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<ConsumoCombustible>()
+    .HasOne(c => c.Vehiculo)
+    .WithMany()
+    .HasForeignKey(c => c.VehiculoId)
+    .OnDelete(DeleteBehavior.Restrict);
+    modelBuilder.Entity<ConsumoCombustible>()
+    .HasOne(c => c.Vehiculo)
+    .WithMany()
+    .HasForeignKey(c => c.VehiculoId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 
-    // Reproduce exactamente la matriz de permisos que ya tenías hardcodeada en RolesView.vue,
+
     private static List<RolPermiso> SeedRolPermisos()
     {
         var permisos = new List<RolPermiso>();
@@ -82,26 +100,29 @@ public class AppDbContext : DbContext
                 permisos.Add(new RolPermiso { Id = id++, RolId = rolId, Modulo = modulo, Accion = accion, Permitido = permitido });
         }
 
-        // Administrador (Id = 1)
+        // Administrador
         Agregar(1, "vehiculos", ("ver", true), ("crear", true), ("editar", true), ("cancelar", true));
         Agregar(1, "conductores", ("ver", true), ("crear", true), ("editar", true), ("cancelar", true));
         Agregar(1, "solicitudes", ("ver", true), ("crear", true), ("editar", true), ("cancelar", true));
         Agregar(1, "asignaciones", ("ver", true), ("asignar", true), ("editar", true), ("cancelar", true));
         Agregar(1, "reportes", ("ver", true), ("exportar", true), ("estadisticas", true));
+        Agregar(1, "consumo-combustible", ("ver", true), ("crear", true), ("editar", true), ("eliminar", true));
         Agregar(1, "usuarios", ("ver", true), ("crear", true), ("editar", true), ("cancelar", true));
 
-        // Supervisor (Id = 2)
+        // Supervisor
         Agregar(2, "vehiculos", ("ver", true), ("crear", false), ("editar", true), ("cancelar", false));
         Agregar(2, "conductores", ("ver", true), ("crear", true), ("editar", true), ("cancelar", false));
         Agregar(2, "solicitudes", ("ver", true), ("crear", true), ("editar", true), ("cancelar", false));
         Agregar(2, "asignaciones", ("ver", true), ("asignar", true), ("editar", true), ("cancelar", false));
         Agregar(2, "reportes", ("ver", true), ("exportar", true), ("estadisticas", false));
+        Agregar(2, "consumo-combustible", ("ver", true), ("crear", true), ("editar", true), ("eliminar", false));
         Agregar(2, "usuarios", ("ver", true), ("crear", false), ("editar", false), ("cancelar", false));
 
-        // Operador (Id = 3)
+        // Operador
         Agregar(3, "vehiculos", ("ver", true), ("crear", false), ("editar", false), ("cancelar", false));
         Agregar(3, "conductores", ("ver", true), ("crear", false), ("editar", false), ("cancelar", false));
         Agregar(3, "solicitudes", ("ver", true), ("crear", true), ("editar", false), ("cancelar", false));
+        Agregar(3, "consumo-combustible", ("ver", true), ("crear", false), ("editar", false), ("eliminar", false));
         Agregar(3, "asignaciones", ("ver", true), ("asignar", false), ("editar", false), ("cancelar", false));
         Agregar(3, "reportes", ("ver", true), ("exportar", false), ("estadisticas", false));
         Agregar(3, "usuarios", ("ver", true), ("crear", false), ("editar", false), ("cancelar", false));
@@ -117,4 +138,5 @@ public class AppDbContext : DbContext
     public DbSet<Asignacion> Asignaciones { get; set; }
     public DbSet<Rol> Roles { get; set; }
     public DbSet<RolPermiso> RolPermisos { get; set; }
+    public DbSet<OtpVerification> OtpVerifications { get; set; }
 }

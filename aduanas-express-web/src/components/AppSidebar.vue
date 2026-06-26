@@ -127,7 +127,7 @@ function cerrarSesion() {
             <div class="user-avatar">{{ userInitials }}</div>
             <div class="user-info">
                 <span class="user-name">{{ authStore.usuario?.nombre || 'Usuario' }}</span>
-                <span class="user-role">{{ authStore.usuario?.rol || 'Sin rol' }}</span>
+                <span class="user-role">{{ authStore.usuario?.rolId || 'Sin rol' }}</span>
             </div>
             <div class="footer-gear-wrap" ref="gearWrap">
                 <button class="btn-gear" @click="gearOpen = !gearOpen" title="Opciones">

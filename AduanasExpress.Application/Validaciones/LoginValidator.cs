@@ -49,7 +49,8 @@ namespace AduanasExpress.Application.Validaciones
                 .NotEmpty().WithMessage("La contraseña es requerida.")
                 .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
             RuleFor(l => l.RolId)
-               .IsInEnum().WithMessage("El rol no es válido.");
+                .GreaterThan(0).WithMessage("El rol no es válido.")
+                .LessThanOrEqualTo(3).WithMessage("El rol no es válido.");
         }
     }
     public  class ResetPasswordValidator : AbstractValidator<ResetPasswordDTO>

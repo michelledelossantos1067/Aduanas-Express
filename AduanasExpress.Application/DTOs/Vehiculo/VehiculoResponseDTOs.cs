@@ -14,4 +14,8 @@ public class VehiculoResponseDTOs{
     public DateTime? FechaUltimoMant { get; set; }
     public bool IsActive { get; set; }
     public bool PuedeEliminarse { get; set; }
+    public decimal? NivelCombustible { get; set; }
+    public decimal? UltimosGalones { get; set; }
+    public DateTime? FechaUltimoCombustible { get; set; }
+    public string UbicacionActual {get;set;}
 }

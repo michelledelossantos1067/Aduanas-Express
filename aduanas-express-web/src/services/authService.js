@@ -12,6 +12,33 @@ export const logout = ()=>{
 export const resetPassword = (email)=>{
     return api.post('/Auth/reset-password',{email})
 }
-export const changePassword = (data)=>{
-    return api.put('/Auth/change-password',data)
+export const changePassword = (data) => {
+    console.log('Data recibida:', data)
+    console.log('PasswordActual:', data.passwordActual)
+    console.log('Longitud:', data.passwordActual?.length)
+    
+    const payload = {
+        Email: data.email,
+        PasswordActual: data.passwordActual,
+        PasswordNueva: data.passwordNueva
+    }
+    
+    console.log('Payload enviado:', JSON.stringify(payload))
+    
+    return api.put('/Auth/change-password', payload)
+}
+export const generateOtp = (email) => {
+    return api.post('/Auth/generate-otp', { Email: email })
+}
+
+export const validateOtp = (email, otp) => {
+    return api.post('/Auth/validate-otp', { Email: email, Otp: otp })
+}
+
+export const resetPasswordWithOtp = (email, otp, nuevaPassword) => {
+    return api.post('/Auth/reset-password-otp', {
+        Email: email,
+        Otp: otp,
+        NuevaPassword: nuevaPassword
+    })
 }

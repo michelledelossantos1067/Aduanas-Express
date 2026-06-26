@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { verVehiculoPorId } from '@/services/vehiculoService'
+import { verConsumos } from '@/services/consumoCombustibleService'
 
 const props = defineProps({
     modelValue: { type: Boolean, default: false },
@@ -12,6 +13,19 @@ const emit = defineEmits(['update:modelValue'])
 const loading = ref(false)
 const error = ref('')
 const vehiculo = ref(null)
+const consumos = ref([])
+const loadingConsumos = ref(false)
+
+const totalGalones = computed(() =>
+    consumos.value.reduce((acc, c) => acc + (c.galones || 0), 0).toFixed(2)
+)
+const totalCosto = computed(() =>
+    consumos.value.reduce((acc, c) => acc + (c.costoTotal || 0), 0).toFixed(2)
+)
+const ultimoConsumo = computed(() => {
+    if (!consumos.value.length) return null
+    return consumos.value.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0]
+})
 
 const estadosVehiculo = [
     { label: 'Disponible', value: 0 },
@@ -40,19 +54,31 @@ function formatFecha(fecha) {
 async function cargarVehiculo(id) {
     if (!id) return
     loading.value = true
+    loadingConsumos.value = true
     error.value = ''
     vehiculo.value = null
+    consumos.value = []
     try {
         const res = await verVehiculoPorId(id)
         const data = Array.isArray(res.data)
             ? res.data.find(v => v.id == id)
             : res.data
-        if (!data) throw new Error('Vehículo no encontrado.')
+        if (!data) throw new Error('Vehiculo no encontrado.')
         vehiculo.value = data
     } catch (e) {
-        error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el vehículo.'
+        error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el vehiculo.'
     } finally {
         loading.value = false
+    }
+
+    try {
+        const resC = await verConsumos()
+        const todos = Array.isArray(resC.data) ? resC.data : []
+        consumos.value = todos.filter(c => c.vehiculoId == id)
+    } catch {
+        consumos.value = []
+    } finally {
+        loadingConsumos.value = false
     }
 }
 
@@ -72,7 +98,8 @@ function cerrar() {
 
                 <div class="modal-header">
                     <div class="modal-header-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <rect x="1" y="3" width="15" height="13" rx="2" />
                             <path d="M16 8h4l3 3v5h-7V8z" />
                             <circle cx="5.5" cy="18.5" r="2.5" />
@@ -84,8 +111,10 @@ function cerrar() {
                         <p>Información completa del registro</p>
                     </div>
                     <button class="btn-cerrar" @click="cerrar">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
                     </button>
                 </div>
@@ -97,7 +126,9 @@ function cerrar() {
 
                 <div v-else-if="error" class="modal-alert">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
                     {{ error }}
                 </div>
@@ -112,7 +143,8 @@ function cerrar() {
                     </div>
 
                     <h3 class="ver-nombre">{{ vehiculo.marca }} {{ vehiculo.modelo }} {{ vehiculo.año }}</h3>
-                    <p class="ver-subtitulo">{{ vehiculo.tipo }} · {{ vehiculo.capacidad }} pasajeros · {{ vehiculo.color }}</p>
+                    <p class="ver-subtitulo">{{ vehiculo.tipo }} · {{ vehiculo.capacidad }} pasajeros · {{
+                        vehiculo.color }}</p>
 
                     <div class="ver-divider"></div>
 
@@ -149,6 +181,10 @@ function cerrar() {
                             <span class="ver-label">Últ. Mantenimiento</span>
                             <span class="ver-valor">{{ formatFecha(vehiculo.fechaUltimoMant) }}</span>
                         </div>
+                        <div class="ver-item ver-item-full">
+                            <span class="ver-label">Ubicación Actual</span>
+                            <span class="ver-valor">📍 {{ vehiculo.ubicacionActual ?? '—' }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -165,7 +201,7 @@ function cerrar() {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(0, 0, 0, .45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -180,7 +216,7 @@ function cerrar() {
     max-width: 90vw;
     max-height: 85vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
 }
 
 .modal-header {
@@ -203,7 +239,9 @@ function cerrar() {
     flex-shrink: 0;
 }
 
-.modal-header-text { flex: 1; }
+.modal-header-text {
+    flex: 1;
+}
 
 .modal-header-text h2 {
     font-size: 1.05rem;
@@ -228,6 +266,7 @@ function cerrar() {
     display: flex;
     transition: background 0.15s, color 0.15s;
 }
+
 .btn-cerrar:hover {
     background: #f3f4f6;
     color: #374151;
@@ -251,7 +290,15 @@ function cerrar() {
     animation: spin 0.75s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ver-item-full {
+    grid-column: 1 / -1;
+}
 
 .modal-alert {
     display: flex;
@@ -339,10 +386,26 @@ function cerrar() {
     font-size: 0.73rem;
     font-weight: 600;
 }
-.badge-disponible { background: #d1fae5; color: #065f46; }
-.badge-en-viaje { background: #dbeafe; color: #1e40af; }
-.badge-mantenimiento { background: #fef3c7; color: #92400e; }
-.badge-fuera-servicio { background: #fee2e2; color: #991b1b; }
+
+.badge-disponible {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-en-viaje {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-mantenimiento {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-fuera-servicio {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
 .modal-footer {
     display: flex;
@@ -364,11 +427,25 @@ function cerrar() {
     font-family: inherit;
     transition: background 0.15s;
 }
-.btn-cerrar-modal:hover { background: #e5e7eb; }
+
+.btn-cerrar-modal:hover {
+    background: #e5e7eb;
+}
 
 @media (max-width: 640px) {
-    .modal { width: 95vw; }
-    .ver-grid { grid-template-columns: 1fr; }
-    .modal-header, .modal-body, .modal-footer { padding-left: 16px; padding-right: 16px; }
+    .modal {
+        width: 95vw;
+    }
+
+    .ver-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
 }
 </style>

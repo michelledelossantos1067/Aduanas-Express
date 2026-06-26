@@ -19,13 +19,11 @@ const form = ref({
     motivoViaje: '',
     fechaViaje: '',
     horaSalida: '',
+    horaEstimada: '',
     cantidadColaboradores: 1,
     estado: 0,
 })
 
-/* =========================
-   ESTADOS (deben coincidir con el enum EstadosSolicitudes del backend)
-========================= */
 const estadosSolicitud = [
     { value: 0, label: 'Pendiente' },
     { value: 1, label: 'Aprobada' },
@@ -50,9 +48,6 @@ const estadoBadgeClase = computed(() => {
     return mapa[form.value.estado] ?? 'badge-pendiente'
 })
 
-/* =========================
-   AUTOCOMPLETE UBICACIONES
-========================= */
 
 const origenQuery = ref('')
 const destinoQuery = ref('')
@@ -75,7 +70,6 @@ async function buscarUbicaciones(query, target) {
                 }
             }
         )
-
         const data = await res.json()
         target.value = data.map(d => d.display_name)
 
@@ -84,7 +78,6 @@ async function buscarUbicaciones(query, target) {
     }
 }
 
-/* debounce origen */
 watch(origenQuery, (val) => {
     clearTimeout(timeoutOrigen)
     timeoutOrigen = setTimeout(() => {
@@ -92,7 +85,6 @@ watch(origenQuery, (val) => {
     }, 400)
 })
 
-/* debounce destino */
 watch(destinoQuery, (val) => {
     clearTimeout(timeoutDestino)
     timeoutDestino = setTimeout(() => {
@@ -100,9 +92,6 @@ watch(destinoQuery, (val) => {
     }, 400)
 })
 
-/* =========================
-   RESTO TU LÓGICA
-========================= */
 
 async function cargarSolicitud() {
     loading.value = true
@@ -119,17 +108,10 @@ async function cargarSolicitud() {
             motivoViaje: s.motivoViaje ?? '',
             fechaViaje: s.fechaViaje ? s.fechaViaje.substring(0, 10) : '',
             horaSalida: s.horaSalida ? s.horaSalida.substring(0, 5) : '',
+            horaEstimada: s.horaEstimada ? s.horaEstimada.substring(0, 5) : '',
             cantidadColaboradores: s.cantidadColaboradores ?? 1,
             estado: s.estado ?? 0,
         }
-
-        // 👇 ESTO ES LO QUE FALTABA:
-        // El <select> de origen/destino solo muestra opciones que estén
-        // dentro de los arrays "origenes" / "destinos", los cuales solo
-        // se llenan cuando el usuario escribe en el buscador.
-        // Si el valor que viene del backend no está en esa lista,
-        // el <select> no tiene ninguna <option> que calce y se ve vacío.
-        // Por eso lo insertamos manualmente como opción disponible:
         if (s.puntoOrigen) {
             origenes.value = [s.puntoOrigen]
         }
@@ -230,7 +212,6 @@ onMounted(() => {
                         <li>Área solicitante</li>
                         <li>Punto de origen</li>
                         <li>Destino</li>
-                        <li>Tipo de viaje</li>
                         <li>Fecha de viaje</li>
                         <li>Hora de salida</li>
                     </ul>
@@ -307,35 +288,6 @@ onMounted(() => {
                                     </option>
                                 </select>
                             </div>
-                            <div class="field form-full">
-                                <label>Tipo de viaje <span class="req">*</span></label>
-                                <div class="tipo-viaje-group">
-                                    <button type="button" class="tipo-btn"
-                                        :class="{ 'tipo-btn-activo': form.tipoViaje === 0 }"
-                                        @click="form.tipoViaje = 0">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <line x1="5" y1="12" x2="19" y2="12" />
-                                            <polyline points="12 5 19 12 12 19" />
-                                        </svg>
-                                        Solo ida
-                                        <span class="tipo-hint">El vehículo queda en destino</span>
-                                    </button>
-                                    <button type="button" class="tipo-btn"
-                                        :class="{ 'tipo-btn-activo': form.tipoViaje === 1 }"
-                                        @click="form.tipoViaje = 1">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <polyline points="17 1 21 5 17 9" />
-                                            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                                            <polyline points="7 23 3 19 7 15" />
-                                            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                                        </svg>
-                                        Ida y vuelta
-                                        <span class="tipo-hint">El vehículo regresa al origen</span>
-                                    </button>
-                                </div>
-                            </div>
                             <div class="field">
                                 <label>Fecha de viaje <span class="req">*</span></label>
                                 <input v-model="form.fechaViaje" type="date" />
@@ -346,6 +298,10 @@ onMounted(() => {
                             <div class="field">
                                 <label>Hora de salida <span class="req">*</span></label>
                                 <input v-model="form.horaSalida" type="time" />
+                            </div>
+                            <div class="field">
+                                <label>Hora estimada</label>
+                                <input v-model="form.horaEstimada" type="time" />
                             </div>
                         </div>
                     </div>

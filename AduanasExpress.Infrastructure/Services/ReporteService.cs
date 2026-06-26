@@ -10,30 +10,30 @@ namespace AduanasExpress.Infrastructure.Services;
 
 public class ReporteService : IReporteService
 {
-    private readonly IAsignacionRepository              _asignacionRepo;
-    private readonly ISolicitudTransporteRepositories   _solicitudRepo;
-    private readonly IConsumoCombustibleRepositories    _consumoRepo;
+    private readonly IAsignacionRepository _asignacionRepo;
+    private readonly ISolicitudTransporteRepositories _solicitudRepo;
+    private readonly IConsumoCombustibleRepositories _consumoRepo;
 
     public ReporteService(
-        IAsignacionRepository            asignacionRepo,
+        IAsignacionRepository asignacionRepo,
         ISolicitudTransporteRepositories solicitudRepo,
-        IConsumoCombustibleRepositories  consumoRepo)
+        IConsumoCombustibleRepositories consumoRepo)
     {
         _asignacionRepo = asignacionRepo;
-        _solicitudRepo  = solicitudRepo;
-        _consumoRepo    = consumoRepo;
+        _solicitudRepo = solicitudRepo;
+        _consumoRepo = consumoRepo;
     }
 
 
     public async Task<ReporteViajesDTO> GetReporteViajesAsync(int mes, int anio)
     {
-        var solicitudes  = await _solicitudRepo.ObtenerTodos();
+        var solicitudes = await _solicitudRepo.ObtenerTodos();
         var asignaciones = await _asignacionRepo.ObtenerTodos();
 
         var filtradas = solicitudes
             .Where(s => s.FechaViaje.HasValue
                      && s.FechaViaje.Value.Month == mes
-                     && s.FechaViaje.Value.Year  == anio)
+                     && s.FechaViaje.Value.Year == anio)
             .ToList();
 
         var mapaAsig = asignaciones
@@ -47,18 +47,17 @@ public class ReporteService : IReporteService
 
         return new ReporteViajesDTO
         {
-            Mes            = mes,
-            Anio           = anio,
-            TotalViajes    = detalles.Count,
-            Completados    = filtradas.Count(s => s.Estado == EstadosSolicitudes.Finalizada),
-            Pendientes     = filtradas.Count(s => s.Estado == EstadosSolicitudes.Pendiente
+            Mes = mes,
+            Anio = anio,
+            TotalViajes = detalles.Count,
+            Completados = filtradas.Count(s => s.Estado == EstadosSolicitudes.Finalizada),
+            Pendientes = filtradas.Count(s => s.Estado == EstadosSolicitudes.Pendiente
                                                || s.Estado == EstadosSolicitudes.Aprobada),
-            Cancelados     = filtradas.Count(s => s.Estado == EstadosSolicitudes.Cancelada),
+            Cancelados = filtradas.Count(s => s.Estado == EstadosSolicitudes.Cancelada),
             TotalPasajeros = filtradas.Sum(s => s.CantidadColaboradores),
-            Detalles       = detalles,
+            Detalles = detalles,
         };
     }
-
     public async Task<ReporteConsumoDTO> GetReporteConsumoAsync(int mes, int anio)
     {
         var consumos = await _consumoRepo.ObtenerTodos();
@@ -66,41 +65,46 @@ public class ReporteService : IReporteService
         var filtrados = consumos
             .Where(c => c.Fecha.HasValue
                      && c.Fecha.Value.Month == mes
-                     && c.Fecha.Value.Year  == anio)
+                     && c.Fecha.Value.Year == anio
+                     && c.Vehiculo != null)
             .ToList();
 
         var detalles = filtrados
-            .GroupBy(c => c.Vehiculo)
-            .Select(g => new ReporteConsumoDetalleDTO
+            .GroupBy(c => c.VehiculoId)
+            .Select(g =>
             {
-                VehiculoPlaca  = g.Key.Matricula,
-                VehiculoMarca  = g.Key.Marca,
-                TotalGalones   = g.Sum(c => c.Galones),
-                CostoTotal     = g.Sum(c => c.CostoTotal),
-                TotalRegistros = g.Count(),
+                var vehiculo = g.First().Vehiculo;
+                return new ReporteConsumoDetalleDTO
+                {
+                    VehiculoPlaca = vehiculo.Matricula,
+                    VehiculoMarca = vehiculo.Marca,
+                    TotalGalones = g.Sum(c => c.Galones),
+                    CostoTotal = g.Sum(c => c.CostoTotal),
+                    TotalRegistros = g.Count(),
+                };
             })
             .OrderByDescending(d => d.CostoTotal)
             .ToList();
 
         decimal totalGalones = detalles.Sum(d => d.TotalGalones);
-        decimal costoTotal   = detalles.Sum(d => d.CostoTotal);
+        decimal costoTotal = detalles.Sum(d => d.CostoTotal);
 
         return new ReporteConsumoDTO
         {
-            Mes                = mes,
-            Anio               = anio,
-            CostoTotal         = costoTotal,
-            TotalGalones       = totalGalones,
+            Mes = mes,
+            Anio = anio,
+            CostoTotal = costoTotal,
+            TotalGalones = totalGalones,
             CostoPromedioGalon = totalGalones > 0 ? costoTotal / totalGalones : 0,
-            TotalVehiculos     = detalles.Count,
-            Detalles           = detalles,
+            TotalVehiculos = detalles.Count,
+            Detalles = detalles,
         };
     }
 
     public async Task<ReporteSolicitudesDTO> GetReporteSolicitudesAsync()
     {
         var solicitudes = await _solicitudRepo.ObtenerTodos();
-        var lista       = solicitudes.ToList();
+        var lista = solicitudes.ToList();
 
         var detalles = lista
             .Select(s => s.ToReporteSolicitudDetalleDTO())
@@ -109,13 +113,13 @@ public class ReporteService : IReporteService
 
         return new ReporteSolicitudesDTO
         {
-            Total      = lista.Count,
-            Aprobadas  = lista.Count(s => s.Estado == EstadosSolicitudes.Aprobada),
+            Total = lista.Count,
+            Aprobadas = lista.Count(s => s.Estado == EstadosSolicitudes.Aprobada),
             Pendientes = lista.Count(s => s.Estado == EstadosSolicitudes.Pendiente),
             Rechazadas = lista.Count(s => s.Estado == EstadosSolicitudes.Rechazada),
             Canceladas = lista.Count(s => s.Estado == EstadosSolicitudes.Cancelada),
             Finalizadas = lista.Count(s => s.Estado == EstadosSolicitudes.Finalizada),
-            Detalles   = detalles,
+            Detalles = detalles,
         };
     }
 
@@ -124,26 +128,31 @@ public class ReporteService : IReporteService
         var asignaciones = await _asignacionRepo.ObtenerTodos();
 
         var detalles = asignaciones
-            .GroupBy(a => a.Conductor)
-            .Select(g => new ReporteConductorDetalleDTO
-            {
-                NombreConductor = $"{g.Key.Nombre} {g.Key.Apellido}",
-                Licencia        = g.Key.NumeroLicencia,
-                TotalViajes     = g.Count(),
-                TotalPasajeros  = g.Sum(a => a.Solicitud.CantidadColaboradores),
-                UltimoViaje     = g.Max(a => a.Solicitud.FechaViaje),
-            })
-            .OrderByDescending(d => d.TotalViajes)
-            .ToList();
+            .Where(a => a.Conductor != null && a.Solicitud != null)
+            .GroupBy(a => a.ConductorId)
+            .Select(g =>
+    {
+        var conductor = g.First().Conductor;
+        return new ReporteConductorDetalleDTO
+        {
+            NombreConductor = $"{conductor.Nombre} {conductor.Apellido}",
+            Licencia = conductor.NumeroLicencia,
+            TotalViajes = g.Count(),
+            TotalPasajeros = g.Sum(a => a.Solicitud.CantidadColaboradores),
+            UltimoViaje = g.Max(a => a.Solicitud.FechaViaje),
+        };
+    })
+    .OrderByDescending(d => d.TotalViajes)
+    .ToList();
 
-        int totalViajes    = detalles.Sum(d => d.TotalViajes);
+        int totalViajes = detalles.Sum(d => d.TotalViajes);
         int totalPasajeros = detalles.Sum(d => d.TotalPasajeros);
 
         return new ReporteConductoresDTO
         {
-            TotalConductores          = detalles.Count,
-            TotalViajes               = totalViajes,
-            TotalPasajeros            = totalPasajeros,
+            TotalConductores = detalles.Count,
+            TotalViajes = totalViajes,
+            TotalPasajeros = totalPasajeros,
             PromedioPasajerosPorViaje = totalViajes > 0
                 ? (double)totalPasajeros / totalViajes
                 : 0,

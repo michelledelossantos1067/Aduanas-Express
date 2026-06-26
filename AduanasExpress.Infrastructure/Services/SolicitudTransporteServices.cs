@@ -56,6 +56,7 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
             CantidadColaboradores = createSolicitudTransporteDTOs.CantidadColaboradores,
             FechaViaje = createSolicitudTransporteDTOs.FechaViaje,
             HoraSalida = createSolicitudTransporteDTOs.HoraSalida,
+            HoraEstimada = createSolicitudTransporteDTOs.HoraEstimada,
             PuntoOrigen = createSolicitudTransporteDTOs.PuntoOrigen,
             Destino = createSolicitudTransporteDTOs.Destino,
             TipoViaje = createSolicitudTransporteDTOs.TipoViaje,
@@ -78,6 +79,7 @@ public class SolicitudTransporteServices : ISolicitudTransporteService
         solicitudTrans.CantidadColaboradores = updateSolicitudTransporteDTOs.CantidadColaboradores;
         solicitudTrans.FechaViaje = updateSolicitudTransporteDTOs.FechaViaje;
         solicitudTrans.HoraSalida = updateSolicitudTransporteDTOs.HoraSalida;
+        solicitudTrans.HoraEstimada = updateSolicitudTransporteDTOs.HoraEstimada;
         solicitudTrans.PuntoOrigen = updateSolicitudTransporteDTOs.PuntoOrigen;
         solicitudTrans.Destino = updateSolicitudTransporteDTOs.Destino;
         solicitudTrans.TipoViaje = updateSolicitudTransporteDTOs.TipoViaje;

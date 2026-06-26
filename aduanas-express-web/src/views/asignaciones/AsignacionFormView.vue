@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import { crearAsignaciones, obtenerDisponibles, obtenerVehiculosPorUbicacion } from '@/services/asignacionService.js'
+import { crearAsignaciones, obtenerDisponibles } from '@/services/asignacionService.js'
 import { verSolicitud } from '@/services/solicitudService.js'
 import {
     formatFecha,
@@ -110,28 +110,12 @@ async function cargarRecursosDisponibles(solicitudId) {
         vehiculos.value = res.data?.vehiculos ?? []
         conductores.value = res.data?.conductores ?? []
         
-        // NUEVO: Si tenemos una solicitud seleccionada, filtramos vehículos por su ubicación
-        if (solicitudSeleccionada.value?.puntoOrigen) {
-            await filtrarVehiculosPorUbicacion(solicitudSeleccionada.value.puntoOrigen)
-        }
     } catch (e) {
         console.error(e)
         vehiculos.value = []
         conductores.value = []
     } finally {
         loadingRes.value = false
-    }
-}
-
-// NUEVO: Filtrar vehículos por ubicación actual
-async function filtrarVehiculosPorUbicacion(puntoOrigen) {
-    try {
-        const res = await obtenerVehiculosPorUbicacion(puntoOrigen)
-        // Solo mostrar vehículos que estén en la ubicación del puntoOrigen
-        vehiculos.value = res.data ?? []
-    } catch (e) {
-        console.error('Error al filtrar vehículos por ubicación:', e)
-        vehiculos.value = []
     }
 }
 
@@ -309,7 +293,6 @@ onMounted(cargarSolicitudes)
                     <p class="recurso-sub">{{ v.marca }} {{ v.modelo }}</p>
                     <div class="recurso-meta">
                         <span>Capacidad <strong>{{ v.capacidad ?? '—' }} pasajeros</strong></span>
-                        <span v-if="v.ubicacionActual">📍 {{ v.ubicacionActual }}</span>
                     </div>
                 </div>
 

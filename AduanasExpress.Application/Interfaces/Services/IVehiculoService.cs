@@ -11,5 +11,4 @@ public interface IVehiculoService{
     Task Desactivar(int id);
     Task Activar(int id);
     Task<List<VehiculoResponseDTOs>> ObtenerDisponiblesEnFecha(DateTime fecha);
-    Task<IEnumerable<Vehiculo>> ObtenerVehiculosPorUbicacion(string ubicacion);
 }

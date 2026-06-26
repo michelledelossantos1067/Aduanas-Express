@@ -32,14 +32,6 @@ public class VehiculoController : ControllerBase
         return Ok(vehiculo);
     }
 
-    [Authorize(Roles = "Administrador,Supervisor,Operador")]
-    [HttpGet("disponibles")]
-    public async Task<IActionResult> ObtenerVehiculosPorUbicacion([FromQuery] string ubicacion)
-    {
-        var vehiculos = await _vehiculoService.ObtenerVehiculosPorUbicacion(ubicacion);
-        return Ok(vehiculos);
-    }
-
     [Authorize(Roles = "Administrador,Supervisor")]
     [HttpPost]
     public async Task<IActionResult> Crear(CreateVehiculoDTOs createVehiculoDTOs)

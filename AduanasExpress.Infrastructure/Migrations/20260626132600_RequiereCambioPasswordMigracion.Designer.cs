@@ -4,6 +4,7 @@ using AduanasExpress.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AduanasExpress.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260626132600_RequiereCambioPasswordMigracion")]
+    partial class RequiereCambioPasswordMigracion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1095,9 +1098,6 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("FechaUltimoCombustible")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("FechaUltimoMant")
                         .HasColumnType("datetime2");
 
@@ -1126,9 +1126,6 @@ namespace AduanasExpress.Infrastructure.Migrations
                     b.Property<string>("UbicacionActual")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("UltimoCombustible")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

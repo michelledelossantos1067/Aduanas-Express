@@ -159,7 +159,8 @@ public class AuthServices : IAuthService
             Id = usuario.Id,
             Token = tokenString,
             RolId = usuario.Rol.Nombre,
-            Nombre = usuario.Nombre
+            Nombre = usuario.Nombre,
+            RequiereCambioPassword = usuario.RequiereCambioPassword
         };
     }
     public async Task Logout()
@@ -189,11 +190,16 @@ public class AuthServices : IAuthService
         }
         if (!BCrypt.Net.BCrypt.Verify(changePasswordDTO.PasswordActual, usuarioExistente.Password))
         {
-            throw new Exception("La contraseña no existe.");
+            throw new Exception("La contraseña actual es incorrecta.");
         }
-        ;
+
         var hashPassword = BCrypt.Net.BCrypt.HashPassword(changePasswordDTO.PasswordNueva);
         usuarioExistente.Password = hashPassword;
+
+        // Si era el primer inicio de sesión, marcar que ya cambió la contraseña
+        if (usuarioExistente.RequiereCambioPassword)
+            usuarioExistente.RequiereCambioPassword = false;
+
         await _usuarioRepositories.Actualizar(usuarioExistente.Id, usuarioExistente);
     }
     public async Task Register(RegisterDTO registerDTO)

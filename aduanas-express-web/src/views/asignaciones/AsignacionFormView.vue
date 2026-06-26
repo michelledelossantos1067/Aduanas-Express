@@ -109,7 +109,6 @@ async function cargarRecursosDisponibles(solicitudId) {
         const res = await obtenerDisponibles(solicitudId)
         vehiculos.value = res.data?.vehiculos ?? []
         conductores.value = res.data?.conductores ?? []
-        
     } catch (e) {
         console.error(e)
         vehiculos.value = []
@@ -147,16 +146,11 @@ async function guardarAsignacion() {
     if (!puedeAsignar.value) return
     guardando.value = true
 
-    const ahora = new Date()
-    const fechaAsignacionLocal =
-        `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}` +
-        `T${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}:${String(ahora.getSeconds()).padStart(2, '0')}`
-
     const payload = {
         solicitudId: solicitudSeleccionada.value.id,
         vehiculoId: vehiculoSeleccionado.value.id,
         conductorId: conductorSeleccionado.value.id,
-        fechaAsignacion: fechaAsignacionLocal,
+        fechaAsignacion: new Date().toISOString().split('T')[0],
         asignadoPorId: authStore.usuario.id,
     }
 
@@ -276,7 +270,7 @@ onMounted(cargarSolicitudes)
                     Selecciona una solicitud para ver los vehículos disponibles en esa fecha.
                 </div>
                 <div v-else-if="vehiculosFiltrados.length === 0" class="col-vacio">
-                    Sin vehículos disponibles en esta ubicación y fecha.
+                    Sin vehículos disponibles en esta fecha.
                 </div>
                 <div
                     v-else
@@ -298,75 +292,130 @@ onMounted(cargarSolicitudes)
 
                 <p class="recursos-grupo-label recursos-grupo-sep">CONDUCTORES</p>
 
-                <div v-if="conductoresFiltrados.length === 0" class="col-vacio">
-                    Sin conductores disponibles.
+                <div v-if="!solicitudSeleccionada" class="col-vacio">
+                    Selecciona una solicitud para ver los conductores disponibles en esa fecha.
+                </div>
+                <div v-else-if="conductoresFiltrados.length === 0" class="col-vacio">
+                    Sin conductores disponibles en esta fecha.
                 </div>
                 <div
                     v-else
                     v-for="c in conductoresFiltrados"
                     :key="'c' + c.id"
-                    class="recurso-card"
+                    class="recurso-card recurso-card-conductor"
                     :class="{ 'recurso-card-activo': conductorSeleccionado?.id === c.id }"
                     @click="seleccionarConductor(c)"
                 >
-                    <div class="conductor-info">
-                        <div class="conductor-avatar-sm">
-                            {{ iniciales(c.nombre, c.apellido) }}
+                    <div class="recurso-card-top">
+                        <div class="conductor-info">
+                            <div class="conductor-avatar-sm">{{ iniciales(c.nombre, c.apellido) }}</div>
+                            <span class="recurso-nombre">{{ c.nombre }} {{ c.apellido }}</span>
                         </div>
-                        <div>
-                            <p class="recurso-nombre">{{ c.nombre }} {{ c.apellido }}</p>
-                            <p class="recurso-sub">{{ c.cedula }}</p>
-                        </div>
+                        <span class="badge badge-disponible">{{ c.estado }}</span>
+                    </div>
+                    <div class="conductor-detalles">
+                        <p class="recurso-sub">
+                            Lic. {{ c.tipoLicencia ?? '—' }} • Vence {{ formatFecha(c.fechaVencLicencia) }}
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-panel">
-            <div v-if="solicitudSeleccionada && vehiculoSeleccionado && conductorSeleccionado" class="panel-contenido">
+        <div class="col-panel col-panel-asig">
+            <div class="col-header">
+                <div class="col-header-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                    </svg>
+                    <h2 class="col-titulo">Panel de asignación</h2>
+                </div>
+            </div>
+
+            <div v-if="!solicitudSeleccionada" class="panel-vacio">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <p>Selecciona una solicitud<br>para comenzar</p>
+            </div>
+
+            <template v-else>
                 <div class="panel-seccion">
-                    <p class="panel-label">Solicitud</p>
-                    <div class="panel-ruta">
-                        {{ solicitudSeleccionada.puntoOrigen }}
-                        <svg class="panel-flecha" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                        {{ solicitudSeleccionada.destino }}
+                    <div class="panel-row-top">
+                        <p class="panel-label">Solicitud seleccionada</p>
+                        <span class="sol-id-badge">{{ formatNumero(solicitudSeleccionada.id) }}</span>
                     </div>
-                    <p class="panel-meta-sol">{{ formatFecha(solicitudSeleccionada.fechaViaje) }} a las {{ formatHora(solicitudSeleccionada.horaSalida) }}</p>
-                    <p class="panel-meta-sol">{{ solicitudSeleccionada.cantidadColaboradores }} colaboradores</p>
+                    <p class="panel-ruta">
+                        {{ solicitudSeleccionada.areaSolicitante }}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="panel-flecha">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                        {{ solicitudSeleccionada.destino }}
+                    </p>
+                    <p class="panel-meta-sol">
+                        {{ formatFecha(solicitudSeleccionada.fechaViaje) }}
+                        &nbsp;·&nbsp;
+                        {{ formatHora(solicitudSeleccionada.horaSalida) }}
+                        &nbsp;·&nbsp;
+                        {{ solicitudSeleccionada.cantidadColaboradores }} Colaboradores
+                    </p>
                 </div>
 
                 <div class="panel-seccion">
-                    <p class="panel-label">Vehículo asignado</p>
-                    <div class="panel-card panel-card-vehiculo">
-                        <p class="panel-card-titulo">{{ vehiculoSeleccionado.marca }} {{ vehiculoSeleccionado.modelo }}</p>
-                        <p class="panel-card-sub">{{ vehiculoSeleccionado.matricula }}</p>
+                    <p class="panel-label">Vehículo Asignado</p>
+                    <div v-if="vehiculoSeleccionado" class="panel-card panel-card-vehiculo">
+                        <p class="panel-card-titulo">
+                            {{ vehiculoSeleccionado.matricula }} · {{ vehiculoSeleccionado.marca }} {{ vehiculoSeleccionado.modelo }}
+                        </p>
+                        <p class="panel-card-sub">
+                            {{ vehiculoSeleccionado.capacidad ?? '—' }} pasajeros · {{ vehiculoSeleccionado.estado }}
+                        </p>
+                    </div>
+                    <div v-else class="panel-card panel-card-placeholder">
+                        <p>Selecciona un vehículo en la columna central</p>
                     </div>
                 </div>
 
                 <div class="panel-seccion">
                     <p class="panel-label">Conductor asignado</p>
-                    <div class="panel-card panel-card-conductor">
+                    <div v-if="conductorSeleccionado" class="panel-card panel-card-conductor">
                         <div class="panel-conductor-row">
                             <div class="conductor-avatar-md">
                                 {{ iniciales(conductorSeleccionado.nombre, conductorSeleccionado.apellido) }}
                             </div>
                             <div>
-                                <p class="panel-card-titulo">{{ conductorSeleccionado.nombre }} {{ conductorSeleccionado.apellido }}</p>
-                                <p class="panel-card-sub">{{ conductorSeleccionado.cedula }}</p>
+                                <p class="panel-card-titulo">
+                                    {{ conductorSeleccionado.nombre }} {{ conductorSeleccionado.apellido }}
+                                </p>
+                                <p class="panel-card-sub">
+                                    Lic. tipo {{ conductorSeleccionado.tipoLicencia ?? '—' }}
+                                    · Vence {{ formatFecha(conductorSeleccionado.fechaVencLicencia) }}
+                                </p>
                             </div>
                         </div>
                     </div>
+                    <div v-else class="panel-card panel-card-placeholder">
+                        <p>Selecciona un conductor en la columna central</p>
+                    </div>
                 </div>
 
-                <div class="panel-seccion">
+                <div class="panel-seccion" v-if="vehiculoSeleccionado && conductorSeleccionado">
                     <p class="panel-label">Validaciones</p>
                     <div class="validaciones">
-                        <div v-for="(v, idx) in validaciones" :key="idx" class="validacion-item" :class="v.ok ? 'val-ok' : 'val-fail'">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path v-if="v.ok" d="M20 6L9 17l-5-5" />
-                                <circle v-else cx="12" cy="12" r="10" />
-                                <line v-if="!v.ok" x1="15" y1="9" x2="9" y2="15" />
-                                <line v-if="!v.ok" x1="9" y1="9" x2="15" y2="15" />
+                        <div
+                            v-for="(v, i) in validaciones"
+                            :key="i"
+                            class="validacion-item"
+                            :class="{ 'val-ok': v.ok, 'val-fail': !v.ok }"
+                        >
+                            <svg v-if="v.ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
                             </svg>
                             {{ v.texto }}
                         </div>
@@ -374,60 +423,59 @@ onMounted(cargarSolicitudes)
                 </div>
 
                 <div class="panel-acciones">
-                    <button
-                        class="btn-asignar"
-                        :disabled="!puedeAsignar || guardando"
-                        @click="guardarAsignacion"
-                    >
-                        <svg v-if="!guardando" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /></svg>
-                        <span v-if="!guardando">Crear asignación</span>
-                        <span v-else>Guardando...</span>
+                    <button class="btn-asignar" :disabled="!puedeAsignar || guardando" @click="guardarAsignacion">
+                        <svg v-if="!guardando" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <div v-else class="spinner-btn"></div>
+                        {{ guardando ? 'Guardando...' : 'Confirmar asignación' }}
                     </button>
-                    <button class="btn-limpiar" @click="limpiarSeleccion">Limpiar selección</button>
+                    <button class="btn-limpiar" @click="limpiarSeleccion">Limpiar</button>
                 </div>
-            </div>
-
-            <div v-else class="panel-vacio">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                </svg>
-                <p>Selecciona una solicitud, vehículo y conductor para crear una asignación.</p>
-            </div>
+            </template>
         </div>
     </div>
 </template>
 
 <style scoped>
+@import './styles/asignaciones.css';
+
 .asig-board {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    height: 100vh;
+    grid-template-columns: 1fr 1fr 380px;
+    gap: 20px;
+    align-items: start;
 }
 
 .col-panel {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    max-height: 100vh;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    max-height: calc(100vh - 160px);
+}
+
+.col-panel-asig {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
 }
 
 .col-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 18px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 14px 16px;
+    border-bottom: 1.5px solid #f3f4f6;
+    flex-shrink: 0;
 }
 
 .col-header-left {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: #374151;
 }
 
 .col-titulo {
@@ -438,73 +486,67 @@ onMounted(cargarSolicitudes)
 }
 
 .badge-count {
-    font-size: .75rem;
-    font-weight: 600;
-    color: #6b7280;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: .71rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
 }
 
 .badge-fecha {
-    font-size: .75rem;
-    font-weight: 500;
-    color: #9ca3af;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: .71rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
 }
 
 .col-search {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0 16px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    flex-shrink: 0;
 }
 
 .search-input {
     flex: 1;
-    padding: 10px 0;
     border: none;
     outline: none;
-    font-size: .85rem;
+    font-size: .875rem;
+    color: #111827;
     background: transparent;
 }
 
-.col-loading,
-.col-vacio {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    color: #9ca3af;
-}
-
-.col-vacio {
-    flex-direction: column;
-    font-size: .85rem;
-    padding: 24px;
-    text-align: center;
-}
+.search-input::placeholder { color: #9ca3af; }
 
 .col-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 8px;
+    padding: 10px 12px;
 }
 
-.spinner-sm {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #e5e7eb;
-    border-top-color: #1a3a2a;
-    border-radius: 50%;
-    animation: spin .6s linear infinite;
+.col-loading {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.col-vacio {
+    text-align: center;
+    padding: 24px 12px;
+    color: #9ca3af;
+    font-size: .82rem;
 }
 
 .sol-card {
     border: 1.5px solid #e5e7eb;
     border-radius: 10px;
-    padding: 11px 13px;
+    padding: 12px 14px;
     margin-bottom: 8px;
     cursor: pointer;
     transition: border-color .15s, box-shadow .15s;
@@ -642,14 +684,16 @@ onMounted(cargarSolicitudes)
     line-height: 1.5;
 }
 
-.panel-contenido {
-    flex: 1;
-    overflow-y: auto;
-}
-
 .panel-seccion {
     padding: 16px 18px;
     border-bottom: 1px solid #f3f4f6;
+}
+
+.panel-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
 }
 
 .panel-label {
@@ -659,6 +703,15 @@ onMounted(cargarSolicitudes)
     text-transform: uppercase;
     letter-spacing: .07em;
     margin: 0 0 8px;
+}
+
+.sol-id-badge {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #374151;
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 6px;
 }
 
 .panel-ruta {
@@ -688,6 +741,13 @@ onMounted(cargarSolicitudes)
 .panel-card-conductor {
     background: #f0fdf4;
     border: 1.5px solid #bbf7d0;
+}
+
+.panel-card-placeholder {
+    background: #f9fafb;
+    border: 1.5px dashed #d1d5db;
+    color: #9ca3af;
+    font-size: .82rem;
 }
 
 .panel-card-titulo {
@@ -745,7 +805,6 @@ onMounted(cargarSolicitudes)
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border-top: 1px solid #f3f4f6;
 }
 
 .btn-asignar {

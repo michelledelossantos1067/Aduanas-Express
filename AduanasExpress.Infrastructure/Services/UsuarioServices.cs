@@ -65,29 +65,28 @@ public class UsuarioServices : IUsuarioService
         await _usuarioRepositories.Crear(usuarios);
     }
 
-   public async Task Actualizar(int Id, UpdateUsuario updateUsuario)
-{
-    var usuario = await _usuarioRepositories.ObtenerPorId(Id);
-    
-    if (usuario == null)
+    public async Task Actualizar(int Id, UpdateUsuario updateUsuario)
     {
-        throw new Exception("Error al actualizar el usuario.");
+        var usuario = await _usuarioRepositories.ObtenerPorId(Id);
+
+        if (usuario == null)
+        {
+            throw new Exception("Error al actualizar el usuario.");
+        }
+
+        usuario.Nombre = updateUsuario.Nombre;
+        usuario.Apellido = updateUsuario.Apellido;
+        usuario.Email = updateUsuario.Email;
+        usuario.RolId = updateUsuario.RolId;
+
+
+        if (!string.IsNullOrWhiteSpace(updateUsuario.Password))
+        {
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(updateUsuario.Password);
+        }
+
+        await _usuarioRepositories.Actualizar(Id, usuario);
     }
-
-    usuario.Nombre = updateUsuario.Nombre;
-    usuario.Apellido = updateUsuario.Apellido;
-    usuario.Email = updateUsuario.Email;
-    usuario.RolId = updateUsuario.RolId;
-
-    
-    if (!string.IsNullOrWhiteSpace(updateUsuario.Password))
-    {
-        usuario.Password = BCrypt.Net.BCrypt.HashPassword(updateUsuario.Password);
-    }
-
-    // 3. Guardamos los cambios
-    await _usuarioRepositories.Actualizar(Id, usuario);
-}
     public async Task<List<UsuarioResponse>> ObtenerPorRol(string rol)
     {
         var usuarios = await _usuarioRepositories.ObtenerTodos();

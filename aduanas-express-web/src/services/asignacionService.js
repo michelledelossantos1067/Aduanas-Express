@@ -31,3 +31,7 @@ export const cancelarAsignacion = (id, motivo, usuarioId) => {
 export const obtenerDisponibles = (solicitudId) => {
     return api.get('/Asignaciones/disponibles', { params: { solicitudId } })
 }
+
+export const obtenerVehiculosPorUbicacion = (puntoOrigen) => {
+    return api.get('/vehiculo/disponibles', { params: { ubicacion: puntoOrigen } })
+}

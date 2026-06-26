@@ -46,6 +46,13 @@ public class ConsumoCombustibleRepositories : IConsumoCombustibleRepositories
         return await _context.ConsumoCombustibles
                              .AnyAsync(c => c.VehiculoId == vehiculoId);
     }
+    public async Task<ConsumoCombustible?> ObtenerUltimoPorVehiculo(int vehiculoId)
+    {
+        return await _context.ConsumoCombustibles
+            .Where(c => c.VehiculoId == vehiculoId)
+            .OrderByDescending(c => c.Fecha)
+            .FirstOrDefaultAsync();
+    }
     public async Task Eliminar(int Id)
     {
         var consumoCombustibles = await _context.ConsumoCombustibles.FindAsync(Id);
@@ -57,4 +64,5 @@ public class ConsumoCombustibleRepositories : IConsumoCombustibleRepositories
         _context.Remove(consumoCombustibles);
         await _context.SaveChangesAsync();
     }
+
 }

@@ -11,5 +11,6 @@ public class Vehiculo{
     public EstadosVehiculo Estado {get;set;}
     public decimal Kilometraje {get;set;}
     public DateTime? FechaUltimoMant { get; set; }
-    public bool IsActive {get;set;} = true;
+    public bool IsActive { get; set; } = true;
+    public string UbicacionActual {get;set;}
 }

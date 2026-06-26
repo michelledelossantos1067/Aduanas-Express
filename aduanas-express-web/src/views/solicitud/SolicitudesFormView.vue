@@ -68,7 +68,7 @@ async function buscarUbicaciones(query, target) {
 
     try {
         const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1`,
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1&countrycodes=do`,
             {
                 headers: {
                     'Accept-Language': 'es'

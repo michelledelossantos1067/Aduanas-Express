@@ -1,7 +1,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { changePassword } from '../../services/authService'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -11,14 +12,16 @@ const error = ref('')
 const success = ref(false)
 
 const form = ref({
-    email: authStore.usuario?.email || '',
     passwordActual: '',
     passwordNueva: '',
     confirmarNueva: ''
 })
 
+// ✅ Usar computed para que siempre tenga el email del store
+const email = computed(() => authStore.usuario?.email || '')
+
 async function handleChangePassword() {
-    if (!form.value.email || !form.value.passwordActual || !form.value.passwordNueva || !form.value.confirmarNueva) {
+    if (!email.value || !form.value.passwordActual || !form.value.passwordNueva || !form.value.confirmarNueva) {
         error.value = 'Completa todos los campos'
         return
     }
@@ -39,10 +42,21 @@ async function handleChangePassword() {
     error.value = ''
 
     try {
+        console.log('Enviando:', {
+            email: email.value,
+            passwordActual: form.value.passwordActual,
+            passwordNueva: form.value.passwordNueva
+        })
 
+        await changePassword({
+            email: email.value,
+            passwordActual: form.value.passwordActual,
+            passwordNueva: form.value.passwordNueva
+        })
         success.value = true
     } catch (e) {
         error.value = e.response?.data?.message || 'Error al cambiar la contraseña'
+        console.error('Error:', e)
     } finally {
         loading.value = false
     }
@@ -86,7 +100,8 @@ async function handleChangePassword() {
                             </li>
                         </ul>
                     </div>
-                    <p class="info">© 2025 Aduanas Express — Uso institucional exclusivo.<br>Acceso restringido a personal autorizado.</p>
+                    <p class="info">© 2025 Aduanas Express — Uso institucional exclusivo.<br>Acceso restringido a
+                        personal autorizado.</p>
                 </div>
 
                 <div class="change-right">
@@ -97,37 +112,20 @@ async function handleChangePassword() {
 
                         <div class="form-group">
                             <label class="form-label">Correo electrónico</label>
-                            <input
-                                v-model="form.email"
-                                type="email"
-                                class="form-input"
-                                placeholder="correo@ejemplo.com"
-                                :disabled="!!authStore.usuario?.email"
-                            />
+                            <input :value="email" type="email" class="form-input" placeholder="correo@ejemplo.com"
+                                disabled />
 
                             <label class="form-label">Contraseña actual</label>
-                            <input
-                                v-model="form.passwordActual"
-                                type="password"
-                                class="form-input"
-                                placeholder="Tu contraseña actual"
-                            />
+                            <input v-model="form.passwordActual" type="password" class="form-input"
+                                placeholder="Tu contraseña actual" />
 
                             <label class="form-label">Nueva contraseña</label>
-                            <input
-                                v-model="form.passwordNueva"
-                                type="password"
-                                class="form-input"
-                                placeholder="Mínimo 6 caracteres"
-                            />
+                            <input v-model="form.passwordNueva" type="password" class="form-input"
+                                placeholder="Mínimo 6 caracteres" />
 
                             <label class="form-label">Confirmar nueva contraseña</label>
-                            <input
-                                v-model="form.confirmarNueva"
-                                type="password"
-                                class="form-input"
-                                placeholder="Repite tu nueva contraseña"
-                            />
+                            <input v-model="form.confirmarNueva" type="password" class="form-input"
+                                placeholder="Repite tu nueva contraseña" />
 
                             <p v-if="error" class="error-msg">{{ error }}</p>
 
@@ -205,51 +203,94 @@ async function handleChangePassword() {
     color: white;
 }
 
-.brand { display: flex; align-items: center; gap: 10px; }
-
-.brand-icon {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.brand h2 { margin: 0; font-size: 16px; }
-.brand h4 { margin: 0; font-weight: 400; font-size: 12px; opacity: 0.6; }
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.brand h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.brand h4 {
+    margin: 0;
+    font-weight: 400;
+    font-size: 12px;
+    opacity: 0.6;
+}
 
 .left-divider {
     height: 0.5px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     margin: 24px 0 16px;
 }
 
 .left-description {
     font-size: 13px;
-    color: rgba(255,255,255,0.75);
+    color: rgba(255, 255, 255, 0.75);
     line-height: 1.6;
     margin: 0 0 20px;
 }
 
 .feature-list {
-    list-style: none; padding: 0; margin: 0;
-    display: flex; flex-direction: column; gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .feature-list li {
-    display: flex; align-items: flex-start; gap: 12px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 8px; padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 12px;
 }
 
-.feature-list li i { font-size: 18px; color: rgba(255,255,255,0.8); margin-top: 1px; flex-shrink: 0; }
-.feature-list li div { display: flex; flex-direction: column; gap: 2px; }
-.feature-title { font-size: 13px; font-weight: 500; color: white; }
-.feature-sub { font-size: 12px; color: rgba(255,255,255,0.55); }
+.feature-list li i {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.feature-list li div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.feature-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+}
+
+.feature-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+}
 
 .info {
     font-size: 11px;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255, 255, 255, 0.4);
     line-height: 1.5;
     margin: 24px 0 0;
 }
@@ -265,17 +306,39 @@ async function handleChangePassword() {
     min-height: 500px;
 }
 
-.change-right h1 { margin: 0 0 4px 0; font-size: 24px; }
-.change-right h4 { margin: 0 0 8px 0; font-weight: 400; color: #555; font-size: 14px; }
+.change-right h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+}
 
-.form-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.change-right h4 {
+    margin: 0 0 8px 0;
+    font-weight: 400;
+    color: #555;
+    font-size: 14px;
+}
 
-.form-label { font-size: 14px; font-weight: 600; color: #333; margin-top: 8px; }
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-top: 8px;
+}
 
 .form-input {
-    width: 100%; padding: 10px;
-    border: 1px solid #ccc; border-radius: 6px;
-    font-size: 14px; box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
     background: white;
 }
 
@@ -288,74 +351,162 @@ async function handleChangePassword() {
 .form-input:focus {
     outline: none;
     border-color: #1a4a2e;
-    box-shadow: 0 0 0 2px rgba(26,74,46,0.15);
+    box-shadow: 0 0 0 2px rgba(26, 74, 46, 0.15);
 }
 
 .btn-action {
-    width: 100%; padding: 12px;
-    background: #1a4a2e; color: white;
-    border: none; border-radius: 6px;
-    font-size: 15px; font-weight: bold;
-    cursor: pointer; margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    background: #1a4a2e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
     transition: background 0.2s;
 }
 
-.btn-action:hover { background: #255c3a; }
-.btn-action:disabled { background: #7a9e86; cursor: not-allowed; }
+.btn-action:hover {
+    background: #255c3a;
+}
 
-.error-msg { color: #c0392b; font-size: 13px; margin: 0; }
+.btn-action:disabled {
+    background: #7a9e86;
+    cursor: not-allowed;
+}
+
+.error-msg {
+    color: #c0392b;
+    font-size: 13px;
+    margin: 0;
+}
 
 .support {
-    color: #1a4a2e; cursor: pointer;
+    color: #1a4a2e;
+    cursor: pointer;
     text-decoration: underline;
 }
 
 .success-state {
-    display: flex; flex-direction: column;
-    align-items: center; text-align: center;
-    gap: 12px; padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 20px 0;
 }
 
 .success-icon {
-    width: 72px; height: 72px;
-    background: #e8f5ee; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px; color: #1a4a2e;
+    width: 72px;
+    height: 72px;
+    background: #e8f5ee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #1a4a2e;
 }
 
-.success-state h1 { margin: 0; }
-.success-state p { color: #555; font-size: 14px; max-width: 300px; line-height: 1.6; }
-.success-state .btn-action { width: auto; padding: 12px 32px; }
+.success-state h1 {
+    margin: 0;
+}
+
+.success-state p {
+    color: #555;
+    font-size: 14px;
+    max-width: 300px;
+    line-height: 1.6;
+}
+
+.success-state .btn-action {
+    width: auto;
+    padding: 12px 32px;
+}
 
 .form-footer {
-    width: 900px; margin-top: 0;
-    padding: 14px 24px; background: white;
+    width: 900px;
+    margin-top: 0;
+    padding: 14px 24px;
+    background: white;
     border-top: 1px solid #dcdcdc;
     border-radius: 0 0 10px 10px;
-    display: flex; justify-content: center;
-    align-items: center; gap: 12px;
-    font-size: 12px; color: #666;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #666;
     box-sizing: border-box;
 }
 
-.dot { color: #1a4a2e; font-weight: bold; }
+.dot {
+    color: #1a4a2e;
+    font-weight: bold;
+}
 
-.mobile-footer { display: none; }
+.mobile-footer {
+    display: none;
+}
 
 @media (max-width: 768px) {
-    .change-page { background: #1a4a2e; align-items: flex-end; padding: 0; }
-    .change-card { width: 100%; }
-    .change-container { flex-direction: column; width: 100%; border-radius: 0; min-height: auto; }
-    .change-left { background: transparent; width: 100%; padding: 40px 24px 20px; display: block; }
-    .feature-list, .left-divider, .left-description, .info { display: none !important; }
+    .change-page {
+        background: #1a4a2e;
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .change-card {
+        width: 100%;
+    }
+
+    .change-container {
+        flex-direction: column;
+        width: 100%;
+        border-radius: 0;
+        min-height: auto;
+    }
+
+    .change-left {
+        background: transparent;
+        width: 100%;
+        padding: 40px 24px 20px;
+        display: block;
+    }
+
+    .feature-list,
+    .left-divider,
+    .left-description,
+    .info {
+        display: none !important;
+    }
+
     .change-right {
-        background: white; width: 100%;
+        background: white;
+        width: 100%;
         border-radius: 24px 24px 0 0;
-        min-height: 70vh; padding: 30px 24px;
+        min-height: 70vh;
+        padding: 30px 24px;
         justify-content: flex-start;
     }
-    .form-footer { display: none; }
-    .mobile-footer { display: block; font-size: 11px; color: #999; text-align: center; margin-top: 10px; }
-    .form-input, .btn-action { width: 85%; }
+
+    .form-footer {
+        display: none;
+    }
+
+    .mobile-footer {
+        display: block;
+        font-size: 11px;
+        color: #999;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .form-input,
+    .btn-action {
+        width: 85%;
+    }
 }
 </style>

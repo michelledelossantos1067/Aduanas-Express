@@ -9,7 +9,7 @@ import { obtenerUsuario, activarUsuario } from '@/services/usuarioService'
 const authStore = useAuthStore()
 const router = useRouter()
 
-if (authStore.usuario?.rol !== 'Administrador') {
+if (authStore.usuario?.rolId !== 'Administrador') {
     router.replace('/dashboard')
 }
 
@@ -62,8 +62,8 @@ const estadoBadgeCond = ['badge-disponible', 'badge-en-viaje', 'badge-suspendido
 
 const avatarColors = ['av-purple', 'av-blue', 'av-green', 'av-orange', 'av-teal']
 
-function rolLabel(rol) { return ROLES.find(r => r.value === rol)?.label ?? '—' }
-function rolClase(rol) { return ['rol-admin', 'rol-supervisor', 'rol-operador'][rol] ?? '' }
+function rolLabel(rolId) { return ROLES.find(r => r.value === rolId)?.label ?? '—' }
+function rolClase(rolId) { return ['rol-admin', 'rol-supervisor', 'rol-operador'][rolId] ?? '' }
 function avatarColor(id) { return avatarColors[id % avatarColors.length] }
 function initials(nombre = '', apellido = '') { return `${nombre[0] ?? ''}${apellido[0] ?? ''}`.toUpperCase() }
 
@@ -267,7 +267,7 @@ onMounted(cargarTodo)
                     <div v-for="u in usuariosArchivados" :key="'u'+u.id" class="arch-card">
                         <div class="arch-card-top">
                             <div class="usr-avatar" :class="avatarColor(u.id)">{{ initials(u.nombre, u.apellido) }}</div>
-                            <span class="badge-rol" :class="rolClase(u.rol)">{{ rolLabel(u.rol) }}</span>
+                            <span class="badge-rol" :class="rolClase(u.rol)">{{ rolLabel(u.rolId) }}</span>
                         </div>
                         <p class="arch-card-nombre">{{ u.nombre }} {{ u.apellido }}</p>
                         <p class="arch-card-sub">{{ u.email }}</p>

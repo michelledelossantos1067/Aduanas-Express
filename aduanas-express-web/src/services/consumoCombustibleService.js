@@ -1,5 +1,8 @@
 import api from '../utils/axiosConfig'
 
+export const verConsumos = () => {
+    return api.get('/ConsumoCombustible')
+}
 export const verConsumoPorId = (id) => {
     return api.get(`/ConsumoCombustible/${id}`)
 }

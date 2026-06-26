@@ -3,11 +3,11 @@ import { useAuthStore } from '@/stores/authStore'
 
 export function usePermisos() {
     const auth = useAuthStore()
-    const rol = computed(() => auth.usuario?.rol?.toLowerCase())
+    const rolId = computed(() => auth.usuario?.rolId?.toLowerCase())
 
-    const esAdmin = computed(() => rol.value === 'administrador')
-    const esSupervisor = computed(() => rol.value === 'supervisor')
-    const esOperador = computed(() => rol.value === 'operador')
+    const esAdmin = computed(() => rolId.value === 'administrador')
+    const esSupervisor = computed(() => rolId.value === 'supervisor')
+    const esOperador = computed(() => rolId.value === 'operador')
 
     // Permisos específicos por módulo
     const puede = {
@@ -31,8 +31,8 @@ export function usePermisos() {
         
         // Consume-combistible
         verConsumoCombustible: computed(() => true),
-        crearCombustible: computed(() => esAdmin.value || esSupervisor.value),
-        editarCombustible: computed(() => esAdmin.value || esSupervisor.value),
+        crearConsumoCombustible: computed(() => esAdmin.value || esSupervisor.value),
+        editarConsumoCombustible: computed(() => esAdmin.value || esSupervisor.value),
 
         // Solicitudes
         verSolicitudes: computed(() => true),

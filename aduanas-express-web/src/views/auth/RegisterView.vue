@@ -28,7 +28,7 @@ async function handleRegister() {
         const response = await register(form.value)
         authStore.iniciarSesion(response.data.token, {
             nombre: response.data.nombre,
-            rol: response.data.rol
+            rolId: response.data.rolId
         })
         router.push('/dashboard')
     } catch (e) {

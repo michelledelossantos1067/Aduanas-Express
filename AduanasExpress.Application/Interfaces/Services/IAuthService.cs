@@ -6,6 +6,9 @@ public interface IAuthService{
     public Task<AuthResponseDTOs?> Login(AuthDTOs authDTOs);
     public Task Logout();
     public Task Register(RegisterDTO registerDTO);
+    public Task<bool> GenerateOtp(GenerateOtpDTO request);
+    public Task<bool> ValidateOtp(ValidateOtpDTO request);
+    public Task ResetPasswordWithOtp(ResetPasswordWithOtpDTO request);
     public Task<string> ResetPassword(ResetPasswordDTO resetPasswordDTO);
     public Task ChangePassword(ChangePasswordDTO changePasswordDTO);
 }

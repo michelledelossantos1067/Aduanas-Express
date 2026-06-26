@@ -34,7 +34,7 @@ public class UsuarioController : ControllerBase
         ;
         return Ok(usuario);
     }
-    [Authorize(Roles = "Administrador")]
+    // [Authorize(Roles = "Administrador")]
     [HttpPost]
     public async Task<IActionResult> Crear(CreateUsuario createUsuario)
     {

@@ -22,9 +22,6 @@ public class UsuarioServices : IUsuarioService
 
     private async Task<bool> TieneHistorialAsync(int usuarioId)
         => await _conductorRepositories.ExisteConSupervisor(usuarioId);
-    // TODO: si Usuario también se referencia en otra tabla (ej. creador de solicitudes),
-    // agrega esa comprobación aquí también.
-
     public async Task<List<UsuarioResponse?>> ObtenerTodos()
     {
         var usuario = await _usuarioRepositories.ObtenerTodos();

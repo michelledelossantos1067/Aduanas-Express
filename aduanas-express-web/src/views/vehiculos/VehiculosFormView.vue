@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import {
@@ -28,7 +28,88 @@ const form = ref({
     capacidad: 0,
     estado: 0,
     kilometraje: 0,
-    fechaUltimoMant: null
+    fechaUltimoMant: null,
+    ubicacionActual: '',
+    nivelCombustible: null,
+    fechaUltimoCombustible: null,
+    galones: null,
+})
+const años = computed(() => {
+    const actual = new Date().getFullYear()
+    const lista = []
+    for (let a = actual; a >= 1990; a--) lista.push(a)
+    return lista
+})
+
+const añoOpen = ref(false)
+
+function seleccionarAño(a) {
+    form.value.año = a
+    añoOpen.value = false
+}
+
+const colores = ref([])
+const colorOpen = ref(false)
+
+async function cargarColores() {
+    try {
+        const res = await fetch('https://www.csscolorsapi.com/api/colors')
+        const data = await res.json()
+        colores.value = data.colors.map(c => ({
+            nombre: c.name,
+            hex: c.hex
+        }))
+    } catch {
+        colores.value = [
+            { nombre: 'Blanco', hex: '#ffffff' },
+            { nombre: 'Negro', hex: '#000000' },
+            { nombre: 'Gris', hex: '#808080' },
+            { nombre: 'Rojo', hex: '#ff0000' },
+            { nombre: 'Azul', hex: '#0000ff' },
+            { nombre: 'Verde', hex: '#008000' },
+            { nombre: 'Amarillo', hex: '#ffff00' },
+            { nombre: 'Naranja', hex: '#ffa500' },
+            { nombre: 'Marrón', hex: '#a52a2a' },
+            { nombre: 'Blanco Perla', hex: '#f5f0e8' },
+            { nombre: 'Plata', hex: '#c0c0c0' },
+            { nombre: 'Vino', hex: '#722f37' },
+        ]
+    }
+}
+
+function seleccionarColor(c) {
+    form.value.color = c.nombre
+    colorOpen.value = false
+}
+
+function colorHex(nombre) {
+    return colores.value.find(c => c.nombre === nombre)?.hex ?? '#e5e7eb'
+}
+
+const ubicacionQuery = ref('')
+const ubicaciones = ref([])
+let timeoutUbicacion = null
+
+async function buscarUbicaciones(query) {
+    if (!query || query.length < 3) return
+    try {
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1&countrycodes=do`,
+            { headers: { 'Accept-Language': 'es' } }
+        )
+        const data = await res.json()
+        ubicaciones.value = data.map(d => d.display_name)
+    } catch {
+        ubicaciones.value = []
+    }
+}
+let cargandoInicial = false
+
+watch(ubicacionQuery, (val) => {
+    if (cargandoInicial) return
+    form.value.ubicacionActual = val
+    clearTimeout(timeoutUbicacion)
+    timeoutUbicacion = setTimeout(() => buscarUbicaciones(val), 400)
 })
 
 async function guardar() {
@@ -39,6 +120,7 @@ async function guardar() {
         if (!form.value.matricula) { error.value = 'La matrícula es requerida.'; return }
         if (!form.value.marca) { error.value = 'La marca es requerida.'; return }
         if (!form.value.modelo) { error.value = 'El modelo es requerido.'; return }
+        if (!form.value.ubicacionActual) { error.value = 'La Ubicacion Actual es requerido.'; return }
         if (!form.value.tipo) { error.value = 'El tipo es requerido.'; return }
         if (!form.value.color) { error.value = 'El color es requerido.'; return }
 
@@ -83,7 +165,6 @@ async function cargarVehiculo() {
             : response.data
         if (!data) throw new Error('Vehículo no encontrado.')
 
-        // Formatear la fecha si existe
         let fechaFormato = ''
         if (data.fechaUltimoMant) {
             const fecha = new Date(data.fechaUltimoMant)
@@ -100,7 +181,20 @@ async function cargarVehiculo() {
             capacidad: data.capacidad,
             estado: data.estado,
             kilometraje: data.kilometraje,
-            fechaUltimoMant: fechaFormato
+            fechaUltimoMant: fechaFormato,
+            ubicacionActual: data.ubicacionActual,
+            nivelCombustible: data.nivelCombustible ?? null,
+            fechaUltimoCombustible: data.fechaUltimoCombustible ?? null,
+            galones: data.ultimosGalones ?? null,
+        }
+
+        if (data.ubicacionActual) {
+            cargandoInicial = true
+            ubicacionQuery.value = data.ubicacionActual
+            form.value.ubicacionActual = data.ubicacionActual
+            ubicaciones.value = []
+            await nextTick()
+            cargandoInicial = false
         }
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el vehículo.'
@@ -109,6 +203,7 @@ async function cargarVehiculo() {
     }
 }
 onMounted(async () => {
+    await cargarColores()
     if (esEdicion.value) await cargarVehiculo()
 })
 </script>
@@ -210,7 +305,21 @@ onMounted(async () => {
                         </div>
                         <div class="field">
                             <label>Año</label>
-                            <input v-model="form.año" type="number" placeholder="2024" min="1900" max="2100" />
+                            <div class="custom-select" :class="{ open: añoOpen }">
+                                <button type="button" class="custom-select-trigger" @click="añoOpen = !añoOpen">
+                                    <span>{{ form.año ?? 'Seleccionar año…' }}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </button>
+                                <div v-if="añoOpen" class="custom-select-dropdown">
+                                    <div v-for="a in años" :key="a" class="custom-select-option"
+                                        :class="{ selected: form.año === a }" @click="seleccionarAño(a)">
+                                        {{ a }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -228,13 +337,76 @@ onMounted(async () => {
                             <input v-model="form.marca" type="text" placeholder="Toyota" />
                         </div>
                         <div class="field">
+                            <label>Ubicación Actual <span class="req">*</span></label>
+                            <div class="ubicacion-wrap" :class="{ 'ubicacion-wrap--active': ubicaciones.length > 0 }">
+                                <div class="ubicacion-search-row">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" class="ubicacion-icon">
+                                        <circle cx="11" cy="11" r="8" />
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                    </svg>
+                                    <input v-model="ubicacionQuery" type="text" placeholder="Buscar ubicación..."
+                                        autocomplete="off" class="ubicacion-input" />
+                                    <span v-if="ubicacionQuery" class="ubicacion-clear"
+                                        @click="ubicacionQuery = ''; ubicaciones = []; form.ubicacionActual = ''">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <line x1="18" y1="6" x2="6" y2="18" />
+                                            <line x1="6" y1="6" x2="18" y2="18" />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div v-if="ubicaciones.length > 0" class="ubicacion-resultados">
+                                    <div v-for="u in ubicaciones" :key="u" class="ubicacion-opcion"
+                                        :class="{ 'ubicacion-opcion--selected': form.ubicacionActual === u }"
+                                        @click="form.ubicacionActual = u; ubicacionQuery = u; ubicaciones = []">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2"
+                                            style="flex-shrink:0; margin-top:2px; color:#6b7280">
+                                            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" />
+                                        </svg>
+                                        <span>{{ u }}</span>
+                                    </div>
+                                </div>
+                                <div v-if="form.ubicacionActual && ubicaciones.length === 0"
+                                    class="ubicacion-selected-tag">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" style="color:#166534; flex-shrink:0">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    <span>{{ form.ubicacionActual }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
                             <label>Modelo <span class="req">*</span></label>
                             <input v-model="form.modelo" type="text" placeholder="Hilux" />
                         </div>
                         <div class="field">
                             <label>Color <span class="req">*</span></label>
-                            <input v-model="form.color" type="text" placeholder="Blanco" />
+                            <div class="custom-select" :class="{ open: colorOpen }">
+                                <button type="button" class="custom-select-trigger" @click="colorOpen = !colorOpen">
+                                    <span style="display:flex; align-items:center; gap:8px;">
+                                        <span v-if="form.color" class="color-dot"
+                                            :style="{ background: colorHex(form.color) }"></span>
+                                        <span>{{ form.color || 'Seleccionar color…' }}</span>
+                                    </span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </button>
+                                <div v-if="colorOpen" class="custom-select-dropdown">
+                                    <div v-for="c in colores" :key="c.hex" class="custom-select-option"
+                                        :class="{ selected: form.color === c.nombre }" @click="seleccionarColor(c)">
+                                        <span class="color-dot" :style="{ background: c.hex }"></span>
+                                        {{ c.nombre }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="field">
                             <label>Tipo <span class="req">*</span></label>
                             <select v-model="form.tipo">
@@ -286,6 +458,18 @@ onMounted(async () => {
                                 <input v-model="form.kilometraje" type="number" placeholder="0" min="0" />
                                 <span class="input-suffix">km</span>
                             </div>
+                        </div>
+                        <div class="field">
+                            <label>Último Combustible</label>
+                            <div class="input-suffix-wrap">
+                                <input :value="form.galones ?? '—'" type="text" readonly
+                                    style="background:#f9fafb; color:#6b7280; cursor:default" />
+                                <span class="input-suffix">gal</span>
+                            </div>
+                            <p v-if="form.fechaUltimoCombustible" class="field-hint">
+                                Registrado el {{ new Date(form.fechaUltimoCombustible).toLocaleDateString('es-DO') }}
+                            </p>
+                            <p v-else class="field-hint">Sin registros de combustible.</p>
                         </div>
                         <div class="field">
                             <label>Último mantenimiento</label>
@@ -415,6 +599,133 @@ onMounted(async () => {
 
 .btn-back:hover {
     color: #1a3a2a;
+}
+
+.custom-select-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.ubicacion-wrap {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    background: #fff;
+}
+
+.ubicacion-wrap:focus-within,
+.ubicacion-wrap--active {
+    border-color: #1a3a2a;
+    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
+}
+
+.ubicacion-search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    height: 42px;
+}
+
+.ubicacion-icon {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.ubicacion-input {
+    flex: 1;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: 100% !important;
+    font-size: 0.875rem;
+    color: #111827;
+    background: transparent;
+    font-family: inherit;
+    width: 100%;
+}
+
+.ubicacion-input::placeholder {
+    color: #9ca3af;
+}
+
+.ubicacion-clear {
+    cursor: pointer;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.ubicacion-clear:hover {
+    color: #374151;
+}
+
+.ubicacion-resultados {
+    border-top: 1px solid #f3f4f6;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+.ubicacion-resultados::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ubicacion-resultados::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 99px;
+}
+
+.ubicacion-opcion {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 12px;
+    font-size: 0.82rem;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.1s;
+    line-height: 1.4;
+}
+
+.ubicacion-opcion:hover {
+    background: #f3f4f6;
+}
+
+.ubicacion-opcion--selected {
+    background: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
+}
+
+.ubicacion-selected-tag {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 7px 12px;
+    border-top: 1px solid #f3f4f6;
+    background: #f0fdf4;
+    font-size: 0.8rem;
+    color: #166534;
+    line-height: 1.4;
+    word-break: break-word;
 }
 
 .vf-breadcrumb-sep {
@@ -949,5 +1260,91 @@ onMounted(async () => {
     .form-grid.col-3 {
         grid-template-columns: 1fr;
     }
+}
+
+.custom-select {
+    position: relative;
+}
+
+.custom-select-trigger {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.9rem;
+    color: #111827;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    text-align: left;
+}
+
+.custom-select-trigger:hover,
+.custom-select.open .custom-select-trigger {
+    border-color: #1a3a2a;
+    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
+}
+
+.custom-select-trigger svg {
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    color: #6b7280;
+}
+
+.custom-select.open .custom-select-trigger svg {
+    transform: rotate(180deg);
+}
+
+.custom-select-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 50;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+.custom-select-dropdown::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 99px;
+}
+
+.custom-select-option {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-radius: 6px;
+    margin: 2px 4px;
+}
+
+.custom-select-option:hover {
+    background: #f3f4f6;
+}
+
+.custom-select-option.selected {
+    background: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
 }
 </style>

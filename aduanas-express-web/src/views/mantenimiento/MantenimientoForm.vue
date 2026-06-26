@@ -119,10 +119,6 @@ onMounted(cargarVehiculos)
                         <input v-model="form.fechaProgramada" type="date" class="form-input" />
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fecha realizada</label>
-                        <input v-model="form.fechaRealizada" type="date" class="form-input" />
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Kilometraje actual</label>
                         <input v-model="form.kilometraje" type="number" class="form-input" placeholder="km" min="0" />
                     </div>

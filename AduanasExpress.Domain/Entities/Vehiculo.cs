@@ -13,8 +13,6 @@ public class Vehiculo {
     public decimal Kilometraje { get; set; }
     public DateTime? FechaUltimoMant { get; set; }
     public bool IsActive { get; set; } = true;
-    public string UbicacionActual { get; set; }
-    
     public decimal UltimoCombustible { get; set; } = 0;
     public DateTime? FechaUltimoCombustible { get; set; }
 }

@@ -38,7 +38,6 @@ public class VehiculoRepositories : IVehiculoRepositories
         vehiculos.Estado = vehiculo.Estado;
         vehiculos.Kilometraje = vehiculo.Kilometraje;
         vehiculos.FechaUltimoMant = vehiculo.FechaUltimoMant;
-        vehiculos.UbicacionActual = vehiculo.UbicacionActual;
         await _context.SaveChangesAsync();
     }
     public async Task Eliminar(int Id)

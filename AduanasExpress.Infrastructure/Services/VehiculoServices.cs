@@ -83,7 +83,6 @@ public class VehiculoServices : IVehiculoService
             Estado = createVehiculoDTOs.Estado,
             Kilometraje = createVehiculoDTOs.Kilometraje,
             FechaUltimoMant = createVehiculoDTOs.FechaUltimoMant,
-            UbicacionActual = createVehiculoDTOs.UbicacionActual
         };
         await _vehiculoRepositories.Crear(vehiculo);
     }
@@ -108,7 +107,6 @@ public class VehiculoServices : IVehiculoService
         vehiculo.Estado = updateVehiculoDTOs.Estado;
         vehiculo.Kilometraje = updateVehiculoDTOs.Kilometraje;
         vehiculo.FechaUltimoMant = updateVehiculoDTOs.FechaUltimoMant;
-        vehiculo.UbicacionActual = updateVehiculoDTOs.UbicacionActual;
         await _vehiculoRepositories.Actualizar(Id, vehiculo);
     }
     public async Task Eliminar(int Id)
@@ -146,12 +144,5 @@ public class VehiculoServices : IVehiculoService
     {
         var vehiculos = await _vehiculoRepositories.ObtenerDisponiblesEnFecha(fecha);
         return vehiculos.Select(v => v.ToResponse()).ToList();
-    }
-    public async Task<IEnumerable<Vehiculo>> ObtenerVehiculosPorUbicacion(string ubicacion)
-    {
-        var vehiculos = await _vehiculoRepositories.ObtenerTodos();
-        return vehiculos.Where(v => v.UbicacionActual == ubicacion &&
-                                    v.IsActive &&
-                                    v.Estado == EstadosVehiculo.Disponible);
     }
 }

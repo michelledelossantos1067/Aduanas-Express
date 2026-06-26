@@ -29,7 +29,6 @@ const form = ref({
     estado: 0,
     kilometraje: 0,
     fechaUltimoMant: null,
-    ubicacionActual: '',
     nivelCombustible: null,
     fechaUltimoCombustible: null,
     galones: null,
@@ -86,32 +85,6 @@ function colorHex(nombre) {
     return colores.value.find(c => c.nombre === nombre)?.hex ?? '#e5e7eb'
 }
 
-const ubicacionQuery = ref('')
-const ubicaciones = ref([])
-let timeoutUbicacion = null
-
-async function buscarUbicaciones(query) {
-    if (!query || query.length < 3) return
-    try {
-        const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1&countrycodes=do`,
-            { headers: { 'Accept-Language': 'es' } }
-        )
-        const data = await res.json()
-        ubicaciones.value = data.map(d => d.display_name)
-    } catch {
-        ubicaciones.value = []
-    }
-}
-let cargandoInicial = false
-
-watch(ubicacionQuery, (val) => {
-    if (cargandoInicial) return
-    form.value.ubicacionActual = val
-    clearTimeout(timeoutUbicacion)
-    timeoutUbicacion = setTimeout(() => buscarUbicaciones(val), 400)
-})
-
 async function guardar() {
     try {
         loading.value = true
@@ -120,7 +93,6 @@ async function guardar() {
         if (!form.value.matricula) { error.value = 'La matrícula es requerida.'; return }
         if (!form.value.marca) { error.value = 'La marca es requerida.'; return }
         if (!form.value.modelo) { error.value = 'El modelo es requerido.'; return }
-        if (!form.value.ubicacionActual) { error.value = 'La Ubicacion Actual es requerido.'; return }
         if (!form.value.tipo) { error.value = 'El tipo es requerido.'; return }
         if (!form.value.color) { error.value = 'El color es requerido.'; return }
 
@@ -182,19 +154,9 @@ async function cargarVehiculo() {
             estado: data.estado,
             kilometraje: data.kilometraje,
             fechaUltimoMant: fechaFormato,
-            ubicacionActual: data.ubicacionActual,
             nivelCombustible: data.nivelCombustible ?? null,
             fechaUltimoCombustible: data.fechaUltimoCombustible ?? null,
             galones: data.ultimosGalones ?? null,
-        }
-
-        if (data.ubicacionActual) {
-            cargandoInicial = true
-            ubicacionQuery.value = data.ubicacionActual
-            form.value.ubicacionActual = data.ubicacionActual
-            ubicaciones.value = []
-            await nextTick()
-            cargandoInicial = false
         }
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el vehículo.'
@@ -336,49 +298,7 @@ onMounted(async () => {
                             <label>Marca <span class="req">*</span></label>
                             <input v-model="form.marca" type="text" placeholder="Toyota" />
                         </div>
-                        <div class="field">
-                            <label>Ubicación Actual <span class="req">*</span></label>
-                            <div class="ubicacion-wrap" :class="{ 'ubicacion-wrap--active': ubicaciones.length > 0 }">
-                                <div class="ubicacion-search-row">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.5" class="ubicacion-icon">
-                                        <circle cx="11" cy="11" r="8" />
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                    </svg>
-                                    <input v-model="ubicacionQuery" type="text" placeholder="Buscar ubicación..."
-                                        autocomplete="off" class="ubicacion-input" />
-                                    <span v-if="ubicacionQuery" class="ubicacion-clear"
-                                        @click="ubicacionQuery = ''; ubicaciones = []; form.ubicacionActual = ''">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2.5">
-                                            <line x1="18" y1="6" x2="6" y2="18" />
-                                            <line x1="6" y1="6" x2="18" y2="18" />
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div v-if="ubicaciones.length > 0" class="ubicacion-resultados">
-                                    <div v-for="u in ubicaciones" :key="u" class="ubicacion-opcion"
-                                        :class="{ 'ubicacion-opcion--selected': form.ubicacionActual === u }"
-                                        @click="form.ubicacionActual = u; ubicacionQuery = u; ubicaciones = []">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2"
-                                            style="flex-shrink:0; margin-top:2px; color:#6b7280">
-                                            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
-                                            <circle cx="12" cy="10" r="3" />
-                                        </svg>
-                                        <span>{{ u }}</span>
-                                    </div>
-                                </div>
-                                <div v-if="form.ubicacionActual && ubicaciones.length === 0"
-                                    class="ubicacion-selected-tag">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.5" style="color:#166534; flex-shrink:0">
-                                        <polyline points="20 6 9 17 4 12" />
-                                    </svg>
-                                    <span>{{ form.ubicacionActual }}</span>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <div class="field">
                             <label>Modelo <span class="req">*</span></label>
                             <input v-model="form.modelo" type="text" placeholder="Hilux" />

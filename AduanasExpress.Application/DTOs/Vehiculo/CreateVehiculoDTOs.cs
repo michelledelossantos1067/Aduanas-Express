@@ -11,5 +11,4 @@ public class CreateVehiculoDTOs{
     public EstadosVehiculo Estado {get;set;}
     public decimal Kilometraje { get; set; }
     public DateTime? FechaUltimoMant { get; set; }
-    public string UbicacionActual {get;set;}
 }

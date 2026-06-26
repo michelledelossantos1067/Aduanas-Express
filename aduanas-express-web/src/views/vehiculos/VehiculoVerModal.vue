@@ -182,10 +182,6 @@ function cerrar() {
                             <span class="ver-label">Últ. Mantenimiento</span>
                             <span class="ver-valor">{{ formatFecha(vehiculo.fechaUltimoMant) }}</span>
                         </div>
-                        <div class="ver-item ver-item-full">
-                            <span class="ver-label">Ubicación Actual</span>
-                            <span class="ver-valor">📍 {{ vehiculo.ubicacionActual ?? '—' }}</span>
-                        </div>
                     </div>
 
                     <div class="ver-divider"></div>

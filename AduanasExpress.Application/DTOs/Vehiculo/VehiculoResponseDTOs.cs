@@ -17,5 +17,4 @@ public class VehiculoResponseDTOs{
     public decimal? NivelCombustible { get; set; }
     public decimal? UltimosGalones { get; set; }
     public DateTime? FechaUltimoCombustible { get; set; }
-    public string UbicacionActual {get;set;}
 }

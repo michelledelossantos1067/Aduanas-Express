@@ -18,7 +18,9 @@ public class ConsumoCombustibleRepositories : IConsumoCombustibleRepositories
 
     public async Task<List<ConsumoCombustible?>> ObtenerTodos()
     {
-        return await _context.ConsumoCombustibles.ToListAsync();
+        return await _context.ConsumoCombustibles
+            .Include(c => c.Vehiculo)
+            .ToListAsync();
     }
     public async Task<ConsumoCombustible?> ObtenerPorId(int Id)
     {

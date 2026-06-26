@@ -14,6 +14,7 @@ namespace AduanasExpress.Application.Mappings
                 CantidadColaboradores = solicitudTransporte.CantidadColaboradores,
                 FechaViaje = solicitudTransporte.FechaViaje,
                 HoraSalida = solicitudTransporte.HoraSalida,
+                HoraEstimada = solicitudTransporte.HoraEstimada,
                 PuntoOrigen = solicitudTransporte.PuntoOrigen,
                 Destino = solicitudTransporte.Destino,
                 TipoViaje = solicitudTransporte.TipoViaje,

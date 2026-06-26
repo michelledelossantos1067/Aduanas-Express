@@ -8,5 +8,6 @@ public class Usuario{
     public int RolId { get; set; } = 2;
     public Rol Rol { get; set; } = null!;
     public bool IsActive {get;set;} = true;
+    public bool RequiereCambioPassword { get; set; } = false;
 
 }

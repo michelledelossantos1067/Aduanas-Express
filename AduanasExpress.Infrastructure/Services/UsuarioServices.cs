@@ -55,7 +55,8 @@ public class UsuarioServices : IUsuarioService
             Apellido = createUsuario.Apellido,
             Email = createUsuario.Email,
             Password = createUsuario.Password,
-            RolId = createUsuario.RolId
+            RolId = createUsuario.RolId,
+            RequiereCambioPassword = true  // El usuario debe cambiar su contraseña al primer inicio
         };
         if (usuarios.Password != null)
         {

@@ -5,4 +5,5 @@ public class AuthResponseDTOs
     public string Token {get;set;}
     public string Nombre {get;set;}
     public string RolId {get;set;}
+    public bool RequiereCambioPassword { get; set; }
 }

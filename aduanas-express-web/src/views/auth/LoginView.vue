@@ -23,10 +23,15 @@ async function handleLogin() {
         authStore.iniciarSesion(response.data.token, {
             id: response.data.id,
             nombre: response.data.nombre,
-            rolId: response.data.rolId
+            rolId: response.data.rolId,
+            email: form.value.email
         })
         
-        router.push('/dashboard')
+        if (response.data.requiereCambioPassword) {
+            router.push('/change-password')
+        } else {
+            router.push('/dashboard')
+        }
     } catch (e) {
         error.value = e.response?.data?.message || "Error al iniciar sesión"
     } finally {

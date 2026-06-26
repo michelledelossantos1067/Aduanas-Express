@@ -16,15 +16,39 @@ const solicitudes = ref([])
 
 const esEdicion = computed(() => !!route.params.id)
 
+// ✅ CAMBIO: Ahora "galones" representa el NIVEL ACTUAL del tanque
 const form = ref({
-    galones: null,
+    galones: null, // Nivel actual en el tanque (ej: 75 galones)
     costoPorGalon: null,
     costoTotal: null,
     vehiculoId: null,
     solicitudId: null,
 })
 
-// Calcular costo total automáticamente
+const vehiculoSeleccionado = computed(() => {
+    return vehiculos.value.find(v => v.id === parseInt(form.value.vehiculoId))
+})
+
+// ✅ NUEVO: Validar que no exceda la capacidad
+function validarCapacidad() {
+    if (!vehiculoSeleccionado.value) return true
+    
+    const galon = parseFloat(form.value.galones) || 0
+    const capacidad = vehiculoSeleccionado.value.capacidad || 0
+    
+    if (galon > capacidad) {
+        error.value = `El nivel no puede exceder la capacidad del tanque (${capacidad} gal)`
+        return false
+    }
+    
+    if (galon < 0) {
+        error.value = 'El nivel no puede ser negativo'
+        return false
+    }
+    
+    return true
+}
+
 function calcularTotal() {
     if (form.value.galones && form.value.costoPorGalon) {
         form.value.costoTotal = (
@@ -38,10 +62,27 @@ async function guardar() {
         loading.value = true
         error.value = ''
 
-        if (!form.value.galones || form.value.galones <= 0) { error.value = 'La cantidad de galones es requerida.'; return }
-        if (!form.value.costoPorGalon || form.value.costoPorGalon <= 0) { error.value = 'El costo por galón es requerido.'; return }
-        if (!form.value.costoTotal || form.value.costoTotal <= 0) { error.value = 'El costo total es requerido.'; return }
-        if (!form.value.vehiculoId) { error.value = 'Debe seleccionar un vehículo.'; return }
+        if (!form.value.galones || form.value.galones <= 0) { 
+            error.value = 'El nivel de galones es requerido.'; 
+            return 
+        }
+        if (!form.value.costoPorGalon || form.value.costoPorGalon <= 0) { 
+            error.value = 'El costo por galón es requerido.'; 
+            return 
+        }
+        if (!form.value.costoTotal || form.value.costoTotal <= 0) { 
+            error.value = 'El costo total es requerido.'; 
+            return 
+        }
+        if (!form.value.vehiculoId) { 
+            error.value = 'Debe seleccionar un vehículo.'; 
+            return 
+        }
+
+        // ✅ Validar capacidad
+        if (!validarCapacidad()) {
+            return
+        }
 
         const payload = {
             galones: parseFloat(form.value.galones),
@@ -90,11 +131,11 @@ async function cargarConsumo() {
         if (!data) throw new Error('Registro no encontrado.')
 
         form.value = {
-            galones: data.Galones,
-            costoPorGalon: data.CostoPorGalon,
-            costoTotal: data.CostoTotal,
-            vehiculoId: data.VehiculoId,
-            solicitudId: data.SolicitudId ?? null,
+            galones: data.galones,
+            costoPorGalon: data.costoPorGalon,
+            costoTotal: data.costoTotal,
+            vehiculoId: data.vehiculoId,
+            solicitudId: data.solicitudId ?? null,
         }
     } catch (e) {
         error.value = e?.response?.data?.message || e?.message || 'No se pudo cargar el registro.'
@@ -116,7 +157,6 @@ onMounted(async () => {
 
 <template>
     <div class="vf-page">
-
         <div class="vf-header">
             <div class="vf-header-left">
                 <button class="btn-back" @click="router.push('/consumo-combustible')">
@@ -144,7 +184,7 @@ onMounted(async () => {
             </div>
             <div>
                 <h1>{{ esEdicion ? 'Editar Consumo' : 'Registrar Consumo de Combustible' }}</h1>
-                <p>{{ esEdicion ? 'Actualice los datos del consumo.' : 'Complete el formulario para registrar el consumo.' }}</p>
+                <p>{{ esEdicion ? 'Actualice el nivel actual del tanque.' : 'Registre el nivel actual del tanque.' }}</p>
             </div>
         </div>
 
@@ -158,7 +198,6 @@ onMounted(async () => {
         </div>
 
         <div class="vf-layout">
-
             <aside class="vf-aside">
                 <div class="aside-section">
                     <p class="aside-label">Módulo</p>
@@ -170,14 +209,26 @@ onMounted(async () => {
                     <p class="aside-value">{{ esEdicion ? 'Modificación de registro' : 'Nuevo consumo' }}</p>
                 </div>
                 <div class="aside-divider"></div>
+                <!-- ✅ NUEVO: Mostrar información del vehículo seleccionado -->
                 <div class="aside-section">
-                    <p class="aside-label">Campos obligatorios</p>
-                    <ul class="aside-list">
-                        <li>Vehículo</li>
-                        <li>Galones</li>
-                        <li>Costo por galón</li>
-                        <li>Costo total</li>
-                    </ul>
+                    <p class="aside-label">Vehículo Seleccionado</p>
+                    <p class="aside-value" v-if="vehiculoSeleccionado">
+                        {{ vehiculoSeleccionado.matricula }}
+                    </p>
+                    <p class="aside-value" v-else style="color: #9ca3af;">
+                        —
+                    </p>
+                </div>
+                <div class="aside-divider"></div>
+                <!-- ✅ NUEVO: Mostrar capacidad del tanque -->
+                <div class="aside-section">
+                    <p class="aside-label">Capacidad del Tanque</p>
+                    <p class="aside-value" v-if="vehiculoSeleccionado">
+                        {{ vehiculoSeleccionado.capacidad }} galones
+                    </p>
+                    <p class="aside-value" v-else style="color: #9ca3af;">
+                        —
+                    </p>
                 </div>
                 <div class="aside-divider"></div>
                 <div class="aside-section">
@@ -189,7 +240,6 @@ onMounted(async () => {
             </aside>
 
             <div class="vf-card">
-
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">01</span>
@@ -200,8 +250,8 @@ onMounted(async () => {
                             <label>Vehículo <span class="req">*</span></label>
                             <select v-model="form.vehiculoId">
                                 <option :value="null" disabled>Seleccionar vehículo…</option>
-                                <option v-for="v in vehiculos" :key="v.Id" :value="v.Id">
-                                    {{ v.Matricula }} — {{ v.Marca }} {{ v.Modelo }}
+                                <option v-for="v in vehiculos" :key="v.id" :value="v.id">
+                                    {{ v.matricula }} — {{ v.marca }} {{ v.modelo }}
                                 </option>
                             </select>
                         </div>
@@ -222,16 +272,19 @@ onMounted(async () => {
                 <div class="form-section">
                     <div class="section-header">
                         <span class="section-tag">02</span>
-                        <h3>Detalle del Consumo</h3>
+                        <h3>Nivel de Combustible</h3>
                     </div>
                     <div class="form-grid col-3">
                         <div class="field">
-                            <label>Galones <span class="req">*</span></label>
+                            <label>Nivel Actual <span class="req">*</span></label>
                             <div class="input-suffix-wrap">
                                 <input v-model="form.galones" @input="calcularTotal" type="number" placeholder="0.00"
-                                    min="0" step="0.01" />
+                                    min="0" :max="vehiculoSeleccionado?.capacidad || 999" step="0.01" />
                                 <span class="input-suffix">gal</span>
                             </div>
+                            <p class="field-hint" v-if="vehiculoSeleccionado">
+                                Capacidad: {{ vehiculoSeleccionado.capacidad }} gal
+                            </p>
                         </div>
                         <div class="field">
                             <label>Costo por Galón <span class="req">*</span></label>
@@ -250,7 +303,7 @@ onMounted(async () => {
                                 <input v-model="form.costoTotal" type="number" placeholder="Calculado automáticamente"
                                     min="0" step="0.01" />
                             </div>
-                            <p class="field-hint">Se calcula automáticamente al ingresar galones × costo/galón.</p>
+                            <p class="field-hint">Se calcula automáticamente: nivel × costo/galón.</p>
                         </div>
                     </div>
                 </div>
@@ -268,47 +321,33 @@ onMounted(async () => {
                         </button>
                     </div>
                     <div class="action-bar-right">
-                        <button class="btn-secondary" :disabled="loading" @click="router.push('/consumo-combustible')">
-                            Cancelar
-                        </button>
-                        <button class="btn-primary" :disabled="loading" @click="guardar">
+                        <button class="btn-secondary" @click="router.push('/consumo-combustible')">Cancelar</button>
+                        <button class="btn-primary" @click="guardar" :disabled="loading">
                             <span v-if="loading" class="btn-spinner"></span>
-                            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                            {{ esEdicion ? 'Guardar Cambios' : 'Registrar Consumo' }}
+                            {{ esEdicion ? 'Actualizar' : 'Registrar' }}
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <!-- Modal confirmación eliminar -->
+        <!-- Modal de confirmación -->
         <div v-if="mostrarConfirmacion" class="modal-overlay">
             <div class="modal">
                 <div class="modal-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                        <line x1="12" y1="9" x2="12" y2="13" />
-                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                        <path d="M12 9v2m0 4v2" />
+                        <circle cx="12" cy="12" r="9" />
                     </svg>
                 </div>
-                <p class="modal-titulo">¿Eliminar este registro?</p>
-                <p class="modal-desc">Esta acción no se puede deshacer. El consumo de combustible será eliminado
-                    permanentemente.</p>
+                <h3 class="modal-titulo">Eliminar registro</h3>
+                <p class="modal-desc">¿Está seguro que desea eliminar este registro de consumo?</p>
                 <div class="modal-acciones">
                     <button class="btn-cancelar-modal" @click="mostrarConfirmacion = false">Cancelar</button>
-                    <button class="btn-confirmar-modal" :disabled="loading" @click="eliminar">
-                        <span v-if="loading" class="btn-spinner" style="border-top-color: #fff;"></span>
-                        Sí, eliminar
-                    </button>
+                    <button class="btn-confirmar-modal" @click="eliminar" :disabled="loading">Eliminar</button>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 

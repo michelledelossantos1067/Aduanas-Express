@@ -28,13 +28,14 @@ public class ConsumoCombustibleController : ControllerBase{
     }
     [Authorize(Roles = "Administrador,Supervisor")]
     [HttpPost]
-    public async Task<IActionResult> Crear(CreateConsumoCombustibleDTOs createConsumoCombustibleDTOs){
-        await _consumoCombustibleService.Crear(createConsumoCombustibleDTOs);
+    public async Task<IActionResult> Crear([FromBody] CreateConsumoCombustibleDTOs dto)
+    {
+        await _consumoCombustibleService.Crear(dto);
         return Created();
     }
     [Authorize(Roles = "Administrador,Supervisor")]
     [HttpPut("{Id}")]
-    public async Task<IActionResult> Actualizar(int Id,UpdateConsumoCombustibleDTOs updateConsumoCombustibleDTOs){
+    public async Task<IActionResult> Actualizar(int Id,[FromBody] UpdateConsumoCombustibleDTOs updateConsumoCombustibleDTOs){
         await _consumoCombustibleService.Actualizar(Id,updateConsumoCombustibleDTOs);
         return Ok();
     }

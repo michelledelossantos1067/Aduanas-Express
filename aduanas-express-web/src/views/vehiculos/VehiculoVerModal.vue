@@ -143,10 +143,11 @@ function cerrar() {
                     </div>
 
                     <h3 class="ver-nombre">{{ vehiculo.marca }} {{ vehiculo.modelo }} {{ vehiculo.año }}</h3>
-                    <p class="ver-subtitulo">{{ vehiculo.tipo }} · {{ vehiculo.capacidad }} pasajeros · {{
-                        vehiculo.color }}</p>
+                    <p class="ver-subtitulo">{{ vehiculo.tipo }} · {{ vehiculo.capacidad }} pasajeros · {{ vehiculo.color }}</p>
 
                     <div class="ver-divider"></div>
+
+                    <div class="ver-section-title">Información del Vehículo</div>
 
                     <div class="ver-grid">
                         <div class="ver-item">
@@ -186,6 +187,49 @@ function cerrar() {
                             <span class="ver-valor">📍 {{ vehiculo.ubicacionActual ?? '—' }}</span>
                         </div>
                     </div>
+
+                    <div class="ver-divider"></div>
+
+                    <div class="ver-section-title">Último Consumo de Combustible</div>
+
+                    <div v-if="loadingConsumos" class="ver-loading-small">Cargando consumos…</div>
+
+                    <div v-else-if="ultimoConsumo" class="ver-grid">
+                        <div class="ver-item">
+                            <span class="ver-label">Fecha</span>
+                            <span class="ver-valor">{{ formatFecha(ultimoConsumo.fecha) }}</span>
+                        </div>
+                        <div class="ver-item">
+                            <span class="ver-label">Galones</span>
+                            <span class="ver-valor">{{ ultimoConsumo.galones }} gal</span>
+                        </div>
+                        <div class="ver-item">
+                            <span class="ver-label">Costo por Galón</span>
+                            <span class="ver-valor">${{ ultimoConsumo.costoPorGalon?.toFixed(2) }}</span>
+                        </div>
+                        <div class="ver-item">
+                            <span class="ver-label">Costo Total</span>
+                            <span class="ver-valor">${{ ultimoConsumo.costoTotal?.toFixed(2) }}</span>
+                        </div>
+                        <div class="ver-item">
+                            <span class="ver-label">Total Galones (histórico)</span>
+                            <span class="ver-valor">{{ totalGalones }} gal</span>
+                        </div>
+                        <div class="ver-item">
+                            <span class="ver-label">Gasto Total (histórico)</span>
+                            <span class="ver-valor">${{ totalCosto }}</span>
+                        </div>
+                    </div>
+
+                    <div v-else class="ver-empty">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Sin registros de combustible
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
@@ -212,9 +256,9 @@ function cerrar() {
 .modal {
     background: #fff;
     border-radius: 14px;
-    width: 480px;
-    max-width: 90vw;
-    max-height: 85vh;
+    width: 680px;
+    max-width: 95vw;
+    max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
 }
@@ -225,6 +269,10 @@ function cerrar() {
     gap: 14px;
     padding: 24px 28px;
     border-bottom: 1px solid #f3f4f6;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
 }
 
 .modal-header-icon {
@@ -291,13 +339,7 @@ function cerrar() {
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.ver-item-full {
-    grid-column: 1 / -1;
+    to { transform: rotate(360deg); }
 }
 
 .modal-alert {
@@ -350,19 +392,32 @@ function cerrar() {
 .ver-divider {
     height: 1px;
     background: #f3f4f6;
-    margin: 18px 0;
+    margin: 20px 0;
+}
+
+.ver-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin-bottom: 14px;
 }
 
 .ver-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px 24px;
 }
 
 .ver-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.ver-item-full {
+    grid-column: 1 / -1;
 }
 
 .ver-label {
@@ -377,6 +432,21 @@ function cerrar() {
     font-size: 0.9rem;
     font-weight: 600;
     color: #111827;
+}
+
+.ver-loading-small {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    padding: 8px 0;
+}
+
+.ver-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    padding: 8px 0;
 }
 
 .badge {
@@ -413,6 +483,8 @@ function cerrar() {
     padding: 16px 28px;
     border-top: 1px solid #f3f4f6;
     background: #fafafa;
+    position: sticky;
+    bottom: 0;
 }
 
 .btn-cerrar-modal {
@@ -434,11 +506,14 @@ function cerrar() {
 
 @media (max-width: 640px) {
     .modal {
-        width: 95vw;
+        width: 100vw;
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
     }
 
     .ver-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .modal-header,

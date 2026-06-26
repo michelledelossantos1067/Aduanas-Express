@@ -6,5 +6,5 @@ public class CreateConsumoCombustibleDTOs{
     public decimal CostoTotal {get;set;}
 
     public int VehiculoId {get;set;}
-    public int SolicitudId {get;set;}
+    public int? SolicitudId { get; set; }
 }

@@ -2,9 +2,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { verConsumos, eliminarConsumo } from '@/services/consumoCombustibleService'
+import { verVehiculos } from '@/services/vehiculoService'
 
 const authStore = useAuthStore()
 const consumos = ref([])
+const vehiculos = ref([])
 const cargando = ref(false)
 const error = ref('')
 const busqueda = ref('')
@@ -13,11 +15,16 @@ const puedeCrear = computed(() => authStore.tienePermiso('consumo-combustible', 
 const puedeEditar = computed(() => authStore.tienePermiso('consumo-combustible', 'editar'))
 const puedeEliminar = computed(() => authStore.tienePermiso('consumo-combustible', 'eliminar'))
 
+// ✅ ACTUALIZADO: Ahora muestra galones actuales, no totales
 const resumen = computed(() => {
   const total = consumos.value.length
-  const totalGalones = consumos.value.reduce((acc, c) => acc + (c.galones || 0), 0)
+  const ultimosRegistros = consumos.value.reduce((acc, c) => acc + (c.galones || 0), 0)
   const totalCosto = consumos.value.reduce((acc, c) => acc + (c.costoTotal || 0), 0)
-  return { total, totalGalones: totalGalones.toFixed(2), totalCosto: totalCosto.toFixed(2) }
+  return { 
+    total, 
+    ultimosRegistros: ultimosRegistros.toFixed(2), 
+    totalCosto: totalCosto.toFixed(2) 
+  }
 })
 
 const consumosFiltrados = computed(() => {
@@ -29,12 +36,28 @@ const consumosFiltrados = computed(() => {
   )
 })
 
+// ✅ NUEVO: Obtener nombre del vehículo por ID
+function obtenerVehiculoNombre(vehiculoId) {
+  const vehiculo = vehiculos.value.find(v => v.id === vehiculoId)
+  return vehiculo ? `${vehiculo.matricula} - ${vehiculo.marca} ${vehiculo.modelo}` : 'No encontrado'
+}
+
+// ✅ NUEVO: Obtener último combustible del vehículo
+function obtenerUltimoCombustible(vehiculoId) {
+  const vehiculo = vehiculos.value.find(v => v.id === vehiculoId)
+  return vehiculo ? vehiculo.ultimoCombustible?.toFixed(2) : '—'
+}
+
 async function cargarConsumos() {
   cargando.value = true
   error.value = ''
   try {
-    const res = await verConsumos()
-    consumos.value = res.data
+    const resC = await verConsumos()
+    consumos.value = resC.data
+    
+    // ✅ NUEVO: Cargar vehículos para mostrar información
+    const resV = await verVehiculos()
+    vehiculos.value = resV.data
   } catch (e) {
     error.value = 'No se pudieron cargar los consumos.'
   } finally {
@@ -87,8 +110,8 @@ onMounted(cargarConsumos)
       <div class="resumen-card">
         <span class="resumen-dot dot-galones"></span>
         <div>
-          <p class="resumen-num">{{ resumen.totalGalones }}</p>
-          <p class="resumen-label">Total Galones</p>
+          <p class="resumen-num">{{ resumen.ultimosRegistros }}</p>
+          <p class="resumen-label">Últimos Registros (gal)</p>
         </div>
       </div>
       <div class="resumen-card">
@@ -136,7 +159,7 @@ onMounted(cargarConsumos)
             <th>#</th>
             <th>Fecha</th>
             <th>Vehículo</th>
-            <th>Galones</th>
+            <th>Nivel Actual (gal)</th>
             <th>Costo/Galón</th>
             <th>Costo Total</th>
             <th>Acciones</th>
@@ -146,7 +169,7 @@ onMounted(cargarConsumos)
           <tr v-for="consumo in consumosFiltrados" :key="consumo.id">
             <td class="td-id">{{ consumo.id }}</td>
             <td>{{ formatFecha(consumo.fecha) }}</td>
-            <td>{{ consumo.vehiculoId }}</td>
+            <td>{{ obtenerVehiculoNombre(consumo.vehiculoId) }}</td>
             <td>{{ consumo.galones }} gal</td>
             <td>${{ consumo.costoPorGalon }}</td>
             <td class="td-total">${{ consumo.costoTotal }}</td>

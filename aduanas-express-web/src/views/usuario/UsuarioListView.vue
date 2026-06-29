@@ -121,7 +121,8 @@
                                         </svg>
                                         Editar
                                     </button>
-                                    <button v-if="u.puedeEliminarse" @click="intentarEliminar(u)"
+                                    <!-- Eliminar: Administrador (crea cosas → solo desactivar + eliminar) y Operador (no agrega nada → eliminar + desactivar) -->
+                                    <button v-if="u.rolId === 1 || u.rolId === 3" @click="intentarEliminar(u)"
                                         class="btn-accion btn-eliminar">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
@@ -133,7 +134,8 @@
                                         </svg>
                                         Eliminar
                                     </button>
-                                    <button v-if="!u.puedeEliminarse" @click="intentarDesactivar(u)"
+                                    <!-- Desactivar/Activar: Supervisor (solo este botón) y también Administrador y Operador -->
+                                    <button @click="intentarDesactivar(u)"
                                         :disabled="cambiandoEstado"
                                         :class="['btn-accion', u.isActive ? 'btn-desactivar' : 'btn-activar']">
                                         <svg v-if="u.isActive" width="13" height="13" viewBox="0 0 24 24" fill="none"

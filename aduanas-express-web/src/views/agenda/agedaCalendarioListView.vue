@@ -22,16 +22,17 @@ const viajeSeleccionado = ref(null)
 
 const MAP_ESTADO_SOLICITUD = {
     0: 'pendiente',
-    1: 'programado',
-    2: 'cancelado',
+    1: 'en_curso',
+    2: 'finalizado',
     3: 'cancelado',
-    4: 'programado',
 }
 
-function mapearEstadoSolicitud(estado) {
-    return MAP_ESTADO_SOLICITUD[estado] ?? 'programado'
+const MAP_ESTADO_ASIGNACION = {
+    0: 'pendiente',
+    1: 'en_curso',
+    2: 'finalizado',
+    3: 'cancelado',
 }
-
 async function cargarDatos() {
     cargando.value = true
     errorCarga.value = null
@@ -53,6 +54,11 @@ async function cargarDatos() {
             const horaInicio = `${h}:${m}`
             const horaFin = `${String((Number(h) + 1) % 24).padStart(2, '0')}:${m}`
 
+            // ✅ Si hay asignación, su estado manda; si no, usamos el de la solicitud
+            const estado = asignacion != null
+                ? (MAP_ESTADO_ASIGNACION[asignacion.estado] ?? 'pendiente')
+                : (MAP_ESTADO_SOLICITUD[s.estado] ?? 'pendiente')
+
             return {
                 id: s.id,
                 titulo: s.motivoViaje || s.destino,
@@ -61,21 +67,22 @@ async function cargarDatos() {
                 horaFin,
                 vehiculo: vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : 'Sin asignar',
                 placa: vehiculo ? vehiculo.matricula : '—',
-                conductor: conductor ? `${conductor.nombre} ${conductor.apellido?.charAt(0) ?? ''}.` : 'Sin asignar',
-                estado: mapearEstadoSolicitud(s.estado),
+                conductor: conductor
+                    ? `${conductor.nombre} ${conductor.apellido?.charAt(0) ?? ''}.`
+                    : 'Sin asignar',
+                estado,
                 tipo: s.estado === 0 ? 'urgente' : 'normal',
                 destinoCompleto: s.destino || 'No especificado',
-                motivoCompleto: s.motivoViaje || 'No especificado'
+                motivoCompleto: s.motivoViaje || 'No especificado',
             }
         })
     } catch (err) {
         errorCarga.value = 'No se pudieron cargar los datos del calendario.'
-        console.error("Error al cargar datos:", err)
+        console.error('Error al cargar datos:', err)
     } finally {
         cargando.value = false
     }
 }
-
 onMounted(cargarDatos)
 
 function mesAnterior() {
@@ -238,7 +245,7 @@ const resumen = computed(() => {
     )
     return {
         total: mes.length,
-        completados: mes.filter(v => v.estado === 'programado').length,
+        completados: mes.filter(v => v.estado === 'finalizado').length,
         pendientes: mes.filter(v => v.estado === 'pendiente' || v.estado === 'espera').length,
         cancelados: mes.filter(v => v.estado === 'cancelado').length,
     }
@@ -254,29 +261,30 @@ const proximosViajes = computed(() =>
 )
 
 function chipClase(viaje) {
-    if (viaje.tipo === 'urgente') return 'chip-urgente'
-    if (viaje.estado === 'en_viaje') return 'chip-en-viaje'
+    if (viaje.tipo === 'urgente')        return 'chip-urgente'
+    if (viaje.estado === 'en_curso')     return 'chip-en-viaje'
+    if (viaje.estado === 'finalizado')   return 'chip-finalizado'
+    if (viaje.estado === 'cancelado')    return 'chip-cancelado'
     return 'chip-normal'
 }
 
 function bordeClase(estado) {
     const map = {
-        en_viaje: 'borde-en-viaje',
-        programado: 'borde-programado',
-        pendiente: 'borde-pendiente',
-        espera: 'borde-espera',
-        cancelado: 'borde-cancelado',
+        en_curso:   'borde-en-viaje',
+        pendiente:  'borde-pendiente',
+        finalizado: 'borde-finalizado',
+        cancelado:  'borde-cancelado',
     }
-    return map[estado] ?? 'borde-programado'
+    return map[estado] ?? 'borde-pendiente'
 }
 
 function badgeEstado(estado) {
     const map = {
-        en_viaje: { label: 'En viaje', clase: 'badge-en-viaje-pill' },
-        programado: { label: 'Programado', clase: 'badge-programado-pill' },
-        pendiente: { label: 'Pendiente', clase: 'badge-pendiente-pill' },
-        espera: { label: 'Espera', clase: 'badge-espera-pill' },
-        cancelado: { label: 'Cancelado', clase: 'badge-cancelado-pill' },
+        en_curso:   { label: 'En curso',    clase: 'badge-en-viaje-pill'    },
+        pendiente:  { label: 'Pendiente',   clase: 'badge-pendiente-pill'   },
+        finalizado: { label: 'Finalizado',  clase: 'badge-finalizado-pill'  },
+        cancelado:  { label: 'Cancelado',   clase: 'badge-cancelado-pill'   },
+        espera:     { label: 'Espera',      clase: 'badge-espera-pill'      },
     }
     return map[estado] ?? { label: estado, clase: '' }
 }
@@ -654,6 +662,9 @@ function badgeEstado(estado) {
     overflow: hidden;
 }
 
+.badge-finalizado-pill { background: #e0e7ff; color: #3730a3; }
+
+.borde-finalizado { border-left-color: #6366f1; }
 .tab-btn {
     padding: 8px 22px;
     border: none;
@@ -664,7 +675,12 @@ function badgeEstado(estado) {
     cursor: pointer;
     transition: all .15s;
 }
+.chip-finalizado { background: #e0e7ff; color: #3730a3; }
+.chip-cancelado  { background: #fee2e2; color: #991b1b; }
 
+.borde-finalizado { border-left-color: #6366f1; }
+
+.badge-finalizado-pill { background: #e0e7ff; color: #3730a3; }
 .tab-btn:hover {
     background: #f9fafb;
     color: #374151;
@@ -1104,7 +1120,6 @@ function badgeEstado(estado) {
 .viaje-card.clickable:hover { background-color: #f3f4f6; }
 
 .borde-en-viaje { border-left-color: #2563eb; }
-.borde-programado { border-left-color: #16a34a; }
 .borde-pendiente { border-left-color: #d97706; }
 .borde-espera { border-left-color: #9ca3af; }
 .borde-cancelado { border-left-color: #dc2626; }
@@ -1123,7 +1138,6 @@ function badgeEstado(estado) {
 }
 
 .badge-en-viaje-pill { background: #dbeafe; color: #1e40af; }
-.badge-programado-pill { background: #d1fae5; color: #065f46; }
 .badge-pendiente-pill { background: #fef3c7; color: #92400e; }
 .badge-espera-pill { background: #f3f4f6; color: #374151; }
 .badge-cancelado-pill { background: #fee2e2; color: #991b1b; }

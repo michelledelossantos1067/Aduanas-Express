@@ -20,7 +20,7 @@ namespace AduanasExpress.Application.Validaciones
                 .NotEmpty().WithMessage("La hora de salida es requerida.");
             RuleFor(s => s.Destino)
                 .NotEmpty().WithMessage("El destino es requerido.")
-                .MaximumLength(100).WithMessage("El destino no puede exceder los 100 caracteres.");
+                .MaximumLength(500).WithMessage("El destino no puede exceder los 500 caracteres.");
             RuleFor(s => s.MotivoViaje)
                 .NotEmpty().WithMessage("El motivo del viaje es requerido.")
                 .MaximumLength(200).WithMessage("El motivo del viaje no puede exceder los 200 caracteres.");

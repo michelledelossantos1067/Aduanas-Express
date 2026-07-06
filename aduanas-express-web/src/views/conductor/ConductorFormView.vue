@@ -32,6 +32,7 @@ const form = ref({
     supervisorId: null,
     estado: 0
 })
+
 function formatearCedula(e) {
     let digits = e.target.value.replace(/\D/g, '').slice(0, 11)
     console.log('digits:', digits)
@@ -44,12 +45,25 @@ function formatearCedula(e) {
     form.value.cedula = formatted
     console.log('formatted:', formatted)
 }
+
 function formatearCedulaStr(val) {
     const d = (val ?? '').replace(/\D/g, '').slice(0, 11)
     if (d.length > 10) return d.slice(0, 3) + '-' + d.slice(3, 10) + '-' + d.slice(10)
     if (d.length > 3) return d.slice(0, 3) + '-' + d.slice(3)
     return d
 }
+
+function formatearLicencia(e) {
+    let digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+    let formatted = digits
+    if (digits.length > 6) {
+        formatted = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6)
+    } else if (digits.length > 3) {
+        formatted = digits.slice(0, 3) + '-' + digits.slice(3)
+    }
+    form.value.numeroLicencia = formatted
+}
+
 async function guardar() {
     try {
         loading.value = true
@@ -74,7 +88,6 @@ async function guardar() {
         const payload = {
             ...form.value,
             cedula: form.value.cedula,
-
             supervisorId: Number(form.value.supervisorId),
             estado: Number(form.value.estado),
             fechaVencLicencia: form.value.fechaVencLicencia
@@ -104,9 +117,11 @@ async function guardar() {
         loading.value = false
     }
 }
+
 function confirmarEliminar() {
     mostrarConfirmacion.value = true
 }
+
 async function eliminar() {
     try {
         loading.value = true
@@ -119,6 +134,7 @@ async function eliminar() {
         mostrarConfirmacion.value = false
     }
 }
+
 async function cargarConductor() {
     try {
         loading.value = true
@@ -296,8 +312,8 @@ onMounted(async () => {
                     <div class="form-grid col-3">
                         <div class="field field-highlight">
                             <label>Número de licencia <span class="req">*</span></label>
-                            <input v-model="form.numeroLicencia" type="text" placeholder="LIC-000000"
-                                autocomplete="off" />
+                            <input :value="form.numeroLicencia" type="text" placeholder="809-000-0000"
+                                maxlength="12" autocomplete="off" @input="formatearLicencia" />
                         </div>
                         <div class="field">
                             <label>Tipo de licencia <span class="req">*</span></label>

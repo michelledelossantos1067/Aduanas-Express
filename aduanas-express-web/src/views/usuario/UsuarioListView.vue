@@ -4,14 +4,6 @@
         <div class="usr-header">
             <h1 class="usr-title">Gestión de Usuarios</h1>
             <div class="usr-header-actions">
-                <button class="btn-exportar" @click="exportarPdf">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Exportar
-                </button>
                 <!-- Solo Admin puede crear usuarios -->
                 <button v-if="puede.crearUsuarios.value" class="btn-nuevo" @click="irANuevo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -26,20 +18,32 @@
 
         <div class="usr-stats">
             <div class="stat-card">
-                <p class="stat-num">{{ resumen.total }}</p>
-                <p class="stat-label">Total</p>
+                <span class="stat-dot stat-dot-total"></span>
+                <div class="stat-info">
+                    <p class="stat-num">{{ resumen.total }}</p>
+                    <p class="stat-label">Total</p>
+                </div>
             </div>
             <div class="stat-card">
-                <p class="stat-num">{{ resumen.administradores }}</p>
-                <p class="stat-label">Administradores</p>
+                <span class="stat-dot stat-dot-admin"></span>
+                <div class="stat-info">
+                    <p class="stat-num">{{ resumen.administradores }}</p>
+                    <p class="stat-label">Administradores</p>
+                </div>
             </div>
             <div class="stat-card">
-                <p class="stat-num">{{ resumen.supervisores }}</p>
-                <p class="stat-label">Supervisores</p>
+                <span class="stat-dot stat-dot-supervisor"></span>
+                <div class="stat-info">
+                    <p class="stat-num">{{ resumen.supervisores }}</p>
+                    <p class="stat-label">Supervisores</p>
+                </div>
             </div>
             <div class="stat-card">
-                <p class="stat-num">{{ resumen.operadores }}</p>
-                <p class="stat-label">Operadores</p>
+                <span class="stat-dot stat-dot-operador"></span>
+                <div class="stat-info">
+                    <p class="stat-num">{{ resumen.operadores }}</p>
+                    <p class="stat-label">Operadores</p>
+                </div>
             </div>
         </div>
 
@@ -51,10 +55,16 @@
                 </svg>
                 <input v-model="busqueda" type="text" placeholder="Buscar por nombre o email..." class="filtro-input" />
             </div>
-            <select v-model="filtroRol" class="filtro-select">
-                <option value="">Todos los roles</option>
-                <option v-for="r in ROLES" :key="r.value" :value="r.value">{{ r.label }}</option>
-            </select>
+            <div class="filtro-select-wrap">
+                <select v-model="filtroRol" class="filtro-select">
+                    <option value="">Todos los roles</option>
+                    <option v-for="r in ROLES" :key="r.value" :value="r.value">{{ r.label }}</option>
+                </select>
+                <svg class="filtro-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="#6b7280" stroke-width="2.2">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </div>
         </div>
 
         <div v-if="loading" class="usr-estado">
@@ -75,12 +85,18 @@
 
             <div class="tabla-scroll">
                 <table>
+                    <colgroup>
+                        <col style="width: 30%">
+                        <col style="width: 28%">
+                        <col style="width: 16%">
+                        <col style="width: 26%">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>Usuario</th>
                             <th>Email</th>
                             <th>Rol</th>
-                            <th>Acciones</th>
+                            <th class="th-acciones">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,7 +112,7 @@
                                     <span class="usuario-nombre">{{ u.nombre }} {{ u.apellido }}</span>
                                 </div>
                             </td>
-                            <td class="td-email">{{ u.email }}</td>
+                            <td class="td-email" :title="u.email">{{ u.email }}</td>
                             <td>
                                 <span class="badge-rol" :class="rolClase[u.rolId]">
                                     {{ rolLabel(u.rolId) }}
@@ -104,27 +120,25 @@
                             </td>
                             <td>
                                 <div class="acciones">
-                                    <button @click="verUsuario(u)" class="btn-accion btn-ver">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                    <button @click="verUsuario(u)" class="btn-icono btn-ver" title="Ver">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                             <circle cx="12" cy="12" r="3" />
                                         </svg>
-                                        Ver
                                     </button>
                                     <button v-if="puede.editarUsuarios.value" @click="editarUsuario(u.id)"
-                                        class="btn-accion btn-editar">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        class="btn-icono btn-editar" title="Editar">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                         </svg>
-                                        Editar
                                     </button>
                                     <!-- Eliminar: Administrador (crea cosas → solo desactivar + eliminar) y Operador (no agrega nada → eliminar + desactivar) -->
                                     <button v-if="u.rolId === 1 || u.rolId === 3" @click="intentarEliminar(u)"
-                                        class="btn-accion btn-eliminar">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        class="btn-icono btn-eliminar" title="Eliminar">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
                                             <polyline points="3 6 5 6 21 6" />
                                             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -132,22 +146,21 @@
                                             <path d="M14 11v6" />
                                             <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                                         </svg>
-                                        Eliminar
                                     </button>
                                     <!-- Desactivar/Activar: Supervisor (solo este botón) y también Administrador y Operador -->
                                     <button @click="intentarDesactivar(u)"
                                         :disabled="cambiandoEstado"
-                                        :class="['btn-accion', u.isActive ? 'btn-desactivar' : 'btn-activar']">
-                                        <svg v-if="u.isActive" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        :class="['btn-icono', u.isActive ? 'btn-desactivar' : 'btn-activar']"
+                                        :title="u.isActive ? 'Desactivar' : 'Activar'">
+                                        <svg v-if="u.isActive" width="15" height="15" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
                                             <circle cx="12" cy="12" r="10" />
                                             <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
                                         </svg>
-                                        <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2.2">
                                             <polyline points="20 6 9 17 4 12" />
                                         </svg>
-                                        {{ u.isActive ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </div>
                             </td>
@@ -427,9 +440,6 @@ async function toggleActivo(usuario) {
     }
 }
 
-function exportarPdf() {
-    console.log('Exportar PDF')
-}
 
 watch(pagina, () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -449,14 +459,15 @@ onMounted(cargarUsuarios)
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .usr-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.9rem;
+    font-weight: 800;
     color: #111827;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .usr-header-actions {
@@ -464,25 +475,19 @@ onMounted(cargarUsuarios)
     gap: 12px;
 }
 
-.btn-exportar,
 .btn-nuevo {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 16px;
+    padding: 11px 18px;
     border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #fff;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #374151;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-exportar:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
 }
 
 .btn-nuevo {
@@ -500,28 +505,59 @@ onMounted(cargarUsuarios)
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     background: #fff;
-    border: 1.5px solid #f3f4f6;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.stat-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.stat-dot-total {
+    background: #e5e7eb;
+}
+
+.stat-dot-admin {
+    background: #fde68a;
+}
+
+.stat-dot-supervisor {
+    background: #bfdbfe;
+}
+
+.stat-dot-operador {
+    background: #bbf7d0;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .stat-num {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #1a3a2a;
+    color: #111827;
     margin: 0;
+    line-height: 1.2;
 }
 
 .stat-label {
     font-size: 0.85rem;
     color: #6b7280;
-    margin: 4px 0 0;
+    margin: 2px 0 0;
 }
 
 .usr-filtros {
@@ -537,7 +573,7 @@ onMounted(cargarUsuarios)
 
 .filtro-search svg {
     position: absolute;
-    left: 12px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
@@ -545,34 +581,56 @@ onMounted(cargarUsuarios)
 
 .filtro-input {
     width: 100%;
-    height: 40px;
-    padding: 0 12px 0 38px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    height: 46px;
+    padding: 0 16px 0 42px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
     color: #111827;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.filtro-input::placeholder {
+    color: #9ca3af;
 }
 
 .filtro-input:focus {
     outline: none;
-    border-color: #1a3a2a;
-    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.1);
+    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.12);
+}
+
+.filtro-select-wrap {
+    position: relative;
+    min-width: 190px;
 }
 
 .filtro-select {
-    padding: 9px 12px;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    width: 100%;
+    height: 46px;
+    padding: 0 40px 0 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
     color: #111827;
     background: #fff;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
     cursor: pointer;
-    min-width: 180px;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .filtro-select:focus {
     outline: none;
-    border-color: #1a3a2a;
+    box-shadow: 0 0 0 3px rgba(26, 58, 42, 0.12);
+}
+
+.filtro-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 .usr-estado,
@@ -621,9 +679,9 @@ onMounted(cargarUsuarios)
 
 .usr-tabla-wrap {
     background: #fff;
-    border: 1.5px solid #f3f4f6;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
 }
 
 .tabla-header {
@@ -657,6 +715,7 @@ onMounted(cargarUsuarios)
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 thead {
@@ -674,11 +733,20 @@ th {
     border-bottom: 1px solid #f3f4f6;
 }
 
+.th-acciones {
+    text-align: right;
+}
+
 td {
-    padding: 16px 24px;
+    padding: 14px 24px;
     border-bottom: 1px solid #f3f4f6;
     font-size: 0.875rem;
     color: #111827;
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
 }
 
 tbody tr:hover {
@@ -695,9 +763,11 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 .avatar {
+    flex-shrink: 0;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -738,10 +808,17 @@ tbody tr:hover {
 .usuario-nombre {
     font-weight: 600;
     color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .td-email {
     color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0;
 }
 
 .badge-rol {
@@ -750,6 +827,7 @@ tbody tr:hover {
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .rol-admin {
@@ -769,43 +847,43 @@ tbody tr:hover {
 
 .acciones {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
 }
 
-.btn-accion {
+.btn-icono {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     border: 1px solid #e5e7eb;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #fff;
-    font-size: 0.75rem;
-    font-weight: 500;
     color: #374151;
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-.btn-accion:hover:not(:disabled) {
-    background: #f3f4f6;
+.btn-icono:hover:not(:disabled) {
+    transform: translateY(-1px);
 }
 
 .btn-ver {
     color: #0284c7;
-    border-color: #0ea5e9;
+    border-color: #bae6fd;
     background: #f0f9ff;
 }
 
 .btn-ver:hover:not(:disabled) {
     background: #e0f2fe;
-    border-color: #06b6d4;
+    border-color: #7dd3fc;
 }
 
 .btn-editar {
     color: #7c3aed;
-    border-color: #a78bfa;
+    border-color: #ddd6fe;
     background: #faf5ff;
 }
 
@@ -816,13 +894,13 @@ tbody tr:hover {
 
 .btn-eliminar {
     color: #dc2626;
-    border-color: #f87171;
+    border-color: #fecaca;
     background: #fff5f5;
 }
 
-.btn-eliminar:hover {
+.btn-eliminar:hover:not(:disabled) {
     background: #fee2e2;
-    border-color: #f87171;
+    border-color: #fca5a5;
 }
 
 .btn-desactivar {
@@ -831,7 +909,7 @@ tbody tr:hover {
     background: #f9fafb;
 }
 
-.btn-desactivar:hover {
+.btn-desactivar:hover:not(:disabled) {
     background: #f3f4f6;
     border-color: #9ca3af;
 }
@@ -839,6 +917,7 @@ tbody tr:hover {
 .btn-desactivar:disabled {
     opacity: 0.5;
     cursor: default;
+    transform: none;
 }
 
 .btn-activar {
@@ -847,7 +926,7 @@ tbody tr:hover {
     background: #f0fdf4;
 }
 
-.btn-activar:hover {
+.btn-activar:hover:not(:disabled) {
     background: #d1fae5;
     border-color: #34d399;
 }
@@ -855,6 +934,7 @@ tbody tr:hover {
 .btn-activar:disabled {
     opacity: 0.5;
     cursor: default;
+    transform: none;
 }
 
 .usr-paginacion {
@@ -1046,6 +1126,10 @@ tbody tr:hover {
 
     .usr-filtros {
         flex-direction: column;
+    }
+
+    .filtro-select-wrap {
+        min-width: 0;
     }
 }
 </style>

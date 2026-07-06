@@ -35,7 +35,6 @@ const form = ref({
 
 function formatearCedula(e) {
     let digits = e.target.value.replace(/\D/g, '').slice(0, 11)
-    console.log('digits:', digits)
     let formatted = digits
     if (digits.length > 3 && digits.length <= 10) {
         formatted = digits.slice(0, 3) + '-' + digits.slice(3)
@@ -43,7 +42,6 @@ function formatearCedula(e) {
         formatted = digits.slice(0, 3) + '-' + digits.slice(3, 10) + '-' + digits.slice(10)
     }
     form.value.cedula = formatted
-    console.log('formatted:', formatted)
 }
 
 function formatearCedulaStr(val) {
@@ -53,7 +51,37 @@ function formatearCedulaStr(val) {
     return d
 }
 
+// ---- LICENCIA: ahora acepta letras + números (ej: LIC-78451236) ----
+// y también sigue soportando formato solo numérico (809-000-0000)
 function formatearLicencia(e) {
+    let raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 15)
+
+    const letrasMatch = raw.match(/^[A-Z]+/)
+    const letras = letrasMatch ? letrasMatch[0] : ''
+    const resto = raw.slice(letras.length)
+
+    let formatted
+
+    if (letras) {
+        // Formato con prefijo de letras: LIC-78451236
+        formatted = resto ? `${letras}-${resto}` : letras
+    } else {
+        // Formato numérico clásico: 809-000-0000
+        let digits = resto.slice(0, 10)
+        if (digits.length > 6) {
+            formatted = digits.slice(0, 3) + '-' + digits.slice(3, 6) + '-' + digits.slice(6)
+        } else if (digits.length > 3) {
+            formatted = digits.slice(0, 3) + '-' + digits.slice(3)
+        } else {
+            formatted = digits
+        }
+    }
+
+    form.value.numeroLicencia = formatted
+}
+
+// ---- TELÉFONO: formateador controlado (809-000-0000) ----
+function formatearTelefono(e) {
     let digits = e.target.value.replace(/\D/g, '').slice(0, 10)
     let formatted = digits
     if (digits.length > 6) {
@@ -61,7 +89,7 @@ function formatearLicencia(e) {
     } else if (digits.length > 3) {
         formatted = digits.slice(0, 3) + '-' + digits.slice(3)
     }
-    form.value.numeroLicencia = formatted
+    form.value.telefono = formatted
 }
 
 async function guardar() {
@@ -94,19 +122,15 @@ async function guardar() {
                 ? new Date(form.value.fechaVencLicencia + 'T00:00:00').toISOString()
                 : null
         }
-        console.log('cedula enviada:', payload.cedula, 'longitud:', payload.cedula.length)
 
         if (esEdicion.value) {
-            console.log('payload completo:', JSON.stringify(payload))
             await actualizarConductor(route.params.id, payload)
         } else {
             await crearConductor(payload)
         }
-        console.log('cedula enviada:', payload.cedula, '| longitud:', payload.cedula.length)
 
         router.push('/conductores')
     } catch (e) {
-        console.log('error completo:', JSON.stringify(e?.response?.data))
         const data = e?.response?.data
         if (data?.errors) {
             error.value = Object.values(data.errors).flat().join(' ')
@@ -147,19 +171,15 @@ async function cargarConductor() {
 
         function formatearFecha(fechaStr) {
             if (!fechaStr || fechaStr.startsWith('0001')) return ''
-
             try {
                 if (typeof fechaStr === 'string' && fechaStr.match(/^\d{4}-\d{2}-\d{2}/)) {
                     return fechaStr.substring(0, 10)
                 }
-
                 const fecha = new Date(fechaStr)
                 if (isNaN(fecha.getTime())) return ''
-
                 const year = fecha.getFullYear()
                 const month = String(fecha.getMonth() + 1).padStart(2, '0')
                 const day = String(fecha.getDate()).padStart(2, '0')
-
                 return `${year}-${month}-${day}`
             } catch (e) {
                 console.error('Error al formatear fecha:', e)
@@ -179,8 +199,6 @@ async function cargarConductor() {
             supervisorId: data.supervisorId ?? null,
             estado: data.estado ?? 0
         }
-        console.log('Fecha cargada:', form.value.fechaVencLicencia)
-        console.log('Data completo:', JSON.stringify(data))
     } catch (e) {
         error.value = e?.response?.data?.message || 'No se pudo cargar el conductor.'
     } finally {
@@ -194,7 +212,6 @@ onMounted(async () => {
     if (esEdicion.value) await cargarConductor()
 })
 </script>
-
 <template>
     <div class="cf-page">
 
@@ -310,10 +327,11 @@ onMounted(async () => {
                         <h3>Licencia de Conducir</h3>
                     </div>
                     <div class="form-grid col-3">
+                        <!-- Número de licencia -->
                         <div class="field field-highlight">
                             <label>Número de licencia <span class="req">*</span></label>
-                            <input :value="form.numeroLicencia" type="text" placeholder="809-000-0000"
-                                maxlength="12" autocomplete="off" @input="formatearLicencia" />
+                            <input :value="form.numeroLicencia" type="text" placeholder="LIC-78451236"
+                                maxlength="15" autocomplete="off" @input="formatearLicencia" />
                         </div>
                         <div class="field">
                             <label>Tipo de licencia <span class="req">*</span></label>
@@ -341,9 +359,11 @@ onMounted(async () => {
                         <h3>Contacto y Operación</h3>
                     </div>
                     <div class="form-grid col-3">
+                        <!-- Teléfono -->
                         <div class="field">
                             <label>Teléfono <span class="req">*</span></label>
-                            <input v-model="form.telefono" type="tel" placeholder="809-000-0000" />
+                            <input :value="form.telefono" type="text" placeholder="809-000-0000" maxlength="12"
+                                autocomplete="off" @input="formatearTelefono" />
                         </div>
                         <div class="field field-span2">
                             <label>Dirección <span class="req">*</span></label>

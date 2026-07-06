@@ -54,8 +54,8 @@ namespace AduanasExpress.Application.Validaciones
                 .InclusiveBetween(1885, DateTime.Now.Year).WithMessage($"El año debe estar entre 1885 y {DateTime.Now.Year}.");
             RuleFor(v => v.Matricula)
                 .NotEmpty().WithMessage("matricula es requerida.")
-                .MinimumLength(7).WithMessage("La placa debe tener 7 caracteres.")
-                .MaximumLength(7).WithMessage("La placa debe tener 7 caracteres.");
+                .MinimumLength(8).WithMessage("La placa debe tener 8 caracteres.")
+                .MaximumLength(8).WithMessage("La placa debe tener 8 caracteres.");
             RuleFor(v => v.Color)
                 .NotEmpty().WithMessage("El color es requerido.")
                 .MaximumLength(10).WithMessage("El color no puede exceder los 10 caracteres.");

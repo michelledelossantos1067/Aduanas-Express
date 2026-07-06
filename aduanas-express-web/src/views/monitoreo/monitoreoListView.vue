@@ -82,6 +82,13 @@ function dotClase(e) {
 }
 function seleccionar(id) {
   vehiculoSelId.value = vehiculoSelId.value === id ? null : id
+
+  if (vehiculoSelId.value) {
+    const v = vehiculos.value.find(x => x.id === id)
+    if (v?.lat && v?.lng && mapInstance) {
+      mapInstance.flyTo([v.lat, v.lng], 13, { duration: 1.2 })
+    }
+  }
 }
 function formatHora(h) {
   if (!h) return '—'
@@ -157,6 +164,9 @@ async function procesarVehiculo(v, asignacionPorVehiculo) {
   const estado = normalizarEstadoVehiculo(v.estado)
 
   let destino     = null
+  let origenTexto = null
+  let destCord    = null
+  let origen      = SEDE
   let conductor   = null
   let ruta        = []
   let distanciaKm = null
@@ -168,12 +178,14 @@ async function procesarVehiculo(v, asignacionPorVehiculo) {
 
   if (estado === 'en_viaje') {
     const asignacion = asignacionPorVehiculo.get(v.id) ?? null
-    const solicitud   = asignacion?.solicitud ?? null
-    const cond        = asignacion?.conductor ?? null
+    const solicitud = asignacion?.solicitud ?? null
+    const cond = asignacion?.conductor ?? null
+    origenTexto = solicitud?.puntoOrigen ?? null
 
-    destino    = solicitud?.destino ?? null
+    destino = solicitud?.destino ?? null
     fechaViaje = solicitud?.fechaViaje ?? null
     horaSalida = solicitud?.horaSalida ?? null
+    
 
     if (cond) {
       conductor = [cond.nombre, cond.apellido].filter(Boolean).join(' ') || null
@@ -181,6 +193,7 @@ async function procesarVehiculo(v, asignacionPorVehiculo) {
 
     const coordDestino = await geocodificar(destino)
     if (coordDestino) {
+      destCord = coordDestino
       const r = await obtenerRuta(SEDE, coordDestino)
       ruta        = r.coords
       distanciaKm = r.distanciaKm
@@ -199,7 +212,10 @@ async function procesarVehiculo(v, asignacionPorVehiculo) {
     capacidad:        v.capacidad ?? null,
     estado,
     conductor,
+    
     destino,
+    destCord,
+    origen,
     fechaViaje,
     horaSalida,
     distanciaKm,
@@ -305,505 +321,363 @@ function pintarEnMapa() {
 
     const marker = L.marker([v.lat, v.lng], { icon })
     marker.bindPopup(`
-      <div style="font-family:Inter,sans-serif;font-size:13px;min-width:170px">
-        <b style="font-size:14px">${v.modelo}</b><br>
-        <span style="color:#6b7280;font-size:11px">${v.matricula}</span><br><br>
-        <span style="color:${color};font-weight:700">${estadoLabel(v.estado)}</span><br>
-        ${v.conductor ? `<span>👤 ${v.conductor}</span><br>` : ''}
-        ${v.destino   ? `<span>📍 ${v.destino}</span><br>` : ''}
-        ${v.distanciaKm ? `<span>🛣 ${v.distanciaKm} km</span>` : ''}
-        ${v.posicionEstimada ? '<br><span style="color:#9ca3af;font-size:10px">📡 Posición estimada</span>' : ''}
-      </div>
-    `)
-    marker.on('click', () => seleccionar(v.id))
+  <div style="font-family:Inter,sans-serif;font-size:13px;min-width:210px;padding:4px 0">
+    <b style="font-size:14px">${v.modelo}</b>
+    <span style="color:#6b7280;font-size:11px;margin-left:6px">${v.matricula}</span>
+    <div style="margin:5px 0 4px">
+      <span style="color:${color};font-weight:700;font-size:12px">${estadoLabel(v.estado)}</span>
+    </div>
+    ${v.conductor ? `<div style="font-size:12px;color:#374151;margin-bottom:6px">👤 ${v.conductor}</div>` : ''}
+    ${v.estado === 'en_viaje' ? `
+      <div style="background:#f9fafb;border-radius:8px;padding:8px;margin-top:4px">
+        <div style="display:flex;align-items:stretch;gap:10px">
+          <div style="display:flex;flex-direction:column;align-items:center;padding-top:3px">
+            <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0"></div>
+            <div style="width:2px;flex:1;min-height:16px;background:#d1d5db;margin:3px 0"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:8px">
+            <div>
+              <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Origen</div>
+              <div style="font-size:12px;color:#111827;font-weight:500">${v.origenTexto ?? 'Sede Central'}</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Destino</div>
+              <div style="font-size:12px;color:#111827;font-weight:500">${v.destino ?? '—'}</div>
+            </div>
+          </div>
+        </div>
+        ${(v.distanciaKm || v.duracionMin) ? `
+        <div style="display:flex;gap:12px;border-top:1px solid #e5e7eb;padding-top:7px;margin-top:8px">
+          ${v.distanciaKm ? `<span style="font-size:11px;color:#6b7280">📏 ${v.distanciaKm} km</span>` : ''}
+          ${v.duracionMin ? `<span style="font-size:11px;color:#6b7280">⏱️ ${v.duracionMin} min</span>` : ''}
+        </div>` : ''}
+      </div>` : ''}
+    ${v.posicionEstimada ? `<div style="margin-top:6px;font-size:10px;color:#9ca3af;background:#f3f4f6;display:inline-block;padding:2px 7px;border-radius:4px">Posición estimada</div>` : ''}
+  </div>
+`, { maxWidth: 270 })
     marker.addTo(capaMarcadores)
 
-    if (v.ruta.length > 1) {
-      L.polyline(v.ruta, { color: '#2563eb', weight: 4, opacity: 0.75, dashArray: '8 4' })
-        .addTo(capaRutas)
+    // Mostrar ruta y marcadores de origen/destino si está en viaje
+    if (v.estado === 'en_viaje' && v.ruta.length > 0) {
+      // Dibujar la ruta
+      const ruta = L.polyline(v.ruta, {
+        color: color,
+        weight: 3,
+        opacity: 0.7,
+        dashArray: '5, 5',
+        className: 'ruta-viaje'
+      })
+      ruta.addTo(capaRutas)
+
+      // Marcador de origen (SEDE)
+      const iconOrigen = L.divIcon({
+        className: '',
+        html: `<div class="marker-origen" title="Origen">
+          <div class="marker-origen-inner">A</div>
+        </div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      })
+      L.marker([v.origen.lat, v.origen.lng], { icon: iconOrigen })
+        .bindPopup(`<b>Punto de Origen</b><br><small>Sede Central</small>`)
+        .addTo(capaMarcadores)
+
+      // Marcador de destino
+      if (v.destCord) {
+        const iconDestino = L.divIcon({
+          className: '',
+          html: `<div class="marker-destino" title="Destino">
+            <div class="marker-destino-inner">B</div>
+          </div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+        })
+        L.marker([v.destCord.lat, v.destCord.lng], { icon: iconDestino })
+          .bindPopup(`<b>Punto de Destino</b><br><small>${v.destino}</small>`)
+          .addTo(capaMarcadores)
+      }
     }
   })
 }
 
-watch(vehiculosFiltrados, () => pintarEnMapa())
-
-watch(vehiculoSelId, id => {
-  const v = vehiculos.value.find(x => x.id === id)
-  if (v?.lat != null && mapInstance) mapInstance.flyTo([v.lat, v.lng], 14, { duration: 1 })
-})
-
-let intervalo = null
-onMounted(async () => {
-  await nextTick()
+onMounted(() => {
   initMap()
-  await cargarDatos()
-  intervalo = setInterval(cargarDatos, 60000)
+  cargarDatos()
 })
+
 onUnmounted(() => {
-  clearInterval(intervalo)
-  mapInstance?.remove()
+  if (mapInstance) mapInstance.remove()
+})
+
+watch(filtroActivo, () => {
+  pintarEnMapa()
+})
+
+watch(busqueda, () => {
+  pintarEnMapa()
 })
 </script>
 
 <template>
-<div class="mon-page">
-
-  <div class="mon-header">
-    <div class="mon-header-left">
-      <h1 class="mon-title">Monitoreo de flota</h1>
-      <span v-if="ultimaActualizacion" class="ultima-act">
-        Actualizado {{ ultimaActualizacion.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' }) }}
-      </span>
-    </div>
-    <div class="mon-header-right">
-      <span class="badge-live">
-        <span class="live-dot"></span>
-        EN VIVO
-      </span>
-      <button class="btn-dark" :disabled="loading" @click="cargarDatos">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-             :class="{ 'spin': loading }">
-          <polyline points="1 4 1 10 7 10"/>
-          <path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
-        </svg>
-        {{ loading ? 'Cargando…' : 'Actualizar' }}
+  <div class="mon-page">
+    <div class="mon-header">
+      <div>
+        <h1 class="mon-titulo">Monitoreo de flota</h1>
+        <p class="mon-subtitulo" v-if="ultimaActualizacion">Actualizado {{ formatHora(ultimaActualizacion.toLocaleTimeString('es-DO')) }}</p>
+      </div>
+      <button class="btn-actualizar" @click="cargarDatos" :disabled="loading">
+        {{ loading ? 'Cargando...' : 'Actualizar' }}
       </button>
     </div>
+
+    <div class="mon-layout">
+      <!-- Sidebar izquierdo -->
+      <div class="sidebar">
+        <div class="search-box">
+          <input type="text" v-model="busqueda" placeholder="Buscar matrícula, modelo o conductor..." class="search-input">
+        </div>
+
+        <div class="filtros">
+          <button
+            v-for="f in ['todos', 'en_viaje', 'libre', 'taller', 'fuera_servicio']"
+            :key="f"
+            :class="['filtro-btn', { activo: filtroActivo === f }]"
+            @click="filtroActivo = f"
+          >
+            {{ { todos: 'Todos', en_viaje: 'En viaje', libre: 'Libre', taller: 'Taller', fuera_servicio: 'Fuera de servicio' }[f] }}
+          </button>
+        </div>
+
+        <div class="vehiculos-lista">
+          <div v-if="vehiculosFiltrados.length === 0" class="sin-resultados">
+            <p v-if="loading">Cargando...</p>
+            <p v-else-if="error">{{ error }}</p>
+            <p v-else>Sin resultados</p>
+          </div>
+
+          <div v-for="v in vehiculosFiltrados" :key="v.id" :class="['vehiculo-card', { seleccionado: vehiculoSelId === v.id }]" @click="seleccionar(v.id)">
+            <div class="card-header">
+              <div class="card-title">{{ v.modelo }}</div>
+              <span :class="['badge', estadoClase(v.estado)]">{{ estadoLabel(v.estado) }}</span>
+            </div>
+            <div class="card-matricula">{{ v.matricula }}</div>
+            <div v-if="v.estado === 'en_viaje'" class="card-info">
+              <span v-if="v.conductor">👤 {{ v.conductor }}</span>
+              <span v-if="v.destino">📍 {{ v.destino }}</span>
+              <div v-if="v.estado === 'en_viaje'" class="card-ruta">
+  <div class="ruta-linea">
+    <div class="ruta-punto origen"></div>
+    <div class="ruta-barra"></div>
+    <div class="ruta-punto destino"></div>
   </div>
-
-  <div v-if="error" class="error-banner">
-    ⚠️ {{ error }}
+  <div class="ruta-textos">
+    <div class="ruta-dir">{{ v.origenTexto ?? 'Sede Central' }}</div>
+    <div class="ruta-dir">{{ v.destino ?? '—' }}</div>
   </div>
-
-  <div class="mon-layout">
-
-    <div class="panel-izq">
-
-      <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input v-model="busqueda" type="text" placeholder="Buscar matrícula, modelo o conductor…" class="search-input"/>
-      </div>
-
-      <div class="filtros-row">
-        <button class="filtro-btn"            :class="{ activo: filtroActivo === 'todos' }"    @click="filtroActivo = 'todos'">Todos</button>
-        <button class="filtro-btn filtro-vj"  :class="{ activo: filtroActivo === 'en_viaje' }" @click="filtroActivo = 'en_viaje'">En viaje</button>
-        <button class="filtro-btn filtro-lb"  :class="{ activo: filtroActivo === 'libre' }"    @click="filtroActivo = 'libre'">Libre</button>
-        <button class="filtro-btn filtro-tl"  :class="{ activo: filtroActivo === 'taller' }"   @click="filtroActivo = 'taller'">Taller</button>
-        <button class="filtro-btn filtro-fs"  :class="{ activo: filtroActivo === 'fuera_servicio' }" @click="filtroActivo = 'fuera_servicio'">Fuera de servicio</button>
-      </div>
-
-      <p class="flota-label">
-        {{ vehiculosFiltrados.length }} de {{ vehiculos.length }} vehículos
-      </p>
-
-      <div class="vehiculos-lista">
-
-        <template v-if="loading && vehiculos.length === 0">
-          <div v-for="n in 4" :key="n" class="vehiculo-card skeleton">
-            <div class="sk-line sk-w70"></div>
-            <div class="sk-line sk-w40 sk-sm"></div>
-            <div class="sk-line sk-w90 sk-sm"></div>
-          </div>
-        </template>
-
-        <div v-else-if="!loading && vehiculosFiltrados.length === 0" class="empty-state">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h4"/>
-          </svg>
-          <p>Sin vehículos para mostrar</p>
-        </div>
-
-        <div
-          v-for="v in vehiculosFiltrados"
-          :key="v.id"
-          class="vehiculo-card"
-          :class="{ 'card-sel': vehiculoSelId === v.id }"
-          @click="seleccionar(v.id)"
-        >
-          <div class="card-top">
-            <span class="card-modelo">{{ v.modelo }}</span>
-            <span class="badge" :class="estadoClase(v.estado)">{{ estadoLabel(v.estado) }}</span>
-          </div>
-          <p class="card-matricula">{{ v.matricula }}</p>
-
-          <div v-if="v.destino" class="card-info">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
-            {{ v.destino }}
-          </div>
-
-          <div class="card-meta">
-            <span v-if="v.conductor" class="meta-item">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-              {{ v.conductor }}
-            </span>
-            <span v-if="v.horaSalida" class="meta-item">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              Salida {{ formatHora(v.horaSalida) }}
-            </span>
-            <span v-if="v.distanciaKm" class="meta-item">
-              🛣 {{ v.distanciaKm }} km
-            </span>
-          </div>
-
-          <div v-if="v.posicionEstimada" class="estimada-tag">
-            📡 Posición estimada
-          </div>
-        </div>
-      </div>
-
-      <div class="resumen-pie">
-        <div class="res-item">
-          <span class="res-num azul">{{ resumen.en_viaje }}</span>
-          <span class="res-lbl">En viaje</span>
-        </div>
-        <div class="res-sep"></div>
-        <div class="res-item">
-          <span class="res-num verde">{{ resumen.libres }}</span>
-          <span class="res-lbl">Libres</span>
-        </div>
-        <div class="res-sep"></div>
-        <div class="res-item">
-          <span class="res-num naranja">{{ resumen.taller }}</span>
-          <span class="res-lbl">Taller</span>
-        </div>
-        <div class="res-sep"></div>
-        <div class="res-item">
-          <span class="res-num rojo">{{ resumen.fuera_servicio }}</span>
-          <span class="res-lbl">Fuera</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="mapa-wrap">
-
-      <div class="mapa-controles">
-        <div class="mapa-tabs">
-          <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'mapa' }"     @click="cambiarTipoMapa('mapa')">Mapa</button>
-          <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'satelite' }" @click="cambiarTipoMapa('satelite')">Satélite</button>
-        </div>
-
-        <div class="leyenda">
-          <div class="leyenda-item"><span class="dot-leyenda" style="background:#2563eb"></span>En viaje</div>
-          <div class="leyenda-item"><span class="dot-leyenda" style="background:#16a34a"></span>Libre</div>
-          <div class="leyenda-item"><span class="dot-leyenda" style="background:#d97706"></span>Taller</div>
-          <div class="leyenda-item"><span class="dot-leyenda" style="background:#dc2626"></span>Fuera de servicio</div>
-          <div class="leyenda-item"><span class="dot-leyenda" style="background:#111827"></span>Sede</div>
-        </div>
-      </div>
-
-      <div ref="mapaEl" class="leaflet-container"></div>
-
-      <transition name="popup-fade">
-        <div v-if="vehiculoSel" class="popup-vehiculo">
-          <div class="popup-header">
-            <span class="popup-dot" :class="dotClase(vehiculoSel.estado)"></span>
-            <span class="popup-modelo">{{ vehiculoSel.modelo }}</span>
-            <span class="popup-matricula">{{ vehiculoSel.matricula }}</span>
-            <button class="popup-close" @click="vehiculoSelId = null">✕</button>
-          </div>
-          <div class="popup-grid">
-            <div class="popup-row">
-              <span class="popup-lbl">Estado</span>
-              <span class="popup-val">
-                <span class="badge" :class="estadoClase(vehiculoSel.estado)">{{ estadoLabel(vehiculoSel.estado) }}</span>
-              </span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.conductor">
-              <span class="popup-lbl">Conductor</span>
-              <span class="popup-val">{{ vehiculoSel.conductor }}</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.destino">
-              <span class="popup-lbl">Destino</span>
-              <span class="popup-val">{{ vehiculoSel.destino }}</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.fechaViaje">
-              <span class="popup-lbl">Fecha viaje</span>
-              <span class="popup-val">{{ formatFecha(vehiculoSel.fechaViaje) }}</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.horaSalida">
-              <span class="popup-lbl">Hora salida</span>
-              <span class="popup-val">{{ formatHora(vehiculoSel.horaSalida) }}</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.distanciaKm">
-              <span class="popup-lbl">Distancia ruta</span>
-              <span class="popup-val">{{ vehiculoSel.distanciaKm }} km</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.duracionMin">
-              <span class="popup-lbl">Duración estimada</span>
-              <span class="popup-val">{{ vehiculoSel.duracionMin }} min</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.tipo">
-              <span class="popup-lbl">Tipo</span>
-              <span class="popup-val">{{ vehiculoSel.tipo }}</span>
-            </div>
-            <div class="popup-row" v-if="vehiculoSel.capacidad">
-              <span class="popup-lbl">Capacidad</span>
-              <span class="popup-val">{{ vehiculoSel.capacidad }} personas</span>
-            </div>
-            <div v-if="vehiculoSel.posicionEstimada" class="popup-estimada">
-              📡 La posición mostrada es estimada según hora de salida
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
-  </div>
-
 </div>
+              <span v-if="v.distanciaKm">📏 {{ v.distanciaKm }} km</span>
+              <span v-if="v.duracionMin">⏱️ {{ v.duracionMin }} min</span>
+            </div>
+            <div v-if="v.posicionEstimada" class="estimada-tag">Posición estimada</div>
+          </div>
+        </div>
+
+        <div class="resumen-pie">
+          <div class="res-item">
+            <div class="res-num azul">{{ resumen.en_viaje }}</div>
+            <div class="res-lbl">En viaje</div>
+          </div>
+          <div class="res-sep"></div>
+          <div class="res-item">
+            <div class="res-num verde">{{ resumen.libres }}</div>
+            <div class="res-lbl">Libres</div>
+          </div>
+          <div class="res-sep"></div>
+          <div class="res-item">
+            <div class="res-num naranja">{{ resumen.taller }}</div>
+            <div class="res-lbl">Taller</div>
+          </div>
+          <div class="res-sep"></div>
+          <div class="res-item">
+            <div class="res-num rojo">{{ resumen.fuera_servicio }}</div>
+            <div class="res-lbl">Fuera</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="mapa-wrap">
+        <div class="mapa-controles">
+          <div class="mapa-tabs">
+            <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'mapa' }" @click="cambiarTipoMapa('mapa')">Mapa</button>
+            <button class="mapa-tab" :class="{ 'tab-activo': tipoMapa === 'satelite' }" @click="cambiarTipoMapa('satelite')">Satélite</button>
+          </div>
+          <div class="leyenda">
+            <div class="leyenda-item">
+              <div class="dot-leyenda" style="background: #2563eb;"></div>
+              <span>En viaje</span>
+            </div>
+            <div class="leyenda-item">
+              <div class="dot-leyenda" style="background: #16a34a;"></div>
+              <span>Libre</span>
+            </div>
+            <div class="leyenda-item">
+              <div class="dot-leyenda" style="background: #d97706;"></div>
+              <span>Taller</span>
+            </div>
+            <div class="leyenda-item">
+              <div class="dot-leyenda" style="background: #dc2626;"></div>
+              <span>Fuera de servicio</span>
+            </div>
+            <div class="leyenda-item">
+              <div class="dot-leyenda" style="background: #111827;"></div>
+              <span>Sede</span>
+            </div>
+          </div>
+        </div>
+        <div ref="mapaEl" class="leaflet-container"></div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-
-* { box-sizing: border-box; }
-
 .mon-page {
-  padding: 22px 28px;
-  background: #f3f4f6;
+  padding: 20px;
+  background: #f9fafb;
   min-height: 100vh;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .mon-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.mon-header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.mon-title {
-  font-size: 1.4rem;
+.mon-titulo {
+  margin: 0;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #111827;
+}
+
+.mon-subtitulo {
   margin: 0;
-  letter-spacing: -.02em;
-}
-
-.ultima-act {
-  font-size: .72rem;
+  font-size: .85rem;
   color: #9ca3af;
-  font-weight: 500;
+  margin-top: 4px;
 }
 
-.mon-header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.badge-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: #fff;
-  border: 1.5px solid #fca5a5;
-  color: #991b1b;
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .08em;
-  padding: 5px 13px;
-  border-radius: 20px;
-}
-
-.live-dot {
-  width: 7px;
-  height: 7px;
-  background: #dc2626;
-  border-radius: 50%;
-  animation: pulsar 1.4s ease-in-out infinite;
-}
-
-@keyframes pulsar {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: .35; transform: scale(.65); }
-}
-
-.btn-dark {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
+.btn-actualizar {
+  padding: 8px 20px;
   background: #1a3a2a;
+  color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: .85rem;
-  font-weight: 600;
-  color: #fff;
   cursor: pointer;
-  transition: background .15s;
+  font-weight: 600;
+  font-size: .875rem;
+  transition: background .2s;
 }
-.btn-dark:hover:not(:disabled) { background: #14532d; }
-.btn-dark:disabled { opacity: .55; cursor: not-allowed; }
-
-.spin {
-  animation: girar .8s linear infinite;
-}
-@keyframes girar {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.error-banner {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #991b1b;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: .85rem;
-  font-weight: 500;
-}
+.btn-actualizar:hover:not(:disabled) { background: #0f2818; }
+.btn-actualizar:disabled { opacity: .6; cursor: not-allowed; }
 
 .mon-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 14px;
-  flex: 1;
+  grid-template-columns: 380px 1fr;
+  gap: 16px;
+}
+
+.sidebar {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
   min-height: 0;
 }
 
-.panel-izq {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.search-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.search-box {
   padding: 12px 14px;
   border-bottom: 1px solid #f3f4f6;
 }
 
 .search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: .84rem;
-  color: #111827;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: .875rem;
   font-family: inherit;
-  background: transparent;
+  transition: border .15s;
 }
-.search-input::placeholder { color: #9ca3af; }
+.search-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+}
 
-.filtros-row {
+.filtros {
   display: flex;
-  gap: 5px;
-  padding: 10px 12px 8px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
   border-bottom: 1px solid #f3f4f6;
-  flex-wrap: wrap;
 }
 
 .filtro-btn {
-  padding: 4px 13px;
-  border-radius: 20px;
-  font-size: .72rem;
-  font-weight: 600;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  border: 1.5px solid #e5e7eb;
-  background: transparent;
-  color: #374151;
+  font-size: .8rem;
+  font-weight: 500;
+  color: #6b7280;
   transition: all .15s;
+  text-align: left;
 }
-.filtro-btn.activo,
-.filtro-btn:hover { background: #111827; color: #fff; border-color: #111827; }
-.filtro-vj.activo { background: #1e40af; border-color: #1e40af; }
-.filtro-lb.activo { background: #15803d; border-color: #15803d; }
-.filtro-tl.activo { background: #b45309; border-color: #b45309; }
-.filtro-fs.activo { background: #b91c1c; border-color: #b91c1c; }
-
-.flota-label {
-  font-size: .7rem;
-  color: #9ca3af;
-  font-weight: 600;
-  padding: 6px 14px 4px;
-  margin: 0;
-  letter-spacing: .04em;
-  text-transform: uppercase;
+.filtro-btn.activo {
+  background: #1a3a2a;
+  color: #fff;
 }
+.filtro-btn:hover:not(.activo) { background: #e5e7eb; }
 
 .vehiculos-lista {
   flex: 1;
   overflow-y: auto;
-  padding: 6px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
-.skeleton { pointer-events: none; }
-.sk-line {
-  height: 11px;
-  background: linear-gradient(90deg, #f3f4f6 25%, #e9eaeb 50%, #f3f4f6 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 4px;
-  margin-bottom: 8px;
-}
-.sk-w70 { width: 70%; }
-.sk-w40 { width: 40%; }
-.sk-w90 { width: 90%; }
-.sk-sm  { height: 9px; }
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 40px 20px;
-  color: #9ca3af;
-  font-size: .82rem;
+.sin-resultados {
+  padding: 20px 14px;
   text-align: center;
+  color: #9ca3af;
+  font-size: .85rem;
 }
-.empty-state p { margin: 0; }
 
 .vehiculo-card {
-  background: #fafafa;
-  border: 1.5px solid #f3f4f6;
-  border-radius: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f3f4f6;
   cursor: pointer;
-  transition: border-color .15s, background .15s;
+  transition: background .15s;
 }
-.vehiculo-card:hover { border-color: #d1d5db; }
-.card-sel { border-color: #1a3a2a !important; background: #f0fdf4 !important; }
+.vehiculo-card:hover { background: #f9fafb; }
+.vehiculo-card.seleccionado { background: #eff6ff; border-left: 3px solid #2563eb; }
 
-.card-top {
+.card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 2px;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
-.card-modelo {
-  font-size: .85rem;
+.card-title {
   font-weight: 700;
   color: #111827;
   white-space: nowrap;
@@ -916,7 +790,49 @@ onUnmounted(() => {
   flex-direction: column;
   min-height: 560px;
 }
-
+.card-ruta {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 4px;
+  align-items: stretch;
+}
+.ruta-linea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.ruta-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ruta-punto.origen  { background: #10b981; }
+.ruta-punto.destino { background: #ef4444; }
+.ruta-barra {
+  width: 2px;
+  flex: 1;
+  min-height: 14px;
+  background: #d1d5db;
+}
+.ruta-textos {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 1;
+}
+.ruta-dir {
+  font-size: .72rem;
+  color: #374151;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .mapa-controles {
   position: absolute;
   top: 12px;
@@ -1000,6 +916,64 @@ onUnmounted(() => {
   font-family: 'Inter', sans-serif;
   border: 2.5px solid white;
   box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+
+:global(.marker-origen) {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+  position: relative;
+}
+
+:global(.marker-origen-inner) {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+}
+
+:global(.marker-destino) {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4);
+  position: relative;
+}
+
+:global(.marker-destino-inner) {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+}
+
+:global(.ruta-viaje) {
+  z-index: 100;
 }
 
 .popup-vehiculo {

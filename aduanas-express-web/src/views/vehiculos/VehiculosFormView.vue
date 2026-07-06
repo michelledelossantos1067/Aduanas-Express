@@ -110,6 +110,15 @@ async function guardar() {
         loading.value = false
     }
 }
+function formatearMatricula(event) {
+    let valor = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+    if (valor.length > 1) {
+        valor = valor.substring(0, 1) + '-' + valor.substring(1, 7);
+    }
+
+    form.value.matricula = valor;
+}
 
 function confirmarEliminar() {
     mostrarConfirmacion.value = true
@@ -263,7 +272,7 @@ onMounted(async () => {
                     <div class="form-grid">
                         <div class="field field-highlight">
                             <label>Matrícula <span class="req">*</span></label>
-                            <input v-model="form.matricula" type="text" placeholder="Ej. A-123456" autocomplete="off" />
+                            <input v-model="form.matricula" @input="formatearMatricula" type="text" placeholder="A-123456" autocomplete="off" maxlength="8" />
                         </div>
                         <div class="field">
                             <label>Año</label>
